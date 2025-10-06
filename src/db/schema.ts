@@ -44,3 +44,18 @@ export const emailsTable = pgTable("emails", {
   sender: text(),
   receivedAt: integer().notNull(),
 });
+
+export const actionsTable = pgTable("actions", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.id),
+  emailId: integer()
+    .notNull()
+    .references(() => emailsTable.id),
+  actionType: varchar({ length: 50 }).notNull(),
+  actionData: text(),
+  status: varchar({ length: 50 }).notNull(),
+  createdAt: integer().notNull(),
+  updatedAt: integer().notNull(),
+});
