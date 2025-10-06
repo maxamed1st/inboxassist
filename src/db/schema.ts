@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, text } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -28,4 +28,19 @@ export const connectionsTable = pgTable("connections", {
   accessToken: varchar({ length: 255 }),
   refreshToken: varchar({ length: 255 }),
   expiresAt: integer(),
+});
+
+export const emailsTable = pgTable("emails", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  accountId: integer()
+    .notNull()
+    .references(() => accountsTable.id, { onDelete: "cascade" }),
+  emailId: varchar({ length: 255 }).notNull(),
+  subject: text(),
+  body: text(),
+  sender: text(),
+  receivedAt: integer().notNull(),
 });
