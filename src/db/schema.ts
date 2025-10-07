@@ -64,7 +64,6 @@ export const actionsTable = pgTable("actions", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   emailId: integer()
-    .notNull()
     .references(() => emailsTable.id, { onDelete: "cascade" }),
   actionType: varchar({ length: 50 }).notNull(),
   actionData: varchar({ length: 4096 }),
