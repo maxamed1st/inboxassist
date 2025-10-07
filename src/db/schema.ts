@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import { integer, pgTable, varchar, text, jsonb } from "drizzle-orm/pg-core";
-import { ref } from "process";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -56,7 +55,7 @@ export const emailsTable = pgTable("emails", {
   to: jsonb().notNull(),
   cc: jsonb().default(sql`'[]'::jsonb`).notNull(),
   bcc: jsonb().default(sql`'[]'::jsonb`).notNull(),
-  receivedAt: integer(),
+  date: integer().notNull(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
