@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, text, boolean } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -56,6 +56,21 @@ export const actionsTable = pgTable("actions", {
   actionType: varchar({ length: 50 }).notNull(),
   actionData: varchar({ length: 4096 }),
   status: varchar({ length: 50 }).notNull(),
+  createdAt: integer().notNull(),
+  updatedAt: integer().notNull(),
+});
+
+export const messagesTable = pgTable("messages", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.id),
+  emailId: integer()
+    .references(() => emailsTable.id),
+  replyToId: integer()
+    .references((): any => messagesTable.id),
+  content: varchar({ length: 4096 }).notNull(),
+  role: varchar({ length: 50 }).notNull().$type<"user" | "assistant" | "system">(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
