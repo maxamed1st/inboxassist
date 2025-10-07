@@ -77,3 +77,18 @@ export const messagesTable = pgTable("messages", {
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
+
+export const paymentsTable = pgTable("payments", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer()
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  amount: integer().notNull(),
+  currency: varchar({ length: 10 }).notNull(),
+  paymentProvider: varchar({ length: 50 }).notNull().default("stripe"),
+  paymentProviderId: varchar({ length: 255 }).notNull(),
+  status: varchar({ length: 50 }).notNull(),
+  creditsAdded: integer().notNull(),
+  createdAt: integer().notNull(),
+  updatedAt: integer().notNull(),
+});
