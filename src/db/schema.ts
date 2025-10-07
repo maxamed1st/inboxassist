@@ -39,9 +39,9 @@ export const emailsTable = pgTable("emails", {
     .notNull()
     .references(() => accountsTable.id, { onDelete: "cascade" }),
   emailId: varchar({ length: 255 }).notNull(),
-  subject: text(),
+  subject: varchar({ length: 998 }).notNull(),
   body: text(),
-  sender: text(),
+  sender: varchar({ length: 255 }).notNull(),
   receivedAt: integer().notNull(),
 });
 
@@ -54,7 +54,7 @@ export const actionsTable = pgTable("actions", {
     .notNull()
     .references(() => emailsTable.id),
   actionType: varchar({ length: 50 }).notNull(),
-  actionData: text(),
+  actionData: varchar({ length: 4096 }),
   status: varchar({ length: 50 }).notNull(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
