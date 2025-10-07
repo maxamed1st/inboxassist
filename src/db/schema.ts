@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, pgTable, varchar, text, jsonb } from "drizzle-orm/pg-core";
+import { ref } from "process";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -47,6 +48,8 @@ export const emailsTable = pgTable("emails", {
     .notNull()
     .references(() => accountsTable.id, { onDelete: "cascade" }),
   emailId: varchar({ length: 255 }).notNull(),
+  inReplyTo: varchar({ length: 255 }),
+  references: jsonb().default(sql`'[]'::jsonb`).notNull(),
   subject: varchar({ length: 998 }).notNull(),
   content: text(),
   from: varchar({ length: 255 }).notNull(),
