@@ -1,3 +1,4 @@
+import { create } from "domain";
 import { integer, pgTable, varchar, text, boolean } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
@@ -19,6 +20,8 @@ export const accountsTable = pgTable("accounts", {
   accessToken: varchar({ length: 255 }).notNull(),
   refreshToken: varchar({ length: 255 }).notNull(),
   expiresAt: integer().notNull(),
+  createdAt: integer().notNull(),
+  updatedAt: integer().notNull(),
 });
 
 export const connectionsTable = pgTable("connections", {
@@ -31,6 +34,8 @@ export const connectionsTable = pgTable("connections", {
   accessToken: varchar({ length: 255 }),
   refreshToken: varchar({ length: 255 }),
   expiresAt: integer(),
+  createdAt: integer().notNull(),
+  updatedAt: integer().notNull(),
 });
 
 export const emailsTable = pgTable("emails", {
