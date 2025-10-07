@@ -76,11 +76,11 @@ export const messagesTable = pgTable("messages", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer()
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   emailId: integer()
-    .references(() => emailsTable.id),
+    .references(() => emailsTable.id, { onDelete: "set null" }),
   replyToId: integer()
-    .references((): any => messagesTable.id),
+    .references((): any => messagesTable.id, { onDelete: "set null" }),
   content: varchar({ length: 4096 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "assistant" | "system">(),
   createdAt: integer().notNull(),
