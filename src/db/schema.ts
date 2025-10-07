@@ -49,10 +49,10 @@ export const actionsTable = pgTable("actions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer()
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   emailId: integer()
     .notNull()
-    .references(() => emailsTable.id),
+    .references(() => emailsTable.id, { onDelete: "cascade" }),
   actionType: varchar({ length: 50 }).notNull(),
   actionData: varchar({ length: 4096 }),
   status: varchar({ length: 50 }).notNull(),
