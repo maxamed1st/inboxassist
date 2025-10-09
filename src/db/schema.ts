@@ -50,7 +50,7 @@ export const emailsTable = pgTable("emails", {
   inReplyTo: varchar({ length: 255 }),
   references: jsonb().default(sql`'[]'::jsonb`).notNull(),
   subject: varchar({ length: 998 }).notNull(),
-  content: text(),
+  content: jsonb().notNull(),
   from: varchar({ length: 255 }).notNull(),
   to: jsonb().notNull(),
   cc: jsonb().default(sql`'[]'::jsonb`).notNull(),
