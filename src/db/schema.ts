@@ -86,6 +86,7 @@ export const messagesTable = pgTable("messages", {
     .references(() => emailsTable.id, { onDelete: "set null" }),
   replyToId: integer()
     .references((): any => messagesTable.id, { onDelete: "set null" }),
+  references: jsonb().default(sql`'[]'::jsonb`).notNull(),
   content: varchar({ length: 4096 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "assistant" | "system">(),
   createdAt: integer().notNull(),
