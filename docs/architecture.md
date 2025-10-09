@@ -20,7 +20,9 @@ Handles payments, updates user credits, and tracks usage.
 1. User sends a message → `"message:user"` event is emitted.
 2. Intent classifier receives the event → creates an entry in the `actions` table and → emits `"action:ACTION_TYPE"`.
 3. Email/NLP modules handle the action (e.g., compose, edit, send, move).
-4. Once handled, `"email:*"` or `"action:*"` events are emitted → Connection module notifies the user.
+4. Once handled, `"email:*"` or `"action:*"` events are emitted.
+5. Billing and Connection consumes the event.
+6. Billing updates credits while Connection notifies user.
 
 # Important Considerations
 1. **Database as source of truth**: all actions must be persisted before emitting events.  
@@ -36,3 +38,4 @@ Handles payments, updates user credits, and tracks usage.
 8. **Actions table**: generic enough for workflows and nested actions (`parentAction`). Tracks user/system role, status, and linked email.  
 9. **Payments**: stored in `payments` table, credits updated atomically in `users.credits`.  
 10. **Security**: Email and chat content must be encrypted at rest and in transit
+11. **billing**: Usage duration is tracked across events and Billing consumes once the system is done and updates credits

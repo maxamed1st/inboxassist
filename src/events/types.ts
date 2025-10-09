@@ -10,16 +10,16 @@ export interface MessagePayloads {
   "message:assistant": { id: number, content: string };
 
   // user triggered actions
-  "action:compose": { id: number, inReplyTo?: string, userMessage: string };
-  "action:edit": { id: number, emailId:string, userMessage: string };
-  "action:send": { id: number };
-  "action:move": { id: number, emailId: string, folder: string };
+  "action:compose": { id: number, inReplyTo?: string, userMessage: string, usage: number };
+  "action:edit": { id: number, emailId:string, userMessage: string, usage: number };
+  "action:send": { id: number, usage: number };
+  "action:move": { id: number, emailId: string, folder: string, usage: number };
 
   // email events
   "email:new": { id: number };
-  "email:summerised": { id: number, content: string };
-  "email:composed": { id: number, content: string };
-  "email:edited": { id: number, content: string };
-  "email:sent": { id: number };
-  "email:moved": { id: number };
+  "email:summerised": { id: number, content: string, usage: number };
+  "email:composed": { id: number, content: string, usage: number };
+  "email:edited": { id: number, content: string, usage: number };
+  "email:sent": { id: number, usage: number };
+  "email:moved": { id: number, usage: number };
 }
