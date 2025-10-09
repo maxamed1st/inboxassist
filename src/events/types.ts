@@ -17,7 +17,7 @@ export interface MessagePayloads {
 
   // email events
   "email:new": { id: number };
-  "email:summerised": { id: number, content: string, usage: number };
+  "email:summarised": { id: number, content: string, usage: number };
   "email:composed": { id: number, content: string, usage: number };
   "email:edited": { id: number, content: string, usage: number };
   "email:sent": { id: number, usage: number };
