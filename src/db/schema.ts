@@ -70,6 +70,7 @@ export const actionsTable = pgTable("actions", {
   actionType: varchar({ length: 50 }).notNull(),
   actionData: varchar({ length: 4096 }),
   status: varchar({ length: 50 }).notNull(),
+  role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
