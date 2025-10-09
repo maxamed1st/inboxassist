@@ -67,6 +67,8 @@ export const actionsTable = pgTable("actions", {
     .references(() => usersTable.id, { onDelete: "cascade" }),
   emailId: integer()
     .references(() => emailsTable.id, { onDelete: "cascade" }),
+  parentAction: integer()
+    .references((): any => actionsTable.id, { onDelete: "set null" }),
   actionType: varchar({ length: 50 }).notNull(),
   actionData: varchar({ length: 4096 }),
   status: varchar({ length: 50 }).notNull(),
