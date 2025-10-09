@@ -1,0 +1,25 @@
+export type Channels = 
+  "message:user" | "message:assistant" |
+  "action:compose" | "action:send" | "action:edit" | "action:move" |
+  "email:new" | "email:summerised" | "email:sent" | "email:moved" |
+  "email:composed" | "email:edited";
+
+export interface MessagePayloads {
+  // user messages
+  "message:user": { id: number, content: string };
+  "message:assistant": { id: number, content: string };
+
+  // user triggered actions
+  "action:compose": { id: number, inReplyTo?: string, userMessage: string };
+  "action:edit": { id: number, emailId:string, userMessage: string };
+  "action:send": { id: number };
+  "action:move": { id: number, emailId: string, folder: string };
+
+  // email events
+  "email:new": { id: number };
+  "email:summerised": { id: number, content: string };
+  "email:composed": { id: number, content: string };
+  "email:edited": { id: number, content: string };
+  "email:sent": { id: number };
+  "email:moved": { id: number };
+}
