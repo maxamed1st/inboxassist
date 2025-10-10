@@ -134,13 +134,15 @@ Events that are not workflows don't need/have payload.
 - Google
 - Microsoft
 
-### Workflows
+### Features
+
+#### Workflows
 - Summerise
 - Compose Reply
 - send reply
 - Move email to requested folder
 
-### Functionality
+#### Functionality
 - Connect/disconnect email
 - Purge emails and/or chats
 - Buy credits
