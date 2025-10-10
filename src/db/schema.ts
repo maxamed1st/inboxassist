@@ -73,7 +73,7 @@ export const actionsTable = pgTable("actions", {
     .references((): any => actionsTable.id, { onDelete: "set null" }),
   type: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
   payload: jsonb().default(sql`'{}'::jsonb`).notNull().$type<ActionPayload>(),
-  status: varchar({ length: 50 }).notNull(),
+  status: varchar({ length: 50 }).notNull().$type<"pending" | "processing" | "completed" | "failed">(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
