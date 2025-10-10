@@ -146,9 +146,10 @@ Events that are not workflows don't need/have payload.
 - Buy credits
 - See credit balance
 
-### NLP Components
-- Intent classifier
-- Text summeriser
-- Email Generator
+### Components
+- Email
+- NLP
+- Connection
+- Billing
 
 ---
