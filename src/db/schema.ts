@@ -70,7 +70,7 @@ export const actionsTable = pgTable("actions", {
     .references(() => emailsTable.id, { onDelete: "cascade" }),
   parentAction: integer()
     .references((): any => actionsTable.id, { onDelete: "set null" }),
-  actionType: varchar({ length: 50 }).notNull(),
+  actionType: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
   actionData: jsonb().default(sql`'{}'::jsonb`).notNull(),
   status: varchar({ length: 50 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
