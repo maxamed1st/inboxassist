@@ -48,14 +48,14 @@ Handles all user interfaces. Currently, the MVP uses a **Telegram bot**, but the
 - Connect email account
 - Purchase credit
 - Show credit balance
-- Prune database
+- Purge database
 - Notify users of action results
 
 **Database tables:** `connections`, `users`, `messages`
 
 **Notes**
 - Connection sends link to user for email authentication and credit purchase
-- User decides if they want to prune chats, emails or both
+- User decides if they want to purge chats, emails or both
 
 ---
 
@@ -142,7 +142,7 @@ Events that are not workflows don't need/have payload.
 
 ### Functionality
 - Connect/disconnect email
-- Purge Emails and chats
+- Purge emails and/or chats
 - Buy credits
 - See credit balance
 
