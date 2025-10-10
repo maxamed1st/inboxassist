@@ -7,10 +7,11 @@ export type Channels =
   "billing:balance" | "billing:buy";
 
 export interface MessagePayloads {
-  // user messages
+  // chat messages
   "message:user": { id: number, content: string };
   "message:assistant": { id: number, content: string };
   "message:system": { id: number, content: string };
+  "message:prune": undefined;
 
   // user triggered actions
   "action:compose": { id: number, emailId?: number, userMessage: string, usage: number }; // emailId in case of composing a reply
@@ -25,4 +26,11 @@ export interface MessagePayloads {
   "email:edited": { id: number, content: string, usage: number };
   "email:sent": { id: number, usage: number };
   "email:moved": { id: number, usage: number };
+  "email:login": { platform: string };
+  "email:logout": undefined;
+  "email:prune": undefined;
+
+  // Billing events
+  "billing:balance": undefined;
+  "billing:buy": undefined;
 }
