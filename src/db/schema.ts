@@ -68,10 +68,10 @@ export const actionsTable = pgTable("actions", {
     .references(() => usersTable.id, { onDelete: "cascade" }),
   emailId: integer()
     .references(() => emailsTable.id, { onDelete: "cascade" }),
-  parentAction: integer()
+  parentId: integer()
     .references((): any => actionsTable.id, { onDelete: "set null" }),
-  actionType: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
-  actionData: jsonb().default(sql`'{}'::jsonb`).notNull(),
+  type: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
+  payload: jsonb().default(sql`'{}'::jsonb`).notNull(),
   status: varchar({ length: 50 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
   createdAt: integer().notNull(),
