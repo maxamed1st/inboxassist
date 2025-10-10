@@ -17,13 +17,17 @@ Handles user interfaces. For the MVP, this is a Telegram bot. The connection mod
 Handles payments, updates user credits, and tracks usage.
 
 # Flow
+## User Message
 1. User sends a message → `"message:user"` event is emitted.
 2. Intent classifier receives the event → creates an entry in the `actions` table and → emits `"action:ACTION_TYPE"`.
 3. Email/NLP modules handle the action (e.g., compose, edit, send, move).
 4. Once handled, `"email:*"` or `"action:*"` events are emitted.
 5. Billing and Connection consumes the event.
 6. Billing updates credits while Connection notifies user.
-
+## New email
+1. Email polls new email, saves to db and emits "email:new"
+2. NLP summarises email and emits "email:summarised"
+3. Billing and Connection updates credits and notifies user.
 # Important Considerations
 1. **Database as source of truth**: all actions must be persisted before emitting events.  
 2. **Thin events**: events contain minimal information. Additional details can be queried from the database.  
