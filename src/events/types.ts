@@ -13,10 +13,10 @@ export interface MessagePayloads {
   "message:system": { id: number, content: string };
 
   // user triggered actions
-  "action:compose": { id: number, inReplyTo?: string, userMessage: string, usage: number };
-  "action:edit": { id: number, emailId:string, userMessage: string, usage: number };
-  "action:send": { id: number, usage: number };
-  "action:move": { id: number, emailId: string, folder: string, usage: number };
+  "action:compose": { id: number, emailId?: number, userMessage: string, usage: number }; // emailId in case of composing a reply
+  "action:edit": { id: number, emailId: number, userMessage: string, usage: number };
+  "action:send": { id: number, emailId: number, usage: number };
+  "action:move": { id: number, emailId: number, folder: string, usage: number };
 
   // email events
   "email:new": { id: number };
