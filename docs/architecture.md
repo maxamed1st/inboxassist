@@ -124,3 +124,31 @@ They can be found in events/types.
 Events that are not workflows don't need/have payload.
 
 ---
+
+## Scope
+
+### Chat interface
+- Telegram
+
+### Email Platforms
+- Google
+- Microsoft
+
+### Workflows
+- Summerise
+- Compose Reply
+- send reply
+- Move email to requested folder
+
+### Functionality
+- Connect/disconnect email
+- Purge Emails and chats
+- Buy credits
+- See credit balance
+
+### NLP Components
+- Intent classifier
+- Text summeriser
+- Email Generator
+
+---
