@@ -4,7 +4,7 @@ InboxAssist is an **event-driven system** for managing user emails with AI assis
 
 ---
 
-## Components
+## Modules
 
 ### Email
 Handles email account management, sending, receiving, moving, and threading.
@@ -79,7 +79,7 @@ Tracks usage, updates user credits, and processes payments.
 
 ## Database Schema Overview
 
-All components share access to a **PostgreSQL database** via `drizzle-orm`. Key tables:
+All modules share access to a **PostgreSQL database** via `drizzle-orm`. Key tables:
 
 - **users**: id, email, name, credits, timestamps
 - **accounts**: user email accounts and tokens
@@ -119,7 +119,7 @@ Event ids map directly to relevant table id.
 ---
 
 ### Event Channels
-Channels are set up in the format `"component/table:action"` 
+Channels are set up in the format `"module/table:action"` 
 They can be found in events/types.
 Events that are not workflows don't need/have payload.
 
@@ -148,7 +148,7 @@ Events that are not workflows don't need/have payload.
 - Buy credits
 - See credit balance
 
-### Components
+### Modules
 - Email
 - NLP
 - Connections
