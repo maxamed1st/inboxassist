@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, pgTable, varchar, text, jsonb } from "drizzle-orm/pg-core";
+import type { EmailContent, ActionPayload } from "../db/types.js";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -50,7 +51,7 @@ export const emailsTable = pgTable("emails", {
   inReplyTo: varchar({ length: 255 }),
   references: jsonb().default(sql`'[]'::jsonb`).notNull(),
   subject: varchar({ length: 998 }).notNull(),
-  content: jsonb().notNull(),
+  content: jsonb().notNull().$type<EmailContent>(),
   from: varchar({ length: 255 }).notNull(),
   to: jsonb().notNull(),
   cc: jsonb().default(sql`'[]'::jsonb`).notNull(),
@@ -71,7 +72,7 @@ export const actionsTable = pgTable("actions", {
   parentId: integer()
     .references((): any => actionsTable.id, { onDelete: "set null" }),
   type: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
-  payload: jsonb().default(sql`'{}'::jsonb`).notNull(),
+  payload: jsonb().default(sql`'{}'::jsonb`).notNull().$type<ActionPayload>(),
   status: varchar({ length: 50 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
   createdAt: integer().notNull(),
