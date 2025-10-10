@@ -1,8 +1,10 @@
 export type Channels = 
-  "message:user" | "message:assistant" |
+  "message:user" | "message:assistant" | "message:prune" |
   "action:compose" | "action:send" | "action:edit" | "action:move" |
   "email:new" | "email:summerised" | "email:sent" | "email:moved" |
-  "email:composed" | "email:edited";
+  "email:composed" | "email:edited" |
+  "email:login" | "email:logout" | "email:prune" |
+  "billing:balance" | "billing:buy";
 
 export interface MessagePayloads {
   // user messages
