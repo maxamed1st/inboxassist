@@ -39,7 +39,7 @@ Handles natural language tasks such as intent classification, email summarizatio
 
 ---
 
-### Connection
+### Connections
 Handles all user interfaces. Currently, the MVP uses a **Telegram bot**, but the system is designed to support multiple platforms.
 
 **Responsibilities:**
@@ -54,7 +54,7 @@ Handles all user interfaces. Currently, the MVP uses a **Telegram bot**, but the
 **Database tables:** `connections`, `users`, `messages`
 
 **Notes**
-- Connection sends link to user for email authentication and credit purchase
+- Connections sends link to user for email authentication and credit purchase
 - User decides if they want to purge chats, emails or both
 
 ---
@@ -105,16 +105,16 @@ Event ids map directly to relevant table id.
 1. User sends a message → `"message:user"` event is emitted
 2. **NLP / Intent Classifier** consumes the event → creates an entry in `actions` table → emits `"action:ACTION_TYPE"`
 3. Email/NLP modules handle the action (compose, edit, send, move) → emit `"email:*"` or `"action:*"` events
-4. **Billing** and **Connection** consume completed events:
+4. **Billing** and **Connections** consume completed events:
    - Billing: updates credits and usage
-   - Connection: notifies the user of results
+   - Connections: notifies the user of results
 
 #### New Email
 1. New email is fetched → `"email:new"` event is emitted
 2. **NLP / Summeriser** consumes the event → summerises the email and emits → `"email:summerised"`
-3. **Billing** and **Connection** consume completed events:
+3. **Billing** and **Connections** consume completed events:
    - Billing: updates credits and usage
-   - Connection: notifies the user of results
+   - Connections: notifies the user of results
 
 ---
 
@@ -127,7 +127,7 @@ Events that are not workflows don't need/have payload.
 
 ## Scope
 
-### Connection
+### Connections
 - Telegram
 
 ### Email Platforms
@@ -151,7 +151,7 @@ Events that are not workflows don't need/have payload.
 ### Components
 - Email
 - NLP
-- Connection
+- Connections
 - Billing
 
 ---
