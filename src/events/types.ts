@@ -1,5 +1,5 @@
 export type Channels = 
-  "message:user" | "message:assistant" | "message:prune" |
+  "message:user" | "message:assistant" | "message:system" | "message:prune" |
   "action:compose" | "action:send" | "action:edit" | "action:move" |
   "email:new" | "email:summerised" | "email:sent" | "email:moved" |
   "email:composed" | "email:edited" |
@@ -10,6 +10,7 @@ export interface MessagePayloads {
   // user messages
   "message:user": { id: number, content: string };
   "message:assistant": { id: number, content: string };
+  "message:system": { id: number, content: string };
 
   // user triggered actions
   "action:compose": { id: number, inReplyTo?: string, userMessage: string, usage: number };
