@@ -127,7 +127,7 @@ Events that are not workflows don't need/have payload.
 
 ## Scope
 
-### Chat interface
+### Connection
 - Telegram
 
 ### Email Platforms
