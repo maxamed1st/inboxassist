@@ -71,7 +71,7 @@ export const actionsTable = pgTable("actions", {
   parentAction: integer()
     .references((): any => actionsTable.id, { onDelete: "set null" }),
   actionType: varchar({ length: 50 }).notNull(),
-  actionData: varchar({ length: 4096 }),
+  actionData: jsonb().default(sql`'{}'::jsonb`).notNull(),
   status: varchar({ length: 50 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
   createdAt: integer().notNull(),
