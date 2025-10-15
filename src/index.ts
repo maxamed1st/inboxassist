@@ -1,7 +1,10 @@
-import { connectRedis } from "@/events/client.js"
+import initializeRedis from "./events/index.js";
+import initializeServer from "./server.js";
 
 async function main() {
-  await connectRedis();
+  // initializations
+  await initializeRedis();
+  initializeServer();
 }
 
 main()
