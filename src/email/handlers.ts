@@ -1,11 +1,18 @@
 import { googleOauth2Client } from "./clients.js";
 import jwt from "jsonwebtoken";
 import { insertAccount } from "./queries.js";
+import type{ Request, Response } from "express";
 
-export async function gmailCallback(req: any, res: any) {
+export async function gmailCallback(req: Request, res: Response) {
   try {
+    const query = req.query as { code?: string; state?: string };
+    if (!query.code || !query.state) {
+      return res.status(400).json({ error: "Missing code or state in query" });
+      console.error("Missing code or state in query", query);
+    }
+    
     const userId = Number(req.query.state);
-    const { tokens } = await googleOauth2Client.getToken(req.query.code);
+    const { tokens } = await googleOauth2Client.getToken(query.code);
 
     // decode the user's email from the ID token
     const decoded = jwt.decode(tokens.id_token as string) as { email: string };
