@@ -26,6 +26,7 @@
   "dependencies": {
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "bullmq": "^5.61.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "express": "^5.1.0",
