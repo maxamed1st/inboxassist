@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, pgTable, varchar, text, jsonb } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, jsonb } from "drizzle-orm/pg-core";
 import type { EmailContent, ActionPayload } from "../db/types.js";
 
 export const usersTable = pgTable("users", {
