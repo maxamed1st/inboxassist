@@ -1,5 +1,5 @@
-import initializeRedis from "./events/index.js";
-import initializeServer from "./server.js";
+import initializeRedis from "@/events/index.js";
+import initializeServer from "@/server.js";
 
 async function main() {
   // initializations

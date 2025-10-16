@@ -1,5 +1,5 @@
-import { redisClient } from "./client.js";
-import type { Channels, MessagePayloads } from "./types.js";
+import { redisClient } from "@/events/client.js";
+import type { Channels, MessagePayloads } from "@/events/types.js";
 
 // Publisher
 export const publish = async <T extends Channels>(

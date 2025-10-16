@@ -155,3 +155,6 @@ Events that are not workflows don't need/have payload.
 - Billing
 
 ---
+
+#### Notes
+**Absolute paths**: Use absolute paths when referencing other files
