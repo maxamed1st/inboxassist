@@ -2,6 +2,7 @@ import { googleOauth2Client } from "./clients.js";
 import jwt from "jsonwebtoken";
 import { insertAccount } from "./queries.js";
 import type{ Request, Response } from "express";
+import { refreshTokensQueue } from "./queue.js";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -34,6 +35,18 @@ export async function gmailCallback(req: Request, res: Response) {
 
     // insert into accounts table
     await insertAccount(values);
+
+    // refresh tokens periodically
+    refreshTokensQueue.add("refresh",
+      { provider: "google", providerAccountId },
+      {
+        repeat: { every: 50 * 60 * 1000 },
+        attempts: 3,
+        backoff: { type: "exponential", delay: 60000 },
+        removeOnComplete: true,
+        removeOnFail: false,
+      }
+    );
 
     return res.json({ success: true, providerAccountId });
   } catch (error) {
