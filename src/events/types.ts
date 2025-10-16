@@ -11,7 +11,7 @@ export interface MessagePayloads {
   "message:user": { id: number, content: string };
   "message:assistant": { id: number, content: string };
   "message:system": { id: number, content: string };
-  "message:prune": undefined;
+  "message:prune": { userId: number };
 
   // user triggered actions
   "action:compose": { id: number, emailId?: number, userMessage: string, usage: number }; // emailId in case of composing a reply
@@ -26,11 +26,11 @@ export interface MessagePayloads {
   "email:edited": { id: number, content: string, usage: number };
   "email:sent": { id: number, usage: number };
   "email:moved": { id: number, usage: number };
-  "email:login": { platform: string };
-  "email:logout": undefined;
-  "email:prune": undefined;
+  "email:login": { userId: number, platform: string };
+  "email:logout": { userId: number };
+  "email:prune": { userId: number };
 
   // Billing events
-  "billing:balance": undefined;
-  "billing:buy": undefined;
+  "billing:balance": { userId: number };
+  "billing:buy": { userId: number };
 }
