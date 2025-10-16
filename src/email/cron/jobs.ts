@@ -1,5 +1,5 @@
-import { googleOauth2Client } from "./clients.js";
-import { getAccountByProviderAccountId, updateAccount } from "./queries.js";
+import { googleOauth2Client } from "../clients.js";
+import { getAccountByProviderAccountId, updateAccount } from "../../db/queries/accounts.js";
 import jwt from "jsonwebtoken";
 
 // refresh access token when expired

@@ -1,8 +1,8 @@
-import { googleOauth2Client } from "./clients.js";
+import { googleOauth2Client } from "../clients.js";
 import jwt from "jsonwebtoken";
-import { insertAccount } from "./queries.js";
+import { insertAccount } from "../../db/queries/accounts.js";
 import type{ Request, Response } from "express";
-import { refreshTokensQueue } from "./queue.js";
+import { refreshTokensQueue } from "../cron/queue.js";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {

@@ -1,5 +1,5 @@
 import express from "express";
-import authRouter from "@/email/routes.js"
+import authRouter from "@/email/api/routes.js"
 
 export default function server() {
     const app = express();
