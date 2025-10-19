@@ -1,4 +1,4 @@
-import { connectRedis } from "@/events/client.js";
+import { connectRedis } from "@/events/client";
 
 export default async function main() {
   // initializations

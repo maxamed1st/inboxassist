@@ -1,5 +1,5 @@
 import express from "express";
-import { gmailCallback } from "@/email/api/handlers.js";
+import { gmailCallback } from "@/email/api/handlers";
 
 const router = express.Router();
 

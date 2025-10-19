@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, pgTable, varchar, jsonb } from "drizzle-orm/pg-core";
-import type { EmailContent, ActionPayload } from "../db/types.js";
+import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

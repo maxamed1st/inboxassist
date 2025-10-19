@@ -1,5 +1,5 @@
-import { db } from "@/db/client.js";
-import { accountsTable } from "@/db/schema.js";
+import { db } from "@/db/client";
+import { accountsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function insertAccount(values: typeof accountsTable.$inferInsert) {
