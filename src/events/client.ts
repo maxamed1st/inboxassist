@@ -1,27 +1,25 @@
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 
-export const redisClient = createClient({
-  url: process.env.REDIS_URL!,
-});
+export const redisClient = new Redis(process.env.REDIS_URL!);
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
 export const connectRedis = async () => {
-  if (!redisClient.isOpen) {
+  if (redisClient.status !== 'ready') {
     await redisClient.connect();
     console.log('Connected to Redis');
   }
 };
 
 export const disconnectRedis = async () => {
-  if (redisClient.isOpen) {
-    redisClient.destroy();
+  if (redisClient.status === 'ready') {
+    redisClient.disconnect();
     console.log('Disconnected from Redis');
   }
 };
 
 export const getRedisInfo = async () => {
-  if (redisClient.isOpen) {
+  if (redisClient.status === 'ready') {
     const info = await redisClient.info();
     console.log('Redis Info:', info);
     return info;
