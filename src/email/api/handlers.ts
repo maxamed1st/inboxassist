@@ -12,7 +12,7 @@ export async function gmailCallback(req: Request, res: Response) {
       console.error("Missing code or state in query", query);
     }
     
-    const userId = Number(req.query.state);
+    const userId = String(req.query.state);
     const { tokens } = await googleOauth2Client.getToken(query.code);
 
     // decode the user's email from the ID token
@@ -20,7 +20,7 @@ export async function gmailCallback(req: Request, res: Response) {
     const providerAccountId = decoded?.email ?? "unknown";
 
     // prepare values for DB insert
-    const now = Math.floor(Date.now() / 1000);
+    const now = Date.now();
 
     const values = {
       userId,
