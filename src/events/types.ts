@@ -8,29 +8,29 @@ export type Channels =
 
 export interface MessagePayloads {
   // chat messages
-  "message:user": { id: number, content: string };
-  "message:assistant": { id: number, content: string };
-  "message:system": { id: number, content: string };
-  "message:prune": { userId: number };
+  "message:user": { id: string, content: string };
+  "message:assistant": { id: string, content: string };
+  "message:system": { id: string, content: string };
+  "message:prune": { userId: string };
 
   // user triggered actions
-  "action:compose": { id: number, emailId?: number, userMessage: string, usage: number }; // emailId in case of composing a reply
-  "action:edit": { id: number, emailId: number, userMessage: string, usage: number };
-  "action:send": { id: number, emailId: number, usage: number };
-  "action:move": { id: number, emailId: number, folder: string, usage: number };
+  "action:compose": { id: string, emailId?: string, userMessage: string, usage: number }; // emailId in case of composing a reply
+  "action:edit": { id: string, emailId: string, userMessage: string, usage: number };
+  "action:send": { id: string, emailId: string, usage: number };
+  "action:move": { id: string, emailId: string, folder: string, usage: number };
 
   // email events
-  "email:new": { id: number };
-  "email:summarised": { id: number, content: string, usage: number };
-  "email:composed": { id: number, content: string, usage: number };
-  "email:edited": { id: number, content: string, usage: number };
-  "email:sent": { id: number, usage: number };
-  "email:moved": { id: number, usage: number };
-  "email:login": { userId: number, platform: string };
-  "email:logout": { userId: number };
-  "email:prune": { userId: number };
+  "email:new": { id: string };
+  "email:summarised": { id: string, content: string, usage: number };
+  "email:composed": { id: string, content: string, usage: number };
+  "email:edited": { id: string, content: string, usage: number };
+  "email:sent": { id: string, usage: number };
+  "email:moved": { id: string, usage: number };
+  "email:login": { userId: string, platform: string };
+  "email:logout": { userId: string };
+  "email:prune": { userId: string };
 
   // Billing events
-  "billing:balance": { userId: number };
-  "billing:buy": { userId: number };
+  "billing:balance": { userId: string };
+  "billing:buy": { userId: string };
 }

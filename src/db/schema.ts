@@ -1,9 +1,9 @@
 import { sql } from "drizzle-orm";
-import { integer, pgTable, varchar, jsonb } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, jsonb, uuid } from "drizzle-orm/pg-core";
 import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid().primaryKey().defaultRandom(),
   email: varchar({ length: 255 }).notNull().unique(),
   name: varchar({ length: 255 }),
   credits: integer().default(0).notNull(),
@@ -12,8 +12,8 @@ export const usersTable = pgTable("users", {
 });
 
 export const accountsTable = pgTable("accounts", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   provider: varchar({ length: 255 }).notNull(),
@@ -26,8 +26,8 @@ export const accountsTable = pgTable("accounts", {
 });
 
 export const connectionsTable = pgTable("connections", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   platform: varchar({ length: 255 }).notNull(),
@@ -40,11 +40,11 @@ export const connectionsTable = pgTable("connections", {
 });
 
 export const emailsTable = pgTable("emails", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
-  accountId: integer()
+  accountId: uuid()
     .notNull()
     .references(() => accountsTable.id, { onDelete: "cascade" }),
   emailId: varchar({ length: 255 }).notNull(),
@@ -63,13 +63,13 @@ export const emailsTable = pgTable("emails", {
 });
 
 export const actionsTable = pgTable("actions", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
-  emailId: integer()
+  emailId: uuid()
     .references(() => emailsTable.id, { onDelete: "cascade" }),
-  parentId: integer()
+  parentId: uuid()
     .references((): any => actionsTable.id, { onDelete: "set null" }),
   type: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
   payload: jsonb().default(sql`'{}'::jsonb`).notNull().$type<ActionPayload>(),
@@ -80,13 +80,13 @@ export const actionsTable = pgTable("actions", {
 });
 
 export const messagesTable = pgTable("messages", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
-  emailId: integer()
+  emailId: uuid()
     .references(() => emailsTable.id, { onDelete: "set null" }),
-  replyToId: integer()
+  replyToId: uuid()
     .references((): any => messagesTable.id, { onDelete: "set null" }),
   references: jsonb().default(sql`'[]'::jsonb`).notNull(),
   content: varchar({ length: 4096 }).notNull(),
@@ -96,8 +96,8 @@ export const messagesTable = pgTable("messages", {
 });
 
 export const paymentsTable = pgTable("payments", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer()
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   amount: integer().notNull(),
