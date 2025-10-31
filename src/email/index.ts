@@ -1,5 +1,7 @@
 import { publish, subscribe } from "@/events/broker";
 import { googleOauth2Client } from "@/email/clients";
+import { deleteEmailsByUserId } from "@db/queries/emails";
+import { deleteAccountByUserId } from "@db/queries/accounts";
 
 export default async function main() {
   await subscribe("email:login", "email", async ({userId, platform}) => {
@@ -18,4 +20,14 @@ export default async function main() {
       });
     }
   });
+
+  //delete emails
+  await subscribe("email:prune", "email", async (userId) => {
+    await deleteEmailsByUserId(user);
+
+    publish("message:system", {
+      id: userId,
+      content: "All emails have been removed from the system"
+    }
+  }
 }
