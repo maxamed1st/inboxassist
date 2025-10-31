@@ -31,3 +31,11 @@ export async function getAccountByProviderAccountId(providerAccountId: string) {
     .limit(1)
     .then((rows) => rows[0]);
   }
+
+export async function deleteAccountByUserId(userId: string) {
+  return db
+    .delete()
+    .from(accountsTable)
+    where(eq(accountsTable.userId, userId)
+    .then((rows) => rows[0]);
+}

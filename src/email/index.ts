@@ -30,4 +30,15 @@ export default async function main() {
       content: "All emails have been removed from the system"
     }
   }
+
+  // Log user out
+  await subscribe("email:logout", "email" async (user) {
+    await deleteEmailsByUserId(user);
+    await deleteAccountByUserId(user);
+
+    publish("message:system", {
+      id: userId,
+      content: "Your emails have been removed and logged out"
+    }
+  }
 }
