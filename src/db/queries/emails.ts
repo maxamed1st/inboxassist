@@ -9,3 +9,12 @@ export async function deleteEmailsByUserId(userId: string) {
     where(eq(emailsTable.userId, userId)
     .then((rows) => rows[0]);
 }
+
+export async function getEmailById(providerAccountId: string) {
+  return db
+    .select()
+    .from(emailsTable)
+    .where(eq(emailsTable.Id, providerAccountId))
+    .limit(1)
+    .then((rows) => rows[0]);
+  }

@@ -1,7 +1,7 @@
 import { publish, subscribe } from "@/events/broker";
-import { googleOauth2Client } from "@/email/clients";
-import { deleteEmailsByUserId } from "@db/queries/emails";
-import { deleteAccountByUserId } from "@db/queries/accounts";
+import { googleOauth2Client, gmailTransporter } from "@/email/clients";
+import { deleteEmailsByUserId, getEmailById } from "@db/queries/emails";
+import { deleteAccountByUserId, getAccountById } from "@db/queries/accounts";
 
 export default async function main() {
   await subscribe("email:login", "email", async ({userId, platform}) => {
@@ -39,6 +39,26 @@ export default async function main() {
     publish("message:system", {
       id: userId,
       content: "Your emails have been removed and logged out"
+    }
+  }
+
+  // Send email
+  await subscribe("action:send", "email", async (id: string, emailId: string, usage: number) => {
+    const email = await getEmailById(emailId);
+    const account = getAccountById(email.accountId)
+    transporter = gmailTransporter(emailAddress: email.from, refreshToken: account.refreshToken)
+
+    transporter.sendMail(
+      from: email.from,
+      to: email.to,
+      subject: email.subject,
+      html: email.content.html ?? "",
+      text: email.content.text ?? "",
+    )
+
+    publish("message:system", {
+      id: userId,
+      content: "Email sent to" + email.to
     }
   }
 }

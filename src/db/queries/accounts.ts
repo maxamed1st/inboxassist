@@ -23,6 +23,15 @@ export async function updateAccount(providerAccountId: string, values: Partial<t
     .returning();
   }
 
+export async function getAccountById(accountId: string) {
+  return db
+    .select()
+    .from(accountsTable)
+    .where(eq(accountsTable.id, accountId))
+    .limit(1)
+    .then((rows) => rows[0]);
+  }
+
 export async function getAccountByProviderAccountId(providerAccountId: string) {
   return db
     .select()
