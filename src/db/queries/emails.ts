@@ -1,11 +1,11 @@
 import { db } from "@/db/client";
-import { accountsTable } from "@/db/schema";
+import { emailsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function deleteEmailsByUserId(userId: string) {
   return db
     .delete()
-    .from(accountsTable)
-    where(eq(accountsTable.userId, userId)
+    .from(emailsTable)
+    where(eq(emailsTable.userId, userId)
     .then((rows) => rows[0]);
 }
