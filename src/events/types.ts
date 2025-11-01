@@ -14,18 +14,18 @@ export interface MessagePayloads {
   "message:prune": { userId: string };
 
   // user triggered actions
-  "action:compose": { id: string, emailId?: string, userMessage: string, usage: number }; // emailId in case of composing a reply
-  "action:edit": { id: string, emailId: string, userMessage: string, usage: number };
-  "action:send": { id: string, emailId: string, usage: number };
-  "action:move": { id: string, emailId: string, folder: string, usage: number };
+  "action:compose": { id: string, emailId?: string, userMessage: string }; // emailId in case of composing a reply
+  "action:edit": { id: string, emailId: string, userMessage: string };
+  "action:send": { id: string, emailId: string };
+  "action:move": { id: string, emailId: string, folder: string };
 
   // email events
   "email:new": { id: string };
-  "email:summarised": { id: string, content: string, usage: number };
-  "email:composed": { id: string, content: string, usage: number };
-  "email:edited": { id: string, content: string, usage: number };
-  "email:sent": { id: string, usage: number };
-  "email:moved": { id: string, usage: number };
+  "email:summarised": { id: string, content: string };
+  "email:composed": { id: string, content: string };
+  "email:edited": { id: string, content: string };
+  "email:sent": { id: string };
+  "email:moved": { id: string };
   "email:login": { userId: string, platform: string };
   "email:logout": { userId: string };
   "email:prune": { userId: string };
