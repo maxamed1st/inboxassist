@@ -22,7 +22,7 @@ export default async function main() {
   });
 
   //delete emails
-  await subscribe("email:prune", "email", async (userId) => {
+  await subscribe("email:prune", "email", async ({ userId }) => {
     await deleteEmailsByUserId(userId);
 
     publish("message:system", {
@@ -32,7 +32,7 @@ export default async function main() {
   }
 
   // Log user out
-  await subscribe("email:logout", "email" async (userId) {
+  await subscribe("email:logout", "email" async ({ userId }) {
     await deleteAccountByUserId(userId);
 
     publish("message:system", {
@@ -42,7 +42,7 @@ export default async function main() {
   }
 
   // Send email
-  await subscribe("action:send", "email", async (id, emailId) => {
+  await subscribe("action:send", "email", async ({ id, emailId }) => {
     const email = await getEmailById(emailId);
     const account = getAccountById(email.accountId)
     transporter = gmailTransporter(emailAddress: email.from, refreshToken: account.refreshToken)
