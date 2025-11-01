@@ -4,7 +4,7 @@ export type Channels =
   "email:new" | "email:summarised" | "email:sent" | "email:moved" |
   "email:composed" | "email:edited" |
   "email:login" | "email:logout" | "email:prune" |
-  "billing:balance" | "billing:buy";
+  "billing:subscribe" | "billing:manage";
 
 export interface MessagePayloads {
   // chat messages
@@ -31,6 +31,6 @@ export interface MessagePayloads {
   "email:prune": { userId: string };
 
   // Billing events
-  "billing:balance": { userId: string };
-  "billing:buy": { userId: string };
+  "billing:subscribe": { userId: string };
+  "billing:manage": { userId: string };
 }
