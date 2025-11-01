@@ -46,34 +46,32 @@ Handles all user interfaces. Currently, the MVP uses a **Telegram bot**, but the
 - Receive user messages and emit `"message:user"` events
 - Send assistant responses
 - Connect email account
-- Purchase credit
-- Show credit balance
+- Manage subscription
 - Purge database
 - Notify users of action results
 
 **Database tables:** `connections`, `users`, `messages`
 
 **Notes**
-- Socials sends link to user for email authentication and credit purchase
+- Socials sends link to user for email authentication and subscription management (checkout, manage subscription)
 - User decides if they want to purge chats, emails or both
 
 ---
 
 ### Billing
-Tracks usage, updates user credits, and processes payments.
+Manages subscription lifecycle and payments.
 
 **Responsibilities:**
-- Process payments via Stripe (or other providers)
-- Update `users.credits` atomically
-- Track usage across events and actions
-- Consume usage data from completed events
+- Manage subscription via Stripe (or other providers)
+- Track subscriptions both currently active and past
+- Redirect user to checkout and customer portal
+- Update active subscriptions in users table atomically
 
-**Database tables:** `payments`, `users`
+**Database tables:** `subscriptions`, `users`
 
 **Notes**
-- Usage is tracked per event to calculate accurate credit consumption
-- Payments are recorded in the `payments` table and linked to user accounts
-- Credit updates are atomic to prevent inconsistencies
+- Subscriptions are recorded in the `subscriptions` table and linked to user accounts
+- Subscription updates are atomic to prevent inconsistencies
 
 ---
 
@@ -81,13 +79,13 @@ Tracks usage, updates user credits, and processes payments.
 
 All modules share access to a **PostgreSQL database** via `drizzle-orm`. Key tables:
 
-- **users**: id, email, name, credits, timestamps
+- **users**: id, email, name, subscriptionStatus, subscriptionId, timestamps
 - **accounts**: user email accounts and tokens
 - **connections**: user platform connections
 - **emails**: stored emails with threading and JSONB content
 - **actions**: user/system actions and nested workflows
 - **messages**: chat messages linked to emails
-- **payments**: credit payments and statuses
+- **subscriptions**: subscription lifecycle and metadata
 
 **Notes**
 - The database serves as the **source of truth**. Every action, message, and email must be persisted before events are emitted
@@ -103,18 +101,17 @@ Event ids map directly to relevant table id.
 
 #### User Message
 1. User sends a message → `"message:user"` event is emitted
-2. **NLP / Intent Classifier** consumes the event → creates an entry in `actions` table → emits `"action:ACTION_TYPE"`
+2. **NLP / Intent Classifier** consumes the event for users with an active subscription → creates an entry in `actions` table → emits `"action:ACTION_TYPE"`
 3. Email/NLP modules handle the action (compose, edit, send, move) → emit `"email:*"` or `"action:*"` events
-4. **Billing** and **Socials** consume completed events:
-   - Billing: updates credits and usage
-   - Socials: notifies the user of results
+4. **Socials** consume completed events and notify the user of results:
 
 #### New Email
-1. New email is fetched → `"email:new"` event is emitted
+1. New email is fetched for users with an active subscription → `"email:new"` event is emitted
 2. **NLP / Summeriser** consumes the event → summerises the email and emits → `"email:summerised"`
-3. **Billing** and **Socials** consume completed events:
-   - Billing: updates credits and usage
-   - Socials: notifies the user of results
+3. **Socials** consume completed events and notify the user of results:
+
+#### Inactive Subscription
+- User sends a message → **Social** encourages user to get a subscription
 
 ---
 
@@ -145,8 +142,7 @@ Events that are not workflows don't need/have payload.
 #### Functionality
 - Connect/disconnect email
 - Purge emails and/or chats
-- Buy credits
-- See credit balance
+- Subscribe / Manage subscription
 
 ### Modules
 - Email
