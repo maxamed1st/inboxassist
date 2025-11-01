@@ -4,17 +4,15 @@ import { eq } from "drizzle-orm";
 
 export async function deleteEmailsByUserId(userId: string) {
   return db
-    .delete()
-    .from(emailsTable)
-    where(eq(emailsTable.userId, userId)
-    .then((rows) => rows[0]);
+    .delete(emailsTable)
+    .where(eq(emailsTable.userId, userId))
 }
 
-export async function getEmailById(providerAccountId: string) {
+export async function getEmailById(emailId: string) {
   return db
     .select()
     .from(emailsTable)
-    .where(eq(emailsTable.Id, providerAccountId))
+    .where(eq(emailsTable.id, emailId))
     .limit(1)
     .then((rows) => rows[0]);
   }

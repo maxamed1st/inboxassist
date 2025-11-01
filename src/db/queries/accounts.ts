@@ -43,8 +43,6 @@ export async function getAccountByProviderAccountId(providerAccountId: string) {
 
 export async function deleteAccountByUserId(userId: string) {
   return db
-    .delete()
-    .from(accountsTable)
-    where(eq(accountsTable.userId, userId)
-    .then((rows) => rows[0]);
+    .delete(accountsTable)
+    .where(eq(accountsTable.userId, userId))
 }

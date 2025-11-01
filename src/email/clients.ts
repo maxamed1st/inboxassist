@@ -7,7 +7,8 @@ export const googleOauth2Client = new OAuth2Client(
   process.env.GOOGLE_REDIRECT_URI!
 );
 
-export function transporter(platform: string, clientId: string, clientSecret: string, emailAddress: string, refreshToken: string) {
+export function transporter({ platform, clientId, clientSecret, emailAddress, refreshToken }: { platform: string, clientId: string, clientSecret: string, emailAddress: string, refreshToken: string }) {
+  return nodemailer.createTransport({
   service: platform,
   auth: {
     type: "OAuth2",
@@ -16,14 +17,15 @@ export function transporter(platform: string, clientId: string, clientSecret: st
     clientSecret,
     refreshToken
   }
+  })
 }
 
-export function gmailTransporter(emailAddress: string, refreshToken: string) {
-  return transporter(
-    platform = "gmail",
-    clientId = process.env.GOOGLE_CLIENT_ID!,
-    clientSecret = process.env.GOOGLE_CLIENT_SECRET!,
-    emailAddress = emailAddress,
-    refreshToken = refreshToken
-  );
+export function gmailTransporter({emailAddress, refreshToken} : { emailAddress: string, refreshToken: string }) {
+  return transporter({
+    platform : "gmail",
+    clientId : process.env.GOOGLE_CLIENT_ID!,
+    clientSecret : process.env.GOOGLE_CLIENT_SECRET!,
+    emailAddress,
+    refreshToken
+  });
 }
