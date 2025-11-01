@@ -33,12 +33,11 @@ export default async function main() {
 
   // Log user out
   await subscribe("email:logout", "email" async (user) {
-    await deleteEmailsByUserId(user);
     await deleteAccountByUserId(user);
 
     publish("message:system", {
       id: userId,
-      content: "Your emails have been removed and logged out"
+      content: "Email logged out"
     }
   }
 
