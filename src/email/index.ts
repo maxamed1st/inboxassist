@@ -23,7 +23,7 @@ export default async function main() {
 
   //delete emails
   await subscribe("email:prune", "email", async (userId) => {
-    await deleteEmailsByUserId(user);
+    await deleteEmailsByUserId(userId);
 
     publish("message:system", {
       id: userId,
@@ -32,8 +32,8 @@ export default async function main() {
   }
 
   // Log user out
-  await subscribe("email:logout", "email" async (user) {
-    await deleteAccountByUserId(user);
+  await subscribe("email:logout", "email" async (userId) {
+    await deleteAccountByUserId(userId);
 
     publish("message:system", {
       id: userId,
