@@ -42,7 +42,7 @@ export default async function main() {
   }
 
   // Send email
-  await subscribe("action:send", "email", async (id: string, emailId: string, usage: number) => {
+  await subscribe("action:send", "email", async (id, emailId) => {
     const email = await getEmailById(emailId);
     const account = getAccountById(email.accountId)
     transporter = gmailTransporter(emailAddress: email.from, refreshToken: account.refreshToken)
