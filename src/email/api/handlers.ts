@@ -8,8 +8,8 @@ export async function gmailCallback(req: Request, res: Response) {
   try {
     const query = req.query as { code?: string; state?: string };
     if (!query.code || !query.state) {
-      return res.status(400).json({ error: "Missing code or state in query" });
       console.error("Missing code or state in query", query);
+      return res.status(400).json({ error: "Missing code or state in query" });
     }
     
     const userId = String(req.query.state);
