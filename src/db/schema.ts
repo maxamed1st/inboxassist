@@ -1,12 +1,13 @@
 import { sql } from "drizzle-orm";
-import { integer, pgTable, varchar, jsonb, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, jsonb, uuid, boolean } from "drizzle-orm/pg-core";
 import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
   email: varchar({ length: 255 }).notNull().unique(),
   name: varchar({ length: 255 }),
-  credits: integer().default(0).notNull(),
+  subscriptionStatus: varchar({ length: 50 }),
+  subscriptionId: integer(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
@@ -95,17 +96,19 @@ export const messagesTable = pgTable("messages", {
   updatedAt: integer().notNull(),
 });
 
-export const paymentsTable = pgTable("payments", {
+export const subscriptionsTable = pgTable("subscriptions", {
   id: uuid().primaryKey().defaultRandom(),
   userId: uuid()
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
-  amount: integer().notNull(),
-  currency: varchar({ length: 10 }).notNull(),
-  paymentProvider: varchar({ length: 50 }).notNull().default("stripe"),
-  paymentProviderId: varchar({ length: 255 }).notNull(),
+  provider: varchar({ length: 50 }).notNull().default("stripe"),
+  providerCustomerId: varchar({ length: 255 }).notNull(),
+  providerSubscriptionId: varchar({ length: 255 }).notNull(),
+  plan: varchar({ length: 255 }).notNull(),
   status: varchar({ length: 50 }).notNull(),
-  creditsAdded: integer().notNull(),
+  periodStart: integer().notNull(),
+  periodEnd: integer().notNull(),
+  cancelAtPeriodEnd: boolean().notNull(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
