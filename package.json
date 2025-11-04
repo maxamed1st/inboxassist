@@ -37,6 +37,7 @@
     "jsonwebtoken": "^9.0.2",
     "mailparser": "^3.7.5",
     "nodemailer": "^7.0.10",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "telegraf": "^4.16.3"
   }
 }
