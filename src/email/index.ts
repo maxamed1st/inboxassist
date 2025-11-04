@@ -1,5 +1,5 @@
 import { publish, subscribe } from "@/events/broker";
-import { googleOauth2Client, transporter } from "@/email/clients";
+import { googleOauth2Client, imapClient, transporter } from "@/email/clients";
 import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
 
@@ -62,6 +62,42 @@ export default async function main() {
     publish("message:system", {
       id: email?.userId!,
       content: "Email sent to" + email?.to
+    });
+  });
+
+  // move email
+  await subscribe("action:move", "email", async ({ emailId, folder }) => {
+    const email = await getEmailById(emailId);
+    if (!email) {
+      console.warn("Failed to get email from db:", emailId);
+      return;
+    }
+
+    const account = await getAccountById(email.accountId);
+
+    if (!account) {
+      console.warn("Failed to get account from db:", email.accountId);
+      return;
+    }
+
+    const client = imapClient({
+      host: "imap.gmail.com",
+      accessToken: account.accessToken,
+      emailAddress: account.providerAccountId,
+    });
+    await client.connect();
+
+    const lock = await client.getMailboxLock('INBOX');
+    try {
+      await client.messageMove(email.emailId, folder);
+    } finally {
+      lock.release();
+      await client.logout();
+    }
+
+    publish("message:system", {
+      id: email.userId,
+      content: `Email has been moved to folder: ${folder}`
     });
   });
 }
