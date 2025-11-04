@@ -1,7 +1,7 @@
 import { Queue, Worker } from "bullmq";
-import { refreshGmailTokens } from "@/email/cron/jobs";
+import { refreshGmailTokens } from "@/email/cron/jobs/refreshTokens";
 import { publish } from "@/events/broker";
-import { fetchNewEmails } from "@/email/cron/jobs";
+import { fetchNewEmails } from "@/email/cron/jobs/fetchEmails";
 
 const queueName = "refresh-account-tokens";
 
