@@ -14,7 +14,7 @@ if (!isProd) {
     platform: 'node',
     target: 'node20',
     format: 'esm',
-    outdir: 'out',
+    outdir: '.out',
     sourcemap: true,
     minify: false,
     treeShaking: false,
