@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { imapClient } from "@/email/clients";
 import { simpleParser } from "mailparser";
 import { insertEmail } from "@/db/queries/emails";
+import { publish } from "@/events/broker";
 
 // refresh access token when expired
 export async function refreshGmailTokens(accountId: string) {
@@ -79,7 +80,7 @@ export async function fetchNewEmails(host: string, providerAccountId: string) {
         return Array.isArray(refs) ? refs : [refs];
       }
 
-      await insertEmail({
+      const values = {
         userId: account.userId,
         accountId: account.id,
         emailId: parsed.messageId || crypto.randomUUID(),
@@ -95,10 +96,19 @@ export async function fetchNewEmails(host: string, providerAccountId: string) {
           html: parsed.html || undefined 
         },
         date: parsed.date?.getTime() || Date.now(),
-        status: "received",
+        status: "received" as const,
         createdAt: Date.now(),
         updatedAt: Date.now(),
-      });
+      };
+
+      const emailId = await insertEmail(values);
+
+      if (!emailId[0]?.id) {
+        console.error("Failed to insert email in db:", values.emailId);
+        continue;
+      }
+
+      publish("email:new", { id: emailId[0].id } );
     }
   } catch (error) {
     console.error("Error fetching email:", error);

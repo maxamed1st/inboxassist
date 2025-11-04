@@ -21,5 +21,5 @@ export async function insertEmail(emailData: typeof emailsTable.$inferInsert) {
   return db
     .insert(emailsTable)
     .values(emailData)
-    .returning();
+    .returning({ id: emailsTable.id });
 }
