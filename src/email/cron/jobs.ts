@@ -3,6 +3,7 @@ import { getAccountByProviderAccountId, updateAccount } from "@/db/queries/accou
 import jwt from "jsonwebtoken";
 import { imapClient } from "@/email/clients";
 import { simpleParser } from "mailparser";
+import { insertEmail } from "@/db/queries/emails";
 
 // refresh access token when expired
 export async function refreshGmailTokens(accountId: string) {
@@ -32,8 +33,8 @@ export async function refreshGmailTokens(accountId: string) {
 }
 
 // Get new emails
-export async function fetchNewEmails(host: string, accountId: string) {
-  const account = await getAccountByProviderAccountId(accountId);
+export async function fetchNewEmails(host: string, providerAccountId: string) {
+  const account = await getAccountByProviderAccountId(providerAccountId);
   if (!account?.accessToken) {
     throw new Error("No access token found for account");
   }
@@ -59,8 +60,44 @@ export async function fetchNewEmails(host: string, accountId: string) {
       if (!message.source) {
         continue;
       }
+      
       const parsed = await simpleParser(message.source);
-      console.log("New email from:", parsed.from?.text, "Subject:", parsed.subject);
+
+      // Helper to normalize addresses
+      function formatAddresses(addresses: any) {
+        if (!addresses) return [];
+        const addressArray = Array.isArray(addresses) ? addresses : [addresses];
+        return addressArray
+          .map(addr => addr.address || addr)
+          .filter(Boolean);
+      }
+
+      // Helper to normalize references
+      function normalizeReferences(refs: string | string[] | undefined): string[] {
+        if (!refs) return [];
+        return Array.isArray(refs) ? refs : [refs];
+      }
+
+      await insertEmail({
+        userId: account.userId,
+        accountId: account.id,
+        emailId: parsed.messageId || crypto.randomUUID(),
+        from: parsed.from?.text || "unknown",
+        to: formatAddresses((parsed.to as any)?.value),
+        cc: formatAddresses((parsed.cc as any)?.value),
+        bcc: formatAddresses((parsed.bcc as any)?.value),
+        inReplyTo: parsed.inReplyTo,
+        references: normalizeReferences(parsed.references),
+        subject: parsed.subject || "",
+        content: { 
+          text: parsed.text, 
+          html: parsed.html || undefined 
+        },
+        date: parsed.date?.getTime() || Date.now(),
+        status: "received",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
     }
   } catch (error) {
     console.error("Error fetching email:", error);

@@ -16,3 +16,10 @@ export async function getEmailById(emailId: string) {
     .limit(1)
     .then((rows) => rows[0]);
   }
+
+export async function insertEmail(emailData: typeof emailsTable.$inferInsert) {
+  return db
+    .insert(emailsTable)
+    .values(emailData)
+    .returning();
+}
