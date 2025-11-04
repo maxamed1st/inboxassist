@@ -16,15 +16,29 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV NODE_ENV=production
 RUN npm run build
 
 # -----------------------------
-# Runtime stage
+# Development runtime
+# -----------------------------
+FROM base AS dev
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NODE_ENV=development
+EXPOSE 3000
+
+# Use the dev script
+CMD ["npm", "run", "dev"]
+
+# -----------------------------
+# Production runtime
 # -----------------------------
 FROM base AS runner
 WORKDIR /app
 
-#ENV NODE_ENV=production
+ENV NODE_ENV=production
 
 # Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs \
