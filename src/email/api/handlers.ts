@@ -2,7 +2,7 @@ import { googleOauth2Client } from "@/email/clients";
 import jwt from "jsonwebtoken";
 import { insertAccount } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
-import { refreshTokensQueue } from "@/email/cron/queue";
+import { getNewEmailsQueue, refreshTokensQueue } from "@/email/cron/queue";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -41,6 +41,18 @@ export async function gmailCallback(req: Request, res: Response) {
       { provider: "google", providerAccountId },
       {
         repeat: { every: 50 * 60 * 1000 },
+        attempts: 3,
+        backoff: { type: "exponential", delay: 60000 },
+        removeOnComplete: true,
+        removeOnFail: false,
+      }
+    );
+
+    //TODO: Move this to onboarding or billing once they are implemented
+    getNewEmailsQueue.add("fetch",
+      { host: "imap.gmail.com", accountId: providerAccountId },
+      {
+        repeat: { every: 5 * 60 * 1000 },
         attempts: 3,
         backoff: { type: "exponential", delay: 60000 },
         removeOnComplete: true,
