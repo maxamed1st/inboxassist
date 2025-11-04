@@ -36,7 +36,8 @@ export async function refreshGmailTokens(accountId: string) {
 export async function fetchNewEmails(host: string, providerAccountId: string) {
   const account = await getAccountByProviderAccountId(providerAccountId);
   if (!account?.accessToken) {
-    throw new Error("No access token found for account");
+    console.warn("No access token found for account", providerAccountId);
+    return;
   }
 
   const client = imapClient({
