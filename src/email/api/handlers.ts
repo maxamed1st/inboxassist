@@ -28,7 +28,7 @@ export async function gmailCallback(req: Request, res: Response) {
       providerAccountId,
       accessToken: tokens.access_token!,
       refreshToken: tokens.refresh_token!,
-      expiresAt: Math.floor(tokens.expiry_date! / 1000),
+      expiresAt: tokens.expiry_date,
       createdAt: now,
       updatedAt: now,
     };

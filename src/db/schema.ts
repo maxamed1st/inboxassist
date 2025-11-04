@@ -21,7 +21,7 @@ export const accountsTable = pgTable("accounts", {
   providerAccountId: varchar({ length: 255 }).notNull(),
   accessToken: varchar({ length: 255 }).notNull(),
   refreshToken: varchar({ length: 255 }).notNull(),
-  expiresAt: integer().notNull(),
+  expiresAt: integer(),
   createdAt: integer().notNull(),
   updatedAt: integer().notNull(),
 });
