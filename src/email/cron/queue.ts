@@ -3,11 +3,9 @@ import { refreshGmailTokens } from "@/email/cron/jobs/refreshTokens";
 import { publish } from "@/events/broker";
 import { fetchNewEmails } from "@/email/cron/jobs/fetchEmails";
 
-const queueName = "refresh-account-tokens";
+export const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
 
-export const refreshTokensQueue = new Queue(queueName, { connection: { url: process.env.REDIS_URL! } });
-
-new Worker(queueName, async (job) => {
+new Worker("refresh-account-tokens", async (job) => {
     const { provider, providerAccountId, userId } = job.data;
     if (provider === "google" && providerAccountId) {
       try {
