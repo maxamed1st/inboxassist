@@ -1,5 +1,5 @@
 import { publish, subscribe } from "@/events/broker";
-import { googleOauth2Client, gmailTransporter } from "@/email/clients";
+import { googleOauth2Client, transporter } from "@/email/clients";
 import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
 
@@ -45,12 +45,13 @@ export default async function main() {
   await subscribe("action:send", "email", async ({ emailId }) => {
     const email = await getEmailById(emailId);
     const account = await getAccountById(email?.accountId!)
-    const transporter = gmailTransporter({
-    emailAddress : email?.from!,
-    refreshToken : account?.refreshToken!
+    const client = transporter({
+      host: "smtp.gmail.com",
+      emailAddress : email?.from!,
+      accessToken : account?.accessToken!,
     });
 
-    transporter.sendMail({
+    client.sendMail({
       from: email?.from,
       to: email?.to,
       subject: email?.subject,
