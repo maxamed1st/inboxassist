@@ -34,7 +34,7 @@ export async function connectEmail(TelegramUserId: string) {
 export async function sendMessage(bot: Telegraf<Context<Update>>, id: string, content: string) {
     const telegramUser = await getTelegramUserId(id)
     if (!telegramUser) {
-      console.error("Could not find Telegram connectin for:", id);
+      console.error("Could not find Telegram connection for:", id);
       return;
     }
     bot.telegram.sendMessage(telegramUser.id, content);
