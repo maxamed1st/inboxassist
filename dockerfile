@@ -16,6 +16,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY drizzle ./
 ENV NODE_ENV=production
 RUN npm run build
 
@@ -48,6 +49,7 @@ RUN addgroup --system --gid 1001 nodejs \
 COPY --from=builder --chown=appuser:nodejs /app/dist ./dist
 COPY --from=builder --chown=appuser:nodejs /app/package*.json ./
 COPY --from=builder --chown=appuser:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:nodejs /app/drizzle ./drizzle
 
 USER appuser
 

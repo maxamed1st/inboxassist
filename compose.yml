@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      target: dev
+      target: runner
     ports:
       - "3000:3000"
     env_file:
