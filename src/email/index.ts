@@ -4,7 +4,7 @@ import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
 
 export default async function main() {
-  await subscribe("email:login", "email", async ({userId, platform}) => {
+  subscribe("email:login", "email", async ({userId, platform}) => {
     /* generate OAuth URL and send to user */
     if (platform === "gmail") {
       const scopes = ["https://mail.google.com/"];
@@ -22,7 +22,7 @@ export default async function main() {
   });
 
   //delete emails
-  await subscribe("email:prune", "email", async ({ userId }) => {
+  subscribe("email:prune", "email", async ({ userId }) => {
     await deleteEmailsByUserId(userId);
 
     await publish("message:system", {
@@ -32,7 +32,7 @@ export default async function main() {
   });
 
   // Log user out
-  await subscribe("email:logout", "email", async ({ userId }) => {
+  subscribe("email:logout", "email", async ({ userId }) => {
     await deleteAccountByUserId(userId);
 
     await publish("message:system", {
@@ -42,7 +42,7 @@ export default async function main() {
   });
 
   // Send email
-  await subscribe("action:send", "email", async ({ emailId }) => {
+  subscribe("action:send", "email", async ({ emailId }) => {
     const email = await getEmailById(emailId);
     const account = await getAccountById(email?.accountId!)
     const client = transporter({
@@ -66,7 +66,7 @@ export default async function main() {
   });
 
   // move email
-  await subscribe("action:move", "email", async ({ emailId, folder }) => {
+  subscribe("action:move", "email", async ({ emailId, folder }) => {
     const email = await getEmailById(emailId);
     if (!email) {
       console.warn("Failed to get email from db:", emailId);
