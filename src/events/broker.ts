@@ -42,6 +42,21 @@ export async function subscribe<T extends Channels>(
 
   console.log(`[SUBSCRIBE] ${channel} -> ${subscriberName}`);
 
+  // helper to parse messages
+  function parseFields(fields?: string[]): Record<string, string> {
+    const obj: Record<string, string> = {};
+    if (!fields) return obj;
+    for (let i = 0; i < fields.length; i += 2) {
+      const key = fields[i];
+      const value = fields[i + 1];
+      if (key !== undefined && value !== undefined) {
+        obj[key] = value;
+      }
+    }
+    return obj;
+  }
+
+
   // Consume loop
   async function consumeLoop() {
     while (true) {
@@ -62,7 +77,7 @@ export async function subscribe<T extends Channels>(
 
       for (const [, messages] of response) {
         for (const [id, fields] of messages) {
-          const msg = { id, message: Object.fromEntries(fields) };
+          const msg = { id, message: parseFields(fields) };
           await processMessage(stream, group, msg, handler);
         }
       }
@@ -86,7 +101,7 @@ export async function subscribe<T extends Channels>(
       if (!messages?.length) continue;
 
       for (const [id, fields] of messages) {
-        const msg = { id, message: Object.fromEntries(fields) };
+        const msg = { id, message: parseFields(fields) };
         await processMessage(stream, group, msg, handler);
       }
     }
