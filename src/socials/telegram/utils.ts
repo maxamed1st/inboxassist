@@ -1,6 +1,9 @@
 import { getUserIdByTelegramId, insertConnection } from "@/db/queries/connections"
 import { insertUser } from "@/db/queries/user"
 import { publish } from "@/events/broker";
+import { getTelegramUserId } from "@/db/queries/connections";
+import { Context, Telegraf } from "telegraf";
+import { Update } from "telegraf/types";
 
 export async function initializeUser(TelegramUserId: string) {
     const user = await insertUser({ createdAt: new Date(), updatedAt: new Date()})
@@ -26,4 +29,13 @@ export async function connectEmail(TelegramUserId: string) {
         return;
     }
     publish("email:login", { userId: TelegramUserId, platform: "gmail"})
+}
+
+export async function sendMessage(bot: Telegraf<Context<Update>>, id: string, content: string) {
+    const telegramUser = await getTelegramUserId(id)
+    if (!telegramUser) {
+      console.error("Could not find Telegram connectin for:", id);
+      return;
+    }
+    bot.telegram.sendMessage(telegramUser.id, content);
 }

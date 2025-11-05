@@ -20,3 +20,12 @@ export async function getUserIdByTelegramId(telegramUserId: string) {
     .limit(1)
     .then((rows) => rows[0]);
 }
+
+export async function getTelegramUserId(internalUserId: string) {
+  return db
+    .select({id: connectionsTable.id})
+    .from(connectionsTable)
+    .where(eq(connectionsTable.userId, internalUserId))
+    .limit(1)
+    .then((rows) => rows[0]);
+}
