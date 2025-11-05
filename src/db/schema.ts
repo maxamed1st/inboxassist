@@ -4,7 +4,7 @@ import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
-  email: varchar({ length: 255 }).notNull().unique(),
+  email: varchar({ length: 255 }).unique(),
   name: varchar({ length: 255 }),
   subscriptionStatus: varchar({ length: 50 }),
   subscriptionId: integer(),
