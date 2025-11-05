@@ -5,7 +5,7 @@ const STREAM_PREFIX = "inboxassist:";
 const DLQ_SUFFIX = ":dlq";
 const MAX_RETRIES = 3;
 const CLAIM_IDLE_MS = 5000; // 5s idle before retry
-const BLOCK_MS = 5000;
+const BLOCK_MS = 600;
 
 /**
  * Publish a message to a stream.
