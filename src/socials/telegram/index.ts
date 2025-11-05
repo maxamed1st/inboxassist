@@ -11,11 +11,11 @@ export default async function main() {
 
   bot.command("connect", async (ctx) => connectEmail(String(ctx.chat.id)));
 
-  await subscribe("message:system", "telegram_bot", async ({id, content}) => {
+  subscribe("message:system", "telegram_bot", async ({id, content}) => {
     sendMessage(bot, id, content);
   })
   
-  await subscribe("message:assistant", "telegram_bot", async ({id, content}) => {
+  subscribe("message:assistant", "telegram_bot", async ({id, content}) => {
     sendMessage(bot, id, content);
   })
 }
