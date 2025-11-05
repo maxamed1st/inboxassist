@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, pgTable, varchar, jsonb, uuid, boolean } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, jsonb, uuid, boolean, timestamp } from "drizzle-orm/pg-core";
 import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
@@ -8,8 +8,8 @@ export const usersTable = pgTable("users", {
   name: varchar({ length: 255 }),
   subscriptionStatus: varchar({ length: 50 }),
   subscriptionId: integer(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });
 
 export const accountsTable = pgTable("accounts", {
@@ -22,8 +22,8 @@ export const accountsTable = pgTable("accounts", {
   accessToken: varchar({ length: 255 }).notNull(),
   refreshToken: varchar({ length: 255 }).notNull(),
   expiresAt: integer(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });
 
 export const connectionsTable = pgTable("connections", {
@@ -36,8 +36,8 @@ export const connectionsTable = pgTable("connections", {
   accessToken: varchar({ length: 255 }),
   refreshToken: varchar({ length: 255 }),
   expiresAt: integer(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });
 
 export const emailsTable = pgTable("emails", {
@@ -59,8 +59,8 @@ export const emailsTable = pgTable("emails", {
   bcc: jsonb().default(sql`'[]'::jsonb`).notNull().$type<string[]>(),
   date: integer().notNull(),
   status: varchar({ length: 50 }).notNull().$type<"received" | "draft" | "sent">(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });
 
 export const actionsTable = pgTable("actions", {
@@ -76,8 +76,8 @@ export const actionsTable = pgTable("actions", {
   payload: jsonb().default(sql`'{}'::jsonb`).notNull().$type<ActionPayload>(),
   status: varchar({ length: 50 }).notNull().$type<"pending" | "processing" | "completed" | "failed">(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });
 
 export const messagesTable = pgTable("messages", {
@@ -92,8 +92,8 @@ export const messagesTable = pgTable("messages", {
   references: jsonb().default(sql`'[]'::jsonb`).notNull().$type<string[]>(),
   content: varchar({ length: 4096 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "assistant" | "system">(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });
 
 export const subscriptionsTable = pgTable("subscriptions", {
@@ -109,6 +109,6 @@ export const subscriptionsTable = pgTable("subscriptions", {
   periodStart: integer().notNull(),
   periodEnd: integer().notNull(),
   cancelAtPeriodEnd: boolean().notNull(),
-  createdAt: integer().notNull(),
-  updatedAt: integer().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
 });

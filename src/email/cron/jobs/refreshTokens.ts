@@ -23,7 +23,7 @@ export async function refreshGmailTokens(accountId: string) {
     accessToken: credentials.access_token,
     refreshToken: credentials.refresh_token,
     expiresAt: Math.floor(credentials.expiry_date / 1000),
-    updatedAt: Math.floor(Date.now() / 1000),
+    updatedAt: new Date(),
   };
 
   await updateAccount(providerAccountId, values);

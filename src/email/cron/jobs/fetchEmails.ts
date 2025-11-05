@@ -67,8 +67,8 @@ export async function fetchNewEmails(host: string, providerAccountId: string) {
         },
         date: parsed.date?.getTime() || Date.now(),
         status: "received" as const,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const emailId = await insertEmail(values);

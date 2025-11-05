@@ -20,7 +20,7 @@ export async function gmailCallback(req: Request, res: Response) {
     const providerAccountId = decoded?.email ?? "unknown";
 
     // prepare values for DB insert
-    const now = Date.now();
+    const now = new Date();
 
     const values = {
       userId,
