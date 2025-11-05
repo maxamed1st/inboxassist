@@ -1,5 +1,5 @@
 import { telegramBotClient } from "@/socials/telegram/client";
-import { initializeUser } from "@/socials/telegram/utils";
+import { connectEmail, initializeUser } from "@/socials/telegram/utils";
 
 export default async function main() {
   const bot = telegramBotClient();
@@ -7,4 +7,6 @@ export default async function main() {
     await initializeUser(String(ctx.chat.id));
     ctx.reply("Welcome to inboxAssist - Your frictionless email assist.\n Run /connect to connect your email")
   });
+
+  bot.command("connect", async (ctx) => connectEmail(String(ctx.chat.id)));
 }

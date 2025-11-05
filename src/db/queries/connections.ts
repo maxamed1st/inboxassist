@@ -11,3 +11,12 @@ export async function insertConnection(values: typeof connectionsTable.$inferIns
      )
      .returning();
 }
+
+export async function getUserIdByTelegramId(telegramUserId: string) {
+  return db
+    .select({id: connectionsTable.id})
+    .from(connectionsTable)
+    .where(eq(connectionsTable.platformAccountId, telegramUserId))
+    .limit(1)
+    .then((rows) => rows[0]);
+}
