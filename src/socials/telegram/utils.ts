@@ -13,13 +13,17 @@ export async function initializeUser(TelegramUserId: string) {
         return;
     };
 
-    insertConnection({
+    const connection = await insertConnection({
         userId: user[0].id,
         platform: "telegram",
         platformAccountId: TelegramUserId,
         createdAt: new Date(),
         updatedAt: new Date()
-    })
+    });
+
+    if(!connection) {
+        console.error("Failed to create connection for:", user[0].id);
+    }
 }
 
 export async function connectEmail(TelegramUserId: string) {
