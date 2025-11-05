@@ -28,7 +28,7 @@ export async function connectEmail(TelegramUserId: string) {
         console.error("Could not get userID for telegram user:", TelegramUserId)
         return;
     }
-    publish("email:login", { userId: TelegramUserId, platform: "gmail"})
+    await publish("email:login", { userId: TelegramUserId, platform: "gmail"})
 }
 
 export async function sendMessage(bot: Telegraf<Context<Update>>, id: string, content: string) {
