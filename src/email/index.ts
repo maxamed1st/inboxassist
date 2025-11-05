@@ -14,7 +14,7 @@ export default async function main() {
       state: userId
       });
 
-      publish("message:system", {
+      await publish("message:system", {
         id: userId,
         content: `To connect your Gmail account, please click the following link:\n${authUrl}`
       });
@@ -25,7 +25,7 @@ export default async function main() {
   await subscribe("email:prune", "email", async ({ userId }) => {
     await deleteEmailsByUserId(userId);
 
-    publish("message:system", {
+    await publish("message:system", {
       id: userId,
       content: "All emails have been removed from the system"
     });
@@ -35,7 +35,7 @@ export default async function main() {
   await subscribe("email:logout", "email", async ({ userId }) => {
     await deleteAccountByUserId(userId);
 
-    publish("message:system", {
+    await publish("message:system", {
       id: userId,
       content: "Email logged out"
     });
@@ -59,7 +59,7 @@ export default async function main() {
       text: email?.content.text ?? "",
     })
 
-    publish("message:system", {
+    await publish("message:system", {
       id: email?.userId!,
       content: "Email sent to" + email?.to
     });
@@ -95,7 +95,7 @@ export default async function main() {
       await client.logout();
     }
 
-    publish("message:system", {
+    await publish("message:system", {
       id: email.userId,
       content: `Email has been moved to folder: ${folder}`
     });
