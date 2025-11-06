@@ -5,10 +5,14 @@ import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
 
 export async function login({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
-    const scopes = ["https://mail.google.com/"];
+    const scopes = [
+      "https://mail.google.com/", 
+      "https://www.googleapis.com/auth/userinfo.email"
+    ];
     const authUrl = googleOauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
+    prompt: "consent",
     state: userId
     });
 
