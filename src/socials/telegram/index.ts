@@ -11,7 +11,7 @@ export default async function main() {
     switch(user.isNewUser) {
       case null:
         ctx.reply("Welcome to inboxassit - Your frictionless email assistant. Something went wrong with initializing your assistant. Please try again. \
-          \n You can also use /connect to authorize your email once the initialization is done.");
+          \n You can also use /connect to authorize your email.");
         break;
       default:
         ctx.reply("Welcome to inboxassist - Your frictionless email assist.  \n Run /connect to start managing your emails");

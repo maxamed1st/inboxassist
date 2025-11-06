@@ -29,12 +29,16 @@ export async function initializeUser(telegramUserId: string) {
         console.error("Failed to create telegram connection for:", user.id);
     }
 
-    return { isNewUser: true }
+    return { isNewUser: true, id: user.id }
 }
 
 export async function connectEmail(telegramUserId: string) {
-    const user = await getUserIdByTelegramId(telegramUserId);
+    let user;
+    user = await getUserIdByTelegramId(telegramUserId);
     if(!user) {
+        user = await initializeUser(telegramUserId);
+    }
+    if(!user.id) {
         console.error("Could not get userID for telegram user:", telegramUserId)
         return;
     }
