@@ -20,7 +20,12 @@ export async function login({ userId, platform }: { userId: string, platform: st
 }
 
 export async function pruneEmails({ userId }: { userId: string }){
-  await deleteEmailsByUserId(userId);
+  const res = await deleteEmailsByUserId(userId);
+
+  if (!res) {
+    console.error("Failed to delete emails for", userId);
+    return;
+  }
 
   await publish("message:system", {
    id: userId,
@@ -29,7 +34,12 @@ export async function pruneEmails({ userId }: { userId: string }){
 }
 
 export async function logout({ userId }: { userId: string }){
-  await deleteAccountByUserId(userId);
+  const res = await deleteAccountByUserId(userId);
+
+  if (!res) {
+    console.error("Failed to logout email for", userId);
+    return;
+  }
 
   await publish("message:system", {
     id: userId,
@@ -39,24 +49,35 @@ export async function logout({ userId }: { userId: string }){
 
 export async function sendEmail({ emailId }: { emailId: string }){
   const email = await getEmailById(emailId);
-  const account = await getAccountById(email?.accountId!)
+
+  if(!email) {
+    console.error("Failed to fetch email", emailId);
+    return;
+  }
+
+  const account = await getAccountById(email.accountId!)
+
+  if(!account) {
+    console.error("Failed to get account for", email.userId);
+    return;
+  }
   const client = transporter({
       host: "smtp.gmail.com",
-      emailAddress : email?.from!,
-      accessToken : account?.accessToken!,
+      emailAddress : email.from,
+      accessToken : account.accessToken,
   });
 
   client.sendMail({
-      from: email?.from,
-      to: email?.to,
-      subject: email?.subject,
-      html: email?.content.html ?? "",
-      text: email?.content.text ?? "",
+      from: email.from,
+      to: email.to,
+      subject: email.subject,
+      html: email.content.html ?? "",
+      text: email.content.text ?? "",
   })
 
   await publish("message:system", {
-      id: email?.userId!,
-      content: "Email sent to" + email?.to
+      id: email.userId!,
+      content: "Email sent to" + email.to
   });
 }
 
