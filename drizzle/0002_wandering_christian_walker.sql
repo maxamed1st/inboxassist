@@ -1,0 +1,2 @@
+ALTER TABLE "accounts" ALTER COLUMN "expiresAt" SET DATA TYPE timestamp USING to_timestamp("expiresAt");--> statement-breakpoint
+ALTER TABLE "connections" ALTER COLUMN "expiresAt" SET DATA TYPE timestamp USING to_timestamp("expiresAt");
