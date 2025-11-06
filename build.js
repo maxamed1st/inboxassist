@@ -8,6 +8,23 @@ if (!isProd) {
 
   let nodeProcess = null;
 
+  // restart process on build
+  const restartPlugin = {
+    name: 'restart',
+    setup(build) {
+      build.onEnd(async (result) => {
+        if (result.errors.length === 0) {
+          console.log('✅ Build OK, restarting node process...');
+          if (nodeProcess) {
+            nodeProcess.kill('SIGTERM');
+          }
+          nodeProcess = spawn('node', ['.out/index.js'], { stdio: 'inherit' });
+          console.log("process restarted")
+        }
+      });
+    }
+  };
+
   const ctx = await esbuild.context({
     entryPoints: ['src/index.ts'],
     bundle: true,
@@ -21,19 +38,14 @@ if (!isProd) {
     splitting: false,
     packages: 'external',
     logLevel: 'info',
+    plugins: [ restartPlugin ]
   });
-
-  const restartNode = () => {
-    if (nodeProcess) nodeProcess.kill();
-    nodeProcess = spawn('node', ['dist/index.js'], { stdio: 'inherit' });
-  };
 
   // Watch files
   await ctx.watch();
 
-  // Initial build + run
+  // Initial build
   await ctx.rebuild();
-  restartNode();
 
   console.log('🟢 Dev server running, watching for changes...');
 
