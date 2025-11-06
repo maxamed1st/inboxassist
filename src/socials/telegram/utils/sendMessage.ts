@@ -8,5 +8,10 @@ export async function sendMessage(bot: Telegraf<Context<Update>>, id: string, co
       console.error("Could not find Telegram connection for:", id);
       return;
     }
-    bot.telegram.sendMessage(telegramUser.id, content);
+    bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "HTML"}).catch(() => {
+      // send message without html parsing
+      bot.telegram.sendMessage(telegramUser.id, content).catch( err => {
+        console.error("Failed to send message to telegram user", err);
+      })
+    });
 }

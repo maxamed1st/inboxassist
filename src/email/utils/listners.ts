@@ -14,7 +14,7 @@ export async function login({ userId, platform }: { userId: string, platform: st
 
     await publish("message:system", {
     id: userId,
-    content: `To connect your Gmail account, please click the following link:\n${authUrl}`
+    content: `<a href="${authUrl}">Authorize Gmail</a>`
     });
   }
 }
