@@ -2,8 +2,8 @@ import { getUserIdByTelegramId, insertConnection } from "@/db/queries/connection
 import { insertUser } from "@/db/queries/user"
 import { publish } from "@/events/broker";
 
-export async function initializeUser(TelegramUserId: string) {
-    const existingUser = await getUserIdByTelegramId(TelegramUserId);
+export async function initializeUser(telegramUserId: string) {
+    const existingUser = await getUserIdByTelegramId(telegramUserId);
 
     if(existingUser) {
         return { isNewUser: false };
@@ -13,14 +13,14 @@ export async function initializeUser(TelegramUserId: string) {
     const user = await insertUser({ createdAt: new Date(), updatedAt: new Date()})
 
     if (!user) {
-        console.error("Failed to create internal usear for telegram user:", TelegramUserId);
+        console.error("Failed to create internal usear for telegram user:", telegramUserId);
         return { isNewUser: null };
     };
 
     const connection = await insertConnection({
         userId: user.id,
         platform: "telegram",
-        platformAccountId: TelegramUserId,
+        platformAccountId: telegramUserId,
         createdAt: new Date(),
         updatedAt: new Date()
     });
@@ -32,10 +32,10 @@ export async function initializeUser(TelegramUserId: string) {
     return { isNewUser: true }
 }
 
-export async function connectEmail(TelegramUserId: string) {
-    const user = await getUserIdByTelegramId(TelegramUserId);
+export async function connectEmail(telegramUserId: string) {
+    const user = await getUserIdByTelegramId(telegramUserId);
     if(!user) {
-        console.error("Could not get userID for telegram user:", TelegramUserId)
+        console.error("Could not get userID for telegram user:", telegramUserId)
         return;
     }
     await publish("email:login", { userId: user.id, platform: "gmail"})
