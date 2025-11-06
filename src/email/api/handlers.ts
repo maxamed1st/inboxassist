@@ -69,7 +69,7 @@ export async function gmailCallback(req: Request, res: Response) {
       {
         repeat: { every: 5 * 60 * 1000 },
         attempts: 3,
-        backoff: { type: "exponential", delay: 60000 },
+        backoff: { type: "exponential" },
         removeOnComplete: true,
         removeOnFail: false,
       }
