@@ -15,27 +15,31 @@ export async function gmailCallback(req: Request, res: Response) {
     const userId = String(req.query.state);
     const { tokens } = await googleOauth2Client.getToken(query.code);
 
-    if(!tokens.id_token || !tokens.access_token || !tokens.refresh_token) {
+    if(!tokens || !tokens.access_token || !tokens.refresh_token) {
       console.error("Gmail callback missing tokens");
       return res.status(401).json({ error: "Missing tokens"});
     }
 
-    // decode the user's email from the ID token
-    const decoded = jwt.decode(tokens.id_token) as { email: string };
-    if(!decoded || typeof decoded.email !== "string") {
+    // get the email address
+    const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` }
+    });
+
+    const userInfo = await response.json() as { email: string }
+    if(!userInfo || !userInfo.email) {
       throw new Error("Gmail callback missing email field");
     }
 
     // prepare values for DB insert
-    const providerAccountId = decoded.email;
+    const providerAccountId = userInfo.email;
     const now = new Date();
     const values = {
       userId,
       provider: "google",
       providerAccountId,
-      accessToken: tokens.access_token!,
-      refreshToken: tokens.refresh_token!,
-      expiresAt: tokens.expiry_date,
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
       createdAt: now,
       updatedAt: now,
     };

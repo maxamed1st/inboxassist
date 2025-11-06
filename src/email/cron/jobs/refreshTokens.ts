@@ -11,18 +11,25 @@ export async function refreshGmailTokens(accountId: string) {
 
   googleOauth2Client.setCredentials({ refresh_token: account.refreshToken });
   const { credentials } = await googleOauth2Client.refreshAccessToken();
-  if (!credentials || !credentials.access_token || !credentials.refresh_token || !credentials.id_token || !credentials.expiry_date) {
+  if (!credentials || !credentials.access_token || !credentials.refresh_token) {
     throw new Error("Failed to refresh access token");
   }
-  
-  // decode the user's email from the ID token
-  const decoded = jwt.decode(credentials.id_token) as { email: string };
-  const providerAccountId = decoded.email;
 
+  // get the email address
+  const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: { Authorization: `Bearer ${credentials.access_token}` }
+  });
+
+  const userInfo = await response.json() as { email: string }
+  if(!userInfo || !userInfo.email) {
+    throw new Error("Gmail callback missing email field");
+  }
+
+  const providerAccountId = userInfo.email;
   const values = {
     accessToken: credentials.access_token,
     refreshToken: credentials.refresh_token,
-    expiresAt: credentials.expiry_date,
+    expiresAt: credentials.expiry_date ? new Date(credentials.expiry_date) : null,
     updatedAt: new Date(),
   };
 
