@@ -1,5 +1,6 @@
 import { telegramBotClient } from "@/socials/telegram/client";
-import { connectEmail, initializeUser, sendMessage } from "@/socials/telegram/utils";
+import { connectEmail, initializeUser } from "@/socials/telegram/utils/listners";
+import { sendMessage } from "@/socials/telegram/utils/sendMessage"
 import { subscribe } from "@/events/broker";
 
 export default async function main() {
