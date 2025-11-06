@@ -52,7 +52,7 @@ export async function gmailCallback(req: Request, res: Response) {
     }
 
     // refresh tokens periodically
-    refreshTokensQueue.add("refresh",
+    await refreshTokensQueue.add(`refresh-${providerAccountId}`,
       { provider: "google", providerAccountId },
       {
         repeat: { every: 50 * 60 * 1000 },
@@ -64,7 +64,7 @@ export async function gmailCallback(req: Request, res: Response) {
     );
 
     //TODO: Move this to onboarding or billing once they are implemented
-    getNewEmailsQueue.add("fetch",
+    await getNewEmailsQueue.add(`fetch-${providerAccountId}`,
       { host: "imap.gmail.com", accountId: providerAccountId },
       {
         repeat: { every: 5 * 60 * 1000 },
