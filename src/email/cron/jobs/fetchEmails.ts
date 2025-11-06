@@ -73,12 +73,12 @@ export async function fetchNewEmails(host: string, providerAccountId: string) {
 
       const emailId = await insertEmail(values);
 
-      if (!emailId[0]?.id) {
+      if (!emailId) {
         console.error("Failed to insert email in db:", values.emailId);
         continue;
       }
 
-      publish("email:new", { id: emailId[0].id } );
+      publish("email:new", { id: emailId.id } );
     }
   } catch (error) {
     console.error("Error fetching email:", error);

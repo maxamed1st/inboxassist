@@ -4,13 +4,15 @@ import { eq } from "drizzle-orm";
 
 export async function insertAccount(values: typeof accountsTable.$inferInsert) {
   try{
-    return db
+    const [ res ] = await db
       .insert(accountsTable)
       .values({
           ...values,
       }
       )
       .returning();
+
+    return res;
   } catch(err) {
     console.error("Failed to insert account", err)
     return null
@@ -19,7 +21,7 @@ export async function insertAccount(values: typeof accountsTable.$inferInsert) {
 
 export async function updateAccount(providerAccountId: string, values: Partial<typeof accountsTable.$inferInsert>) {
   try{
-    return db
+    const [ res ] = await db
       .update(accountsTable)
       .set({
           ...values,
@@ -27,6 +29,8 @@ export async function updateAccount(providerAccountId: string, values: Partial<t
       )
       .where(eq(accountsTable.providerAccountId, providerAccountId))
       .returning();
+
+    return res;
   } catch(err) {
     console.error("Failed to update account", err)
     return null
@@ -35,12 +39,13 @@ export async function updateAccount(providerAccountId: string, values: Partial<t
 
 export async function getAccountById(accountId: string) {
   try{
-    return db
+    const [ res ] = await db
       .select()
       .from(accountsTable)
       .where(eq(accountsTable.id, accountId))
       .limit(1)
-      .then((rows) => rows[0]);
+
+    return res;
   } catch(err) {
     console.error("Failed to get account", err)
     return null
@@ -49,12 +54,13 @@ export async function getAccountById(accountId: string) {
 
 export async function getAccountByProviderAccountId(providerAccountId: string) {
   try{
-    return db
+    const [ res ] = await db
       .select()
       .from(accountsTable)
       .where(eq(accountsTable.providerAccountId, providerAccountId))
       .limit(1)
-      .then((rows) => rows[0]);
+
+    return res;
   } catch(err) {
     console.error("Failed account by providerAccountId", err)
     return null
@@ -63,9 +69,11 @@ export async function getAccountByProviderAccountId(providerAccountId: string) {
 
 export async function deleteAccountByUserId(userId: string) {
   try{
-    return db
+    const res = await db
       .delete(accountsTable)
       .where(eq(accountsTable.userId, userId))
+
+    return res;
   } catch(err) {
     console.error("Failed to delete account", err)
     return null

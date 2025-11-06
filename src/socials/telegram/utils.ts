@@ -8,13 +8,13 @@ import { Update } from "telegraf/types";
 export async function initializeUser(TelegramUserId: string) {
     const user = await insertUser({ createdAt: new Date(), updatedAt: new Date()})
 
-    if (!user[0]?.id) {
+    if (!user) {
         console.error("Failed to create internal usear for telegram user:", TelegramUserId);
         return;
     };
 
     const connection = await insertConnection({
-        userId: user[0].id,
+        userId: user.id,
         platform: "telegram",
         platformAccountId: TelegramUserId,
         createdAt: new Date(),
@@ -22,13 +22,13 @@ export async function initializeUser(TelegramUserId: string) {
     });
 
     if(!connection) {
-        console.error("Failed to create connection for:", user[0].id);
+        console.error("Failed to create connection for:", user.id);
     }
 }
 
 export async function connectEmail(TelegramUserId: string) {
     const user = await getUserIdByTelegramId(TelegramUserId);
-    if(!user?.id) {
+    if(!user) {
         console.error("Could not get userID for telegram user:", TelegramUserId)
         return;
     }
