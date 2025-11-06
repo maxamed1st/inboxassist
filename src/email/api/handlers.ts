@@ -15,13 +15,20 @@ export async function gmailCallback(req: Request, res: Response) {
     const userId = String(req.query.state);
     const { tokens } = await googleOauth2Client.getToken(query.code);
 
+    if(!tokens.id_token || !tokens.access_token || !tokens.refresh_token) {
+      console.error("Gmail callback missing tokens");
+      return res.status(401).json({ error: "Missing tokens"});
+    }
+
     // decode the user's email from the ID token
-    const decoded = jwt.decode(tokens.id_token as string) as { email: string };
-    const providerAccountId = decoded?.email ?? "unknown";
+    const decoded = jwt.decode(tokens.id_token) as { email: string };
+    if(!decoded || typeof decoded.email !== "string") {
+      throw new Error("Gmail callback missing email field");
+    }
 
     // prepare values for DB insert
+    const providerAccountId = decoded.email;
     const now = new Date();
-
     const values = {
       userId,
       provider: "google",
@@ -34,7 +41,11 @@ export async function gmailCallback(req: Request, res: Response) {
     };
 
     // insert into accounts table
-    await insertAccount(values);
+    const account = await insertAccount(values);
+    
+    if(!account) {
+      throw new Error("gmail_callback: Failed to insert account")
+    }
 
     // refresh tokens periodically
     refreshTokensQueue.add("refresh",
