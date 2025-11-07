@@ -1,7 +1,7 @@
 import { Queue, Worker } from "bullmq";
 import { fetchNewEmails } from "@/email/cron/jobs/fetchEmails";
 
-export const fetchNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
+const fetchNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
 
 new Worker("fetch-new-emails", async (job) => {
     const { host, providerAccountId } = job.data;

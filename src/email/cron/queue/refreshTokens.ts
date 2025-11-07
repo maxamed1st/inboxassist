@@ -2,7 +2,7 @@ import { Queue, Worker } from "bullmq";
 import { refreshGmailTokens } from "@/email/cron/jobs/refreshTokens";
 import { publish } from "@/events/broker";
 
-export const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
+const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
 
 new Worker("refresh-account-tokens", async (job) => {
     const { provider, providerAccountId, userId } = job.data;
