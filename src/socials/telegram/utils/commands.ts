@@ -1,5 +1,5 @@
 import { telegramBotClient } from "@/socials/telegram/client";
-import { connectEmail, initializeUser } from "@/socials/telegram/utils/listners";
+import { connectEmail, initializeUser } from "@/socials/telegram/utils/helpers";
 
 export default async function handleCommands() {
   const bot = telegramBotClient();
