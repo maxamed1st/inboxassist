@@ -5,7 +5,7 @@ import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
 import { cancelEmailSync } from "../cron/queue/fetchNewEmails";
 import { stopRefereshingTokens } from "../cron/queue/refreshTokens";
 
-export async function login({ userId, platform }: { userId: string, platform: string }){
+export async function connect({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
     const scopes = [
       "https://mail.google.com/", 
@@ -39,11 +39,11 @@ export async function pruneEmails({ userId }: { userId: string }){
   });
 }
 
-export async function logout({ userId }: { userId: string }){
+export async function disconnect({ userId }: { userId: string }){
   const res = await deleteAccountByUserId(userId);
 
   if (!res) {
-    console.error("Failed to logout email for", userId);
+    console.error("Failed to disconnect email for", userId);
     return;
   }
 

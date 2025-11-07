@@ -14,7 +14,7 @@ new Worker("refresh-account-tokens", async (job) => {
         const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
         if (isLastAttempt) {
           // reauthenticate user
-          publish("email:login", { userId, platform: "gmail" });
+          publish("email:connect", { userId, platform: "gmail" });
           return;
         }
         throw error; // let the job be retried

@@ -42,5 +42,5 @@ export async function connectEmail(telegramUserId: string) {
         console.error("Could not get userID for telegram user:", telegramUserId)
         return;
     }
-    await publish("email:login", { userId: user.id, platform: "gmail"})
+    await publish("email:connect", { userId: user.id, platform: "gmail"})
 }

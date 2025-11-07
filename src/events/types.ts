@@ -3,7 +3,7 @@ export type Channels =
   "action:compose" | "action:send" | "action:edit" | "action:move" |
   "email:new" | "email:summarised" | "email:sent" | "email:moved" |
   "email:composed" | "email:edited" |
-  "email:login" | "email:logout" | "email:prune" |
+  "email:connect" | "email:disconnect" | "email:prune" |
   "billing:subscribe" | "billing:manage";
 
 export interface MessagePayloads {
@@ -26,8 +26,8 @@ export interface MessagePayloads {
   "email:edited": { id: string, content: string };
   "email:sent": { id: string };
   "email:moved": { id: string };
-  "email:login": { userId: string, platform: string };
-  "email:logout": { userId: string };
+  "email:connect": { userId: string, platform: string };
+  "email:disconnect": { userId: string };
   "email:prune": { userId: string };
 
   // Billing events
