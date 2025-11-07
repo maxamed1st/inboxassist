@@ -1,0 +1,82 @@
+import { initializeUser } from "@/socials/telegram/utils/helpers";
+import { getUserIdByTelegramId } from "@/db/queries/connections"
+import { getMessageByPlatformMessageId, insertMessage } from "@/db/queries/messages";
+import { Message } from "telegraf/types";
+
+export async function storeMessage(message: Message, role: "system" | "user" | "assistant") {
+  try {
+    //get userId from telegram user
+    const telegramUserId = ('from' in message ? message.from?.id : message.chat?.id)?.toString();
+    if (!telegramUserId) {
+      throw new Error("No user ID found in message");
+    }
+
+    let user;
+    user = await getUserIdByTelegramId(telegramUserId);
+
+    if(!user) {
+        user = await initializeUser(telegramUserId);
+    }
+
+    if(!user.id) {
+        throw new Error(`Could not get userID for telegram user: ${telegramUserId}`);
+    }
+
+    //extract content from message
+    let content = '';
+
+    if ('text' in message && message.text) {
+      content = message.text;
+    } else {
+      const messageType = Object.keys(message).find(key => 
+        ['text', 'photo', 'video', 'audio', 'voice', 'document', 'sticker', 'location', 'contact'].includes(key)
+        ) || 'unknown';
+
+      throw new Error(`STORETEXT: unsupported text format:", ${messageType}`);
+    }
+
+    // Handle reply_to
+    let replyToId: string | null = null;
+    let references: string[] = [];
+    let emailId: string | null = null;
+    
+    if ('reply_to_message' in message && message.reply_to_message) {
+      const replyToDbMessage = await getMessageByPlatformMessageId(user.id, message.reply_to_message.message_id.toString());
+      
+      if (replyToDbMessage?.id) {
+        replyToId = replyToDbMessage.id;
+        references = replyToDbMessage.references || [];
+        references.push(replyToDbMessage.id);
+      }
+
+      // keep track of email message is concerning
+      if (replyToDbMessage?.emailId) {
+        emailId = replyToDbMessage.emailId;
+      }
+    }
+
+    //prepare message data
+    const messageDate = new Date(message.date);
+
+    const messageData = {
+      platformMessageId: message.message_id.toString(),
+      userId: user.id,
+      emailId,
+      replyToId,
+      references,
+      content,
+      role,
+      createdAt: messageDate,
+      updatedAt: messageDate,
+    };
+
+    //Insert into database
+    const savedMessage = await insertMessage(messageData);
+    
+    return savedMessage;
+
+  } catch (error) {
+    console.error("Failed to store message:", error);
+    return null;
+  }
+}
