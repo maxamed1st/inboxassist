@@ -65,9 +65,12 @@ export async function gmailCallback(req: Request, res: Response) {
 
     //TODO: Move this to onboarding or billing once they are implemented
     await getNewEmailsQueue.add(`fetch-${providerAccountId}`,
-      { host: "imap.gmail.com", accountId: providerAccountId },
+      { host: "imap.gmail.com", providerAccountId },
       {
-        repeat: { every: 5 * 60 * 1000 },
+        repeat: {
+          every: 5 * 60 * 1000,
+          immediately: true
+        },
         attempts: 3,
         backoff: { type: "exponential" },
         removeOnComplete: true,
