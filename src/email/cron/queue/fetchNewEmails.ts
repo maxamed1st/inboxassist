@@ -1,7 +1,7 @@
 import { Queue, Worker } from "bullmq";
 import { fetchNewEmails } from "@/email/cron/jobs/fetchEmails";
 
-export const getNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
+export const fetchNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
 
 new Worker("fetch-new-emails", async (job) => {
     const { host, providerAccountId } = job.data;
@@ -20,7 +20,7 @@ new Worker("fetch-new-emails", async (job) => {
 });
 
 export async function syncEmails(host: string, providerAccountId: string) {
-  await getNewEmailsQueue.upsertJobScheduler(`fetch-emails:${providerAccountId}`,
+  await fetchNewEmailsQueue.upsertJobScheduler(`fetch-emails:${providerAccountId}`,
     {
       every: 5 * 60 * 1000,
       immediately: true,
@@ -39,7 +39,7 @@ export async function syncEmails(host: string, providerAccountId: string) {
 }
 
 export async function cancelEmailSync(providerAccountId: string) {
-  const removed = await getNewEmailsQueue.removeJobScheduler(`fetch-emails:${providerAccountId}`);
+  const removed = await fetchNewEmailsQueue.removeJobScheduler(`fetch-emails:${providerAccountId}`);
   if (!removed) {
     console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${providerAccountId}`)
   }
