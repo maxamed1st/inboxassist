@@ -37,3 +37,12 @@ export async function syncEmails(host: string, providerAccountId: string) {
     }
   );
 }
+
+export async function cancelEmailSync(providerAccountId: string) {
+  const removed = await getNewEmailsQueue.removeJobScheduler(`fetch-emails:${providerAccountId}`);
+  if (!removed) {
+    console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${providerAccountId}`)
+  }
+
+  return removed;
+}

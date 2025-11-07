@@ -2,6 +2,8 @@ import { publish } from "@/events/broker";
 import { googleOauth2Client, imapClient, transporter } from "@/email/clients";
 import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
+import { cancelEmailSync } from "../cron/queue/fetchNewEmails";
+import { stopRefereshingTokens } from "../cron/queue/refreshTokens";
 
 export async function login({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
@@ -44,6 +46,9 @@ export async function logout({ userId }: { userId: string }){
     console.error("Failed to logout email for", userId);
     return;
   }
+
+  await stopRefereshingTokens(res.providerAccountId); 
+  await cancelEmailSync(res.providerAccountId);
 
   await publish("message:system", {
     id: userId,

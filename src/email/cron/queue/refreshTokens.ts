@@ -42,3 +42,12 @@ export async function keepTokensFresh( provider: string,providerAccountId: strin
     }
   );
 }
+
+export async function stopRefereshingTokens(providerAccountId: string) {
+  const removed = await refreshTokensQueue.removeJobScheduler(`refresh-tokens:${providerAccountId}`);
+  if (!removed) {
+    console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${providerAccountId}`)
+  }
+
+  return removed;
+}

@@ -69,9 +69,10 @@ export async function getAccountByProviderAccountId(providerAccountId: string) {
 
 export async function deleteAccountByUserId(userId: string) {
   try{
-    const res = await db
+    const [ res ] = await db
       .delete(accountsTable)
       .where(eq(accountsTable.userId, userId))
+      .returning({providerAccountId: accountsTable.providerAccountId})
 
     return res;
   } catch(err) {
