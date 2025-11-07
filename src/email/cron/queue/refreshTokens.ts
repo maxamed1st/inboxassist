@@ -1,7 +1,6 @@
 import { Queue, Worker } from "bullmq";
 import { refreshGmailTokens } from "@/email/cron/jobs/refreshTokens";
 import { publish } from "@/events/broker";
-import { fetchNewEmails } from "@/email/cron/jobs/fetchEmails";
 
 export const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
 
@@ -25,20 +24,16 @@ new Worker("refresh-account-tokens", async (job) => {
   connection: { url: process.env.REDIS_URL! },
 });
 
-export const getNewEmailsQueue = new Queue("get-new-emails", { connection: { url: process.env.REDIS_URL! } });
-
-new Worker("get-new-emails", async (job) => {
-    const { host, providerAccountId } = job.data;
-    if (host && providerAccountId) {
-      try {
-        await fetchNewEmails(host, providerAccountId);
-      } catch (error) {
-        console.error(`Failed to fetch new emails for ${providerAccountId}:`, error);
-        const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
-        if (isLastAttempt) return;
-        throw error; // let the job be retried
-      }
+export async function keepTokensFresh( provider: string,providerAccountId: string) {
+  await refreshTokensQueue.add("refresh-tokens",
+    { provider, providerAccountId },
+    {
+      jobId: `refresh-tokens:${providerAccountId}`,
+      repeat: { every: 50 * 60 * 1000 },
+      attempts: 3,
+      backoff: { type: "exponential", delay: 60000 },
+      removeOnComplete: true,
+      removeOnFail: false,
     }
-}, {
-  connection: { url: process.env.REDIS_URL! },
-});
+  );
+}
