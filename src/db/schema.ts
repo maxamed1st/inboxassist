@@ -57,7 +57,7 @@ export const emailsTable = pgTable("emails", {
   to: jsonb().notNull().$type<string[]>(),
   cc: jsonb().default(sql`'[]'::jsonb`).notNull().$type<string[]>(),
   bcc: jsonb().default(sql`'[]'::jsonb`).notNull().$type<string[]>(),
-  date: integer().notNull(),
+  date: timestamp().notNull(),
   status: varchar({ length: 50 }).notNull().$type<"received" | "draft" | "sent">(),
   createdAt: timestamp().notNull(),
   updatedAt: timestamp().notNull(),

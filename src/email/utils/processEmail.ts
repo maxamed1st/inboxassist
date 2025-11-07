@@ -41,7 +41,7 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
       text: parsed.text, 
       html: parsed.html || undefined 
     },
-    date: parsed.date?.getTime() || Date.now(),
+    date: parsed.date || new Date(),
     status: "received" as const,
     createdAt: new Date(),
     updatedAt: new Date(),
