@@ -20,18 +20,20 @@ new Worker("fetch-new-emails", async (job) => {
 });
 
 export async function syncEmails(host: string, providerAccountId: string) {
-  await getNewEmailsQueue.add("fetch-emails",
-    { host, providerAccountId },
+  await getNewEmailsQueue.upsertJobScheduler(`fetch-emails:${providerAccountId}`,
     {
-      jobId: `fetch-emails:${providerAccountId}`,
-      repeat: {
-        every: 5 * 60 * 1000,
-        immediately: true
-      },
+      every: 5 * 60 * 1000,
+      immediately: true,
+    },
+    {
+      name: "fetch-emails",
+      data: { host, providerAccountId },
+      opts: {
       attempts: 3,
       backoff: { type: "exponential" },
       removeOnComplete: true,
       removeOnFail: false,
+      }
     }
   );
 }

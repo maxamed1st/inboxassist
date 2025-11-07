@@ -25,15 +25,20 @@ new Worker("refresh-account-tokens", async (job) => {
 });
 
 export async function keepTokensFresh( provider: string,providerAccountId: string) {
-  await refreshTokensQueue.add("refresh-tokens",
-    { provider, providerAccountId },
+  await refreshTokensQueue.upsertJobScheduler(`refresh-tokens:${providerAccountId}`,
     {
-      jobId: `refresh-tokens:${providerAccountId}`,
-      repeat: { every: 50 * 60 * 1000 },
+      every: 50 * 60 * 1000,
+      startDate: new Date()
+    },
+    {
+      name: "refresh-tokens",
+      data: { provider, providerAccountId },
+      opts: {
       attempts: 3,
       backoff: { type: "exponential", delay: 60000 },
       removeOnComplete: true,
       removeOnFail: false,
+      },
     }
   );
 }
