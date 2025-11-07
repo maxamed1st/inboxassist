@@ -1,8 +1,7 @@
 import { googleOauth2Client } from "@/email/clients";
-import jwt from "jsonwebtoken";
 import { insertAccount } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
-import { getNewEmailsQueue, refreshTokensQueue } from "@/email/cron/queue";
+import { keepTokensFresh, syncEmails } from "../utils/scheduling";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -51,32 +50,9 @@ export async function gmailCallback(req: Request, res: Response) {
       throw new Error("gmail_callback: Failed to insert account")
     }
 
-    // refresh tokens periodically
-    await refreshTokensQueue.add(`refresh-${providerAccountId}`,
-      { provider: "google", providerAccountId },
-      {
-        repeat: { every: 50 * 60 * 1000 },
-        attempts: 3,
-        backoff: { type: "exponential", delay: 60000 },
-        removeOnComplete: true,
-        removeOnFail: false,
-      }
-    );
-
-    //TODO: Move this to onboarding or billing once they are implemented
-    await getNewEmailsQueue.add(`fetch-${providerAccountId}`,
-      { host: "imap.gmail.com", providerAccountId },
-      {
-        repeat: {
-          every: 5 * 60 * 1000,
-          immediately: true
-        },
-        attempts: 3,
-        backoff: { type: "exponential" },
-        removeOnComplete: true,
-        removeOnFail: false,
-      }
-    );
+    // create background jobs to referesh tokens and fetch emails
+    await keepTokensFresh(providerAccountId);
+    await syncEmails(providerAccountId);
 
     return res.json({ success: true, providerAccountId });
   } catch (error) {
