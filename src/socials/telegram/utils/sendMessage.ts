@@ -1,5 +1,6 @@
 import { getTelegramUserId } from "@/db/queries/connections";
 import { telegramBotClient } from "../client";
+import { storeMessage } from "./storeMessage";
 
 export async function sendMessage(id: string, content: string) {
   const bot = telegramBotClient();
@@ -8,10 +9,21 @@ export async function sendMessage(id: string, content: string) {
     console.error("Could not find Telegram connection for:", id);
     return;
   }
-  bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "HTML"}).catch(() => {
+  const message = await bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "HTML"}).catch( async () => {
     // send message without html parsing
-    bot.telegram.sendMessage(telegramUser.id, content).catch( err => {
+    return bot.telegram.sendMessage(telegramUser.id, content).catch( err => {
       console.error("Failed to send message to telegram user", err);
     })
   });
+
+  if (!message) {
+    console.error("Failed to send message to telegram user");
+    return;
+  }
+
+  const storedMessage = await storeMessage(message, "assistant");
+
+  if (!storedMessage) {
+    console.error("Failed to store message in database");
+  }
 }
