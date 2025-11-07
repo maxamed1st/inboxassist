@@ -29,6 +29,13 @@
       "when": 1762474004913,
       "tag": "0003_clumsy_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1762551900238,
+      "tag": "0004_freezing_shocker",
+      "breakpoints": true
     }
   ]
 }

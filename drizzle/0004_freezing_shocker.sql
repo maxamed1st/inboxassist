@@ -1,0 +1,1 @@
+ALTER TABLE "messages" ADD COLUMN "platformMessageId" varchar(255);
