@@ -8,7 +8,7 @@ export default async function handleCommands() {
     // store user message
     await storeMessage(ctx.message, "user");
 
-    const user = await initializeUser(String(ctx.chat.id));
+    const user = await initializeUser(ctx.from.id.toString() || ctx.chat.id.toString());
 
     let messageText;
     switch(user.isNewUser) {
@@ -24,5 +24,5 @@ export default async function handleCommands() {
     await storeMessage(message, "system");
   });
 
-  bot.command("connect", async (ctx) => connectEmail(String(ctx.chat.id)));
+  bot.command("connect", async (ctx) => connectEmail(ctx.from.id.toString() || ctx.chat.id.toString()));
 }
