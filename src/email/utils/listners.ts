@@ -17,6 +17,10 @@ export async function connect({ userId, platform }: { userId: string, platform: 
     state: userId
     });
 
+    if (!authUrl) {
+      throw new Error("Failed to generate auth url")
+    }
+
     await publish("message:system", {
     id: userId,
     content: `<a href="${authUrl}">Authorize Gmail</a>`
@@ -28,8 +32,7 @@ export async function pruneEmails({ userId }: { userId: string }){
   const res = await deleteEmailsByUserId(userId);
 
   if (!res) {
-    console.error("Failed to delete emails for", userId);
-    return;
+    throw new Error(`Failed to delete emails for: ${userId}`);
   }
 
   await publish("message:system", {
@@ -42,8 +45,7 @@ export async function disconnect({ userId }: { userId: string }){
   const res = await deleteAccountByUserId(userId);
 
   if (!res) {
-    console.error("Failed to disconnect email for", userId);
-    return;
+    throw new Error(`Failed to disconnect email for: ${userId}`);
   }
 
   await stopRefereshingTokens(res.providerAccountId); 
@@ -59,15 +61,13 @@ export async function sendEmail({ emailId }: { emailId: string }){
   const email = await getEmailById(emailId);
 
   if(!email) {
-    console.error("Failed to fetch email", emailId);
-    return;
+    throw new Error(`Failed to fetch email: ${emailId}`);
   }
 
   const account = await getAccountById(email.accountId!)
 
   if(!account) {
-    console.error("Failed to get account for", email.userId);
-    return;
+    throw new Error(`Failed to get account for; ${email.userId}`);
   }
   const client = transporter({
       host: "smtp.gmail.com",
@@ -92,15 +92,13 @@ export async function sendEmail({ emailId }: { emailId: string }){
 export async function moveEmail({ emailId, folder }: { emailId: string, folder: string }){
   const email = await getEmailById(emailId);
   if (!email) {
-    console.warn("Failed to get email from db:", emailId);
-    return;
+    throw new Error(`Failed to get email from db: ${emailId}`);
   }
 
   const account = await getAccountById(email.accountId);
 
   if (!account) {
-    console.warn("Failed to get account from db:", email.accountId);
-    return;
+    throw new Error(`Failed to get account from db: ${email.accountId}`);
   }
 
   const client = imapClient({
@@ -113,6 +111,8 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
   const lock = await client.getMailboxLock('INBOX');
   try {
     await client.messageMove(email.emailId, folder);
+  } catch (err) {
+    throw new Error(`Failed to move email: ${err}`)
   } finally {
     lock.release();
     await client.logout();

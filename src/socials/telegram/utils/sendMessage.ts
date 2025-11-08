@@ -16,13 +16,12 @@ export async function sendMessage(id: string, content: string) {
   });
 
   if (!message) {
-    console.error("Failed to send message to telegram user");
-    return;
+    throw new Error("Failed to send message to telegram user");
   }
 
   const storedMessage = await storeMessage(message, "assistant");
 
   if (!storedMessage) {
-    console.error("Failed to store message in database");
+    throw new Error("Failed to store message in database");
   }
 }
