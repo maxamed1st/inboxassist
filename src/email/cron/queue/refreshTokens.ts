@@ -28,7 +28,7 @@ export async function keepTokensFresh( provider: string,providerAccountId: strin
   await refreshTokensQueue.upsertJobScheduler(`refresh-tokens:${providerAccountId}`,
     {
       every: 50 * 60 * 1000,
-      startDate: new Date()
+      startDate: new Date(Date.now() + 50 * 60 * 1000)
     },
     {
       name: "refresh-tokens",
