@@ -16,16 +16,16 @@ export async function refreshGmailTokens(accountId: string) {
   }
 
   // get the email address
-  const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+ const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
     headers: { Authorization: `Bearer ${credentials.access_token}` }
   });
 
-  const userInfo = await response.json() as { email: string }
-  if(!userInfo || !userInfo.email) {
+  const profile = await response.json() as { emailAddress: string }
+  if(!profile || !profile.emailAddress) {
     throw new Error("Gmail callback missing email field");
   }
 
-  const providerAccountId = userInfo.email;
+  const providerAccountId = profile.emailAddress;
   const values = {
     accessToken: credentials.access_token,
     refreshToken: credentials.refresh_token,

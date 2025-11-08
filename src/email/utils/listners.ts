@@ -8,8 +8,7 @@ import { stopRefereshingTokens } from "../cron/queue/refreshTokens";
 export async function connect({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
     const scopes = [
-      "https://mail.google.com/", 
-      "https://www.googleapis.com/auth/userinfo.email"
+      "https://mail.google.com/"
     ];
     const authUrl = googleOauth2Client.generateAuthUrl({
     access_type: "offline",

@@ -21,17 +21,17 @@ export async function gmailCallback(req: Request, res: Response) {
     }
 
     // get the email address
-    const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
       headers: { Authorization: `Bearer ${tokens.access_token}` }
     });
 
-    const userInfo = await response.json() as { email: string }
-    if(!userInfo || !userInfo.email) {
+    const profile = await response.json() as { emailAddress: string }
+    if(!profile || !profile.emailAddress) {
       throw new Error("Gmail callback missing email field");
     }
 
     // prepare values for DB insert
-    const providerAccountId = userInfo.email;
+    const providerAccountId = profile.emailAddress;
     const now = new Date();
     const values = {
       userId,
