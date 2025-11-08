@@ -23,7 +23,6 @@ export async function syncEmails(host: string, providerAccountId: string) {
   await fetchNewEmailsQueue.upsertJobScheduler(`fetch-emails:${providerAccountId}`,
     {
       every: 5 * 60 * 1000,
-      immediately: true,
     },
     {
       name: "fetch-emails",
