@@ -1,9 +1,8 @@
-import { telegramBotClient } from "@/socials/telegram/client";
+import { bot } from "@/socials/telegram/client";
 import { connectEmail, initializeUser } from "@/socials/telegram/utils/helpers";
 import { storeMessage } from "./storeMessage";
 
 export default async function handleCommands() {
-  const bot = telegramBotClient();
   bot.start(async (ctx) => {
     // store user message
     await storeMessage(ctx.message, "user");
