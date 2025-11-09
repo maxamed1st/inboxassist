@@ -43,6 +43,13 @@
       "when": 1762660599406,
       "tag": "0005_melted_thunderbird",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1762725941480,
+      "tag": "0006_common_loa",
+      "breakpoints": true
     }
   ]
 }
