@@ -19,7 +19,7 @@ export async function insertAccount(values: typeof accountsTable.$inferInsert) {
   }
 }
 
-export async function updateAccount(providerAccountId: string, values: Partial<typeof accountsTable.$inferInsert>) {
+export async function updateAccountById(accountId: string, values: Partial<typeof accountsTable.$inferInsert>) {
   try{
     const [ res ] = await db
       .update(accountsTable)
@@ -27,7 +27,7 @@ export async function updateAccount(providerAccountId: string, values: Partial<t
           ...values,
       }
       )
-      .where(eq(accountsTable.providerAccountId, providerAccountId))
+      .where(eq(accountsTable.id, accountId))
       .returning();
 
     return res;
@@ -48,21 +48,6 @@ export async function getAccountById(accountId: string) {
     return res;
   } catch(err) {
     console.error("Failed to get account", err)
-    return null
-  }
-}
-
-export async function getAccountByProviderAccountId(providerAccountId: string) {
-  try{
-    const [ res ] = await db
-      .select()
-      .from(accountsTable)
-      .where(eq(accountsTable.providerAccountId, providerAccountId))
-      .limit(1)
-
-    return res;
-  } catch(err) {
-    console.error("Failed account by providerAccountId", err)
     return null
   }
 }
