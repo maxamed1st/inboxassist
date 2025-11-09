@@ -1,6 +1,6 @@
 import { googleOauth2Client } from "@/email/clients";
 import { getAccountByProviderAccountId, updateAccount } from "@/db/queries/accounts";
-import jwt from "jsonwebtoken";
+import { encrypt, decrypt} from "@/utils/encryption"
 
 // refresh access token when expired
 export async function refreshGmailTokens(accountId: string) {
@@ -9,7 +9,7 @@ export async function refreshGmailTokens(accountId: string) {
     throw new Error("No account found for" + accountId);
   }
 
-  googleOauth2Client.setCredentials({ refresh_token: account.refreshToken });
+  googleOauth2Client.setCredentials({ refresh_token: decrypt(account.refreshToken) });
   const { credentials } = await googleOauth2Client.refreshAccessToken();
   if (!credentials || !credentials.access_token || !credentials.refresh_token) {
     throw new Error("Failed to refresh access token");
@@ -27,8 +27,8 @@ export async function refreshGmailTokens(accountId: string) {
 
   const providerAccountId = profile.emailAddress;
   const values = {
-    accessToken: credentials.access_token,
-    refreshToken: credentials.refresh_token,
+    accessToken: encrypt(credentials.access_token),
+    refreshToken: encrypt(credentials.refresh_token),
     expiresAt: credentials.expiry_date ? new Date(credentials.expiry_date) : null,
     updatedAt: new Date(),
   };
