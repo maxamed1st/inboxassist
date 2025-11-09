@@ -4,12 +4,12 @@ import { fetchNewEmails } from "@/email/cron/jobs/fetchEmails";
 const fetchNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
 
 new Worker("fetch-new-emails", async (job) => {
-    const { host, providerAccountId } = job.data;
-    if (host && providerAccountId) {
+    const { host, accountId } = job.data;
+    if (host && accountId) {
       try {
-        await fetchNewEmails(host, providerAccountId);
+        await fetchNewEmails(host, accountId);
       } catch (error) {
-        console.error(`Failed to fetch new emails for ${providerAccountId}:`, error);
+        console.error(`Failed to fetch new emails for ${accountId}:`, error);
         const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
         if (isLastAttempt) return;
         throw error; // let the job be retried
@@ -19,14 +19,14 @@ new Worker("fetch-new-emails", async (job) => {
   connection: { url: process.env.REDIS_URL! },
 });
 
-export async function syncEmails(host: string, providerAccountId: string) {
-  await fetchNewEmailsQueue.upsertJobScheduler(`fetch-emails:${providerAccountId}`,
+export async function syncEmails(host: string, accountId: string) {
+  await fetchNewEmailsQueue.upsertJobScheduler(`fetch-emails:${accountId}`,
     {
       every: 5 * 60 * 1000,
     },
     {
       name: "fetch-emails",
-      data: { host, providerAccountId },
+      data: { host, accountId },
       opts: {
       attempts: 3,
       backoff: { type: "exponential" },
@@ -37,10 +37,10 @@ export async function syncEmails(host: string, providerAccountId: string) {
   );
 }
 
-export async function cancelEmailSync(providerAccountId: string) {
-  const removed = await fetchNewEmailsQueue.removeJobScheduler(`fetch-emails:${providerAccountId}`);
+export async function cancelEmailSync(accountId: string) {
+  const removed = await fetchNewEmailsQueue.removeJobScheduler(`fetch-emails:${accountId}`);
   if (!removed) {
-    console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${providerAccountId}`)
+    console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${accountId}`)
   }
 
   return removed;

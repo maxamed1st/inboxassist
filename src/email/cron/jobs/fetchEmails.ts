@@ -1,12 +1,12 @@
 import { imapClient } from "@/email/clients";
-import { getAccountByProviderAccountId } from "@/db/queries/accounts";
+import { getAccountById } from "@/db/queries/accounts";
 import { processEmail } from "@/email/utils/processEmail";
 import { decrypt } from "@/utils/encryption";
 
-export async function fetchNewEmails(host: string, providerAccountId: string) {
-  const account = await getAccountByProviderAccountId(providerAccountId);
+export async function fetchNewEmails(host: string, accountId: string) {
+  const account = await getAccountById(accountId);
   if (!account?.accessToken) {
-    console.warn("No access token found for account", providerAccountId);
+    console.warn("No access token found for account", accountId);
     return;
   }
 
