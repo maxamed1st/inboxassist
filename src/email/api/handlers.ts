@@ -3,7 +3,7 @@ import { insertAccount } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
 import { keepTokensFresh } from "../cron/queue/refreshTokens";
 import { syncEmails } from "../cron/queue/fetchNewEmails";
-import { encrypt } from "@/utils/encryption";
+import { encrypt, hashForLookup } from "@/utils/encryption";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -33,11 +33,13 @@ export async function gmailCallback(req: Request, res: Response) {
 
     // prepare values for DB insert
     const providerAccountId = profile.emailAddress;
+    const providerAccountIdHash = hashForLookup(providerAccountId);
     const now = new Date();
     const values = {
       userId,
       provider: "google",
-      providerAccountId,
+      providerAccountId: encrypt(providerAccountId),
+      providerAccountIdHash: providerAccountIdHash,
       accessToken: encrypt(tokens.access_token),
       refreshToken: encrypt(tokens.refresh_token),
       expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
@@ -56,7 +58,7 @@ export async function gmailCallback(req: Request, res: Response) {
     await keepTokensFresh("google", providerAccountId);
     await syncEmails("imap.gmail.com", providerAccountId);
 
-    return res.json({ success: true, providerAccountId });
+    return res.status(200).send();
   } catch (error) {
     console.error("Gmail OAuth callback error:", error);
     return res.status(500).json({ error: "OAuth callback failed" });
