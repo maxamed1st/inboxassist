@@ -2,6 +2,7 @@ import { simpleParser } from "mailparser";
 import { insertEmail } from "@/db/queries/emails";
 import { publish } from "@/events/broker";
 import { FetchMessageObject } from "imapflow";
+import { encrypt } from "@/utils/encryption";
 
 
 export async function processEmail(message: FetchMessageObject, userId: string, accountId: string) {
@@ -30,16 +31,16 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
     userId: userId,
     accountId: accountId,
     emailId: parsed.messageId || crypto.randomUUID(),
-    from: parsed.from?.text || "unknown",
-    to: formatAddresses((parsed.to as any)?.value),
-    cc: formatAddresses((parsed.cc as any)?.value),
-    bcc: formatAddresses((parsed.bcc as any)?.value),
+    from: parsed.from ? encrypt(parsed.from.text) : "unknown",
+    to: encrypt(JSON.stringify(formatAddresses((parsed.to as any)?.value))),
+    cc: encrypt(JSON.stringify(formatAddresses((parsed.cc as any)?.value))),
+    bcc: encrypt(JSON.stringify(formatAddresses((parsed.bcc as any)?.value))),
     inReplyTo: parsed.inReplyTo,
     references: normalizeReferences(parsed.references),
-    subject: parsed.subject || "",
+    subject: parsed.subject ? encrypt(parsed.subject) : "",
     content: { 
-      text: parsed.text, 
-      html: parsed.html || undefined 
+      text: parsed.text ? encrypt(parsed.text) : undefined, 
+      html: parsed.html ? encrypt(parsed.html) : undefined 
     },
     date: parsed.date || new Date(),
     status: "received" as const,
