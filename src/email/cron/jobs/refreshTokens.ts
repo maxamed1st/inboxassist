@@ -1,10 +1,10 @@
 import { googleOauth2Client } from "@/email/clients";
-import { getAccountByProviderAccountId, updateAccount } from "@/db/queries/accounts";
+import { getAccountById, updateAccountById } from "@/db/queries/accounts";
 import { encrypt, decrypt} from "@/utils/encryption"
 
 // refresh access token when expired
 export async function refreshGmailTokens(accountId: string) {
-  const account = await getAccountByProviderAccountId(accountId);
+  const account = await getAccountById(accountId);
   if (!account) {
     throw new Error("No account found for" + accountId);
   }
@@ -15,17 +15,6 @@ export async function refreshGmailTokens(accountId: string) {
     throw new Error("Failed to refresh access token");
   }
 
-  // get the email address
- const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
-    headers: { Authorization: `Bearer ${credentials.access_token}` }
-  });
-
-  const profile = await response.json() as { emailAddress: string }
-  if(!profile || !profile.emailAddress) {
-    throw new Error("Gmail callback missing email field");
-  }
-
-  const providerAccountId = profile.emailAddress;
   const values = {
     accessToken: encrypt(credentials.access_token),
     refreshToken: encrypt(credentials.refresh_token),
@@ -33,7 +22,7 @@ export async function refreshGmailTokens(accountId: string) {
     updatedAt: new Date(),
   };
 
-  const updatedAccount = await updateAccount(providerAccountId, values);
+  const updatedAccount = await updateAccountById(accountId, values);
 
   if (!updatedAccount) {
     throw new Error("Failed to update tokens for" + account.providerAccountId);

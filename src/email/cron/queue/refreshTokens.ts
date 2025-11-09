@@ -5,12 +5,12 @@ import { publish } from "@/events/broker";
 const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
 
 new Worker("refresh-account-tokens", async (job) => {
-    const { provider, providerAccountId, userId } = job.data;
-    if (provider === "google" && providerAccountId) {
+    const { provider, accountId, userId } = job.data;
+    if (provider === "google" && accountId) {
       try {
-        await refreshGmailTokens(providerAccountId);
+        await refreshGmailTokens(accountId);
       } catch (error) {
-        console.error(`Failed to refresh tokens for ${providerAccountId}:`, error);
+        console.error(`Failed to refresh tokens for ${accountId}:`, error);
         const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
         if (isLastAttempt) {
           // reauthenticate user
@@ -24,15 +24,15 @@ new Worker("refresh-account-tokens", async (job) => {
   connection: { url: process.env.REDIS_URL! },
 });
 
-export async function keepTokensFresh( provider: string,providerAccountId: string) {
-  await refreshTokensQueue.upsertJobScheduler(`refresh-tokens:${providerAccountId}`,
+export async function keepTokensFresh( provider: string, accountId: string) {
+  await refreshTokensQueue.upsertJobScheduler(`refresh-tokens:${accountId}`,
     {
       every: 50 * 60 * 1000,
       startDate: new Date(Date.now() + 50 * 60 * 1000)
     },
     {
       name: "refresh-tokens",
-      data: { provider, providerAccountId },
+      data: { provider, accountId },
       opts: {
       attempts: 3,
       backoff: { type: "exponential", delay: 60000 },
@@ -43,10 +43,10 @@ export async function keepTokensFresh( provider: string,providerAccountId: strin
   );
 }
 
-export async function stopRefereshingTokens(providerAccountId: string) {
-  const removed = await refreshTokensQueue.removeJobScheduler(`refresh-tokens:${providerAccountId}`);
+export async function stopRefereshingTokens(accountId: string) {
+  const removed = await refreshTokensQueue.removeJobScheduler(`refresh-tokens:${accountId}`);
   if (!removed) {
-    console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${providerAccountId}`)
+    console.warn(`QUEUE: Could not find scheduler for deletion: refresh-tokens:${accountId}`)
   }
 
   return removed;
