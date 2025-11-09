@@ -4,8 +4,8 @@ import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
-  email: varchar({ length: 255 }).unique(),
-  name: varchar({ length: 255 }),
+  email: text(),
+  name: text(),
   subscriptionStatus: varchar({ length: 50 }),
   subscriptionId: integer(),
   createdAt: timestamp().notNull(),
@@ -18,7 +18,8 @@ export const accountsTable = pgTable("accounts", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   provider: varchar({ length: 255 }).notNull(),
-  providerAccountId: varchar({ length: 255 }).notNull(),
+  providerAccountId: text().notNull(),
+  providerAccountIdHash: varchar({ length: 64 }).notNull(),
   accessToken: text().notNull(),
   refreshToken: text().notNull(),
   expiresAt: timestamp(),
