@@ -3,7 +3,7 @@ import { insertAccount } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
 import { keepTokensFresh } from "../cron/queue/refreshTokens";
 import { syncEmails } from "../cron/queue/fetchNewEmails";
-import { encrypt, hashForLookup } from "@/utils/encryption";
+import { encrypt } from "@/utils/encryption";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -33,13 +33,11 @@ export async function gmailCallback(req: Request, res: Response) {
 
     // prepare values for DB insert
     const providerAccountId = profile.emailAddress;
-    const providerAccountIdHash = hashForLookup(providerAccountId);
     const now = new Date();
     const values = {
       userId,
       provider: "google",
       providerAccountId: encrypt(providerAccountId),
-      providerAccountIdHash: providerAccountIdHash,
       accessToken: encrypt(tokens.access_token),
       refreshToken: encrypt(tokens.refresh_token),
       expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
