@@ -12,7 +12,7 @@ export async function fetchNewEmails(host: string, accountId: string) {
 
   const client = imapClient({
     host,
-    emailAddress: account.providerAccountId,
+    emailAddress: decrypt(account.providerAccountId),
     accessToken: decrypt(account.accessToken),
   });
   await client.connect();
