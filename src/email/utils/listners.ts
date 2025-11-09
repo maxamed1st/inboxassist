@@ -4,6 +4,7 @@ import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
 import { cancelEmailSync } from "../cron/queue/fetchNewEmails";
 import { stopRefereshingTokens } from "../cron/queue/refreshTokens";
+import { decrypt } from "@/utils/encryption";
 
 export async function connect({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
@@ -72,7 +73,7 @@ export async function sendEmail({ emailId }: { emailId: string }){
   const client = transporter({
       host: "smtp.gmail.com",
       emailAddress : email.from,
-      accessToken : account.accessToken,
+      accessToken : decrypt(account.accessToken),
   });
 
   client.sendMail({
@@ -103,7 +104,7 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
 
   const client = imapClient({
     host: "imap.gmail.com",
-    accessToken: account.accessToken,
+    accessToken: decrypt(account.accessToken),
     emailAddress: account.providerAccountId,
   });
   await client.connect();

@@ -1,6 +1,7 @@
 import { imapClient } from "@/email/clients";
 import { getAccountByProviderAccountId } from "@/db/queries/accounts";
 import { processEmail } from "@/email/utils/processEmail";
+import { decrypt } from "@/utils/encryption";
 
 export async function fetchNewEmails(host: string, providerAccountId: string) {
   const account = await getAccountByProviderAccountId(providerAccountId);
@@ -12,7 +13,7 @@ export async function fetchNewEmails(host: string, providerAccountId: string) {
   const client = imapClient({
     host,
     emailAddress: account.providerAccountId,
-    accessToken: account.accessToken,
+    accessToken: decrypt(account.accessToken),
   });
   await client.connect();
 
