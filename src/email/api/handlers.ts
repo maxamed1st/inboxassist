@@ -55,8 +55,8 @@ export async function gmailCallback(req: Request, res: Response) {
     }
 
     // create background jobs to referesh tokens and fetch emails
-    await keepTokensFresh("google", providerAccountId);
-    await syncEmails("imap.gmail.com", providerAccountId);
+    await keepTokensFresh("google", account.id);
+    await syncEmails("imap.gmail.com", account.id);
 
     return res.status(200).send();
   } catch (error) {
