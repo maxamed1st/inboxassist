@@ -2,6 +2,7 @@ import { initializeUser } from "@/socials/telegram/utils/helpers";
 import { getUserIdByTelegramId } from "@/db/queries/connections"
 import { getMessageByPlatformMessageId, insertMessage } from "@/db/queries/messages";
 import { Message } from "telegraf/types";
+import { encrypt } from "@/utils/encryption";
 
 export async function storeMessage(message: Message, role: "system" | "user" | "assistant") {
   try {
@@ -64,7 +65,7 @@ export async function storeMessage(message: Message, role: "system" | "user" | "
       emailId,
       replyToId,
       references,
-      content,
+      content: encrypt(content),
       role,
       createdAt: messageDate,
       updatedAt: messageDate,
