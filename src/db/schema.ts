@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, pgTable, varchar, jsonb, uuid, boolean, timestamp } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, jsonb, uuid, boolean, timestamp, text } from "drizzle-orm/pg-core";
 import type { EmailContent, ActionPayload } from "../db/types";
 
 export const usersTable = pgTable("users", {
@@ -19,8 +19,8 @@ export const accountsTable = pgTable("accounts", {
     .references(() => usersTable.id, { onDelete: "cascade" }),
   provider: varchar({ length: 255 }).notNull(),
   providerAccountId: varchar({ length: 255 }).notNull(),
-  accessToken: varchar({ length: 255 }).notNull(),
-  refreshToken: varchar({ length: 255 }).notNull(),
+  accessToken: text().notNull(),
+  refreshToken: text().notNull(),
   expiresAt: timestamp(),
   createdAt: timestamp().notNull(),
   updatedAt: timestamp().notNull(),
@@ -33,8 +33,8 @@ export const connectionsTable = pgTable("connections", {
     .references(() => usersTable.id, { onDelete: "cascade" }),
   platform: varchar({ length: 255 }).notNull(),
   platformAccountId: varchar({ length: 255 }).notNull(),
-  accessToken: varchar({ length: 255 }),
-  refreshToken: varchar({ length: 255 }),
+  accessToken: text(),
+  refreshToken: text(),
   expiresAt: timestamp(),
   createdAt: timestamp().notNull(),
   updatedAt: timestamp().notNull(),
