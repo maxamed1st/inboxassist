@@ -1,7 +1,7 @@
 import crypto from "crypto"
 
 // get secret key
-export function getEncryptionKey() {
+function getEncryptionKey() {
   const key = process.env.ENCRYPTION_KEY;
 
   if(!key) {
@@ -11,8 +11,10 @@ export function getEncryptionKey() {
   return Buffer.from(key, "hex");
 }
 
+const key = getEncryptionKey();
+
 // Encrypt data
-export function encrypt(text: string, key: Buffer) {
+export function encrypt(text: string) {
   // Generate a random initialization vector
   const iv = crypto.randomBytes(16);
   
@@ -37,7 +39,7 @@ export function encrypt(text: string, key: Buffer) {
 }
 
 // Decrypt data
-export function decrypt(encryptedString: string, key: Buffer) {
+export function decrypt(encryptedString: string) {
   const parts = encryptedString.split(":")
   const [ iv, authTag, encryptedData ] = parts;
 
