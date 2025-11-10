@@ -1,5 +1,5 @@
 import { simpleParser } from "mailparser";
-import { insertEmail } from "@/db/queries/emails";
+import { getEmailByExtrernalEmailId, insertEmail } from "@/db/queries/emails";
 import { publish } from "@/events/broker";
 import { FetchMessageObject } from "imapflow";
 import { encrypt } from "@/utils/encryption";
@@ -47,6 +47,13 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
     createdAt: new Date(),
     updatedAt: new Date(),
   };
+
+  const existingEmail = await getEmailByExtrernalEmailId(values.externalEmailId);
+
+  if(existingEmail) {
+    console.warn("Email already fetched");
+    return;
+  }
 
   const emailId = await insertEmail(values);
 

@@ -30,6 +30,21 @@ export async function getEmailById(emailId: string) {
   }
 }
 
+export async function getEmailByExtrernalEmailId(externalEmailId: string) {
+  try {
+    const [ res ] = await db
+      .select()
+      .from(emailsTable)
+      .where(eq(emailsTable.externalEmailId, externalEmailId))
+      .limit(1)
+
+    return res;
+  } catch(err) {
+    console.error("Failed to get Email", err)
+    return null
+  }
+}
+
 export async function insertEmail(emailData: typeof emailsTable.$inferInsert) {
   try {
     const [ res ] = await db
