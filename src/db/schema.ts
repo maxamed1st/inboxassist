@@ -48,7 +48,7 @@ export const emailsTable = pgTable("emails", {
   accountId: uuid()
     .notNull()
     .references(() => accountsTable.id, { onDelete: "cascade" }),
-  emailId: varchar({ length: 255 }).notNull(),
+  externalEmailId: varchar({ length: 255 }).notNull(),
   inReplyTo: varchar({ length: 255 }),
   references: jsonb().default(sql`'[]'::jsonb`).notNull().$type<string[]>(),
   subject: varchar({ length: 998 }).notNull(),

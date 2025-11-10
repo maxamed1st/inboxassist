@@ -30,7 +30,7 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
   const values = {
     userId: userId,
     accountId: accountId,
-    emailId: parsed.messageId || crypto.randomUUID(),
+    externalEmailId: parsed.messageId || crypto.randomUUID(),
     from: parsed.from ? encrypt(parsed.from.text) : "unknown",
     to: encrypt(JSON.stringify(formatAddresses((parsed.to as any)?.value))),
     cc: encrypt(JSON.stringify(formatAddresses((parsed.cc as any)?.value))),
@@ -51,7 +51,7 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
   const emailId = await insertEmail(values);
 
   if (!emailId) {
-    console.error("Failed to insert email in db:", values.emailId);
+    console.error("Failed to insert email in db:", values.externalEmailId);
     return;
   }
 
