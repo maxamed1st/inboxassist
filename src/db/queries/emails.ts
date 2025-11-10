@@ -43,3 +43,21 @@ export async function insertEmail(emailData: typeof emailsTable.$inferInsert) {
     return null
   }
 }
+
+export async function updateEmailById(emailId: string, values: Partial<typeof emailsTable.$inferInsert>) {
+  try{
+    const [ res ] = await db
+      .update(emailsTable)
+      .set({
+          ...values,
+      }
+      )
+      .where(eq(emailsTable.id, emailId))
+      .returning();
+
+    return res;
+  } catch(err) {
+    console.error("Failed to update account", err)
+    return null
+  }
+}

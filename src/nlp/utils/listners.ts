@@ -1,11 +1,11 @@
 import { publish } from "@/events/broker";
 import { nlpClient } from "../client";
-import { getEmailContent } from "./helpers";
+import { getEmailContent, storeSummary } from "./helpers";
 import { summerizer } from "./systemPrompt";
 
 export async function summerizeEmail({ id }: { id: string }) {
   try {
-  const { userId, from, subject, content } = await getEmailContent(id);
+  const { userId, emailId, from, subject, content } = await getEmailContent(id);
   const response = await nlpClient.chat.completions.create({
     model: "gpt-4o-mini",
       messages: [
@@ -27,6 +27,8 @@ export async function summerizeEmail({ id }: { id: string }) {
   if(!message) {
     throw new Error("Failed to get summary from nlp client");
   }
+
+  await storeSummary(emailId, message);
 
   publish("message:assistant", { id: userId, content: `${from.replace(/['"]/g, '')} \n\n ${message}` })
   } catch(err) {

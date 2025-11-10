@@ -1,4 +1,4 @@
-import { getEmailById } from "@/db/queries/emails";
+import { getEmailById, updateEmailById } from "@/db/queries/emails";
 import { decrypt } from "@/utils/encryption";
 
 export async function getEmailContent(id: string ) {
@@ -9,6 +9,7 @@ export async function getEmailContent(id: string ) {
   }
 
   const userId = email.userId;
+  const emailId = email.id;
   const from = decrypt(email.from);
   const subject = decrypt(email.subject);
   
@@ -20,5 +21,24 @@ export async function getEmailContent(id: string ) {
     content = decrypt(email.content.html)
   }
 
-  return { userId, from, subject, content };
+  return { userId, emailId, from, subject, content };
+}
+
+export async function storeSummary( emailId: string, summary: string ) {
+  const email = await getEmailById(emailId);
+  if (!email) {
+    console.error("failed to fetch summerised email from db", emailId);
+    return null;
+  }
+  const content = email.content
+  content.summary = summary;
+
+  const updatedEmail = await updateEmailById(emailId, { content })
+
+  if (!updatedEmail) {
+    console.error("Failed to insert summary", emailId);
+    return null;
+  }
+
+  return updatedEmail;
 }
