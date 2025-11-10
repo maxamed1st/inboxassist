@@ -8,12 +8,9 @@ export async function sendMessage(id: string, content: string) {
     console.error("Could not find Telegram connection for:", id);
     return;
   }
-  const message = await bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "HTML"}).catch( async () => {
-    // send message without html parsing
-    return bot.telegram.sendMessage(telegramUser.id, content).catch( err => {
-      console.error("Failed to send message to telegram user", err);
-    })
-  });
+  const message = await bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "Markdown"}).catch( async (err) => {
+    throw new Error(`Failed to send message to telegram user: ${err}`);
+    });
 
   if (!message) {
     throw new Error("Failed to send message to telegram user");

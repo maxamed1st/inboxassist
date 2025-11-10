@@ -24,7 +24,7 @@ export async function connect({ userId, platform }: { userId: string, platform: 
 
     await publish("message:system", {
     id: userId,
-    content: `<a href="${authUrl}">Authorize Gmail</a>`
+    content: `[Authorize Gmail](${authUrl})`
     });
   }
 }
