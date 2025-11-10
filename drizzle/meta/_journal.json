@@ -50,6 +50,13 @@
       "when": 1762725941480,
       "tag": "0006_common_loa",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1762743925136,
+      "tag": "0007_needy_whizzer",
+      "breakpoints": true
     }
   ]
 }

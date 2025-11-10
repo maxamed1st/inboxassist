@@ -1,0 +1,1 @@
+ALTER TABLE "emails" RENAME COLUMN "emailId" TO "externalEmailId";
