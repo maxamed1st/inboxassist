@@ -1,5 +1,5 @@
 import { googleOauth2Client } from "@/email/clients";
-import { insertAccount } from "@/db/queries/accounts";
+import { getAccountByUserId, insertAccount, updateAccountById } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
 import { keepTokensFresh } from "../cron/queue/refreshTokens";
 import { syncEmails } from "../cron/queue/fetchNewEmails";
@@ -41,12 +41,22 @@ export async function gmailCallback(req: Request, res: Response) {
       accessToken: encrypt(tokens.access_token),
       refreshToken: encrypt(tokens.refresh_token),
       expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
-      createdAt: now,
       updatedAt: now,
     };
 
+    // Check if user has account
+    let account;
+    const existingAccount = await getAccountByUserId(userId)
+
     // insert into accounts table
-    const account = await insertAccount(values);
+    if(existingAccount) {
+      account = await updateAccountById(existingAccount.id, values);
+    } else {
+      account = await insertAccount({
+        ...values,
+        createdAt: now
+      });
+    }
     
     if(!account) {
       throw new Error("gmail_callback: Failed to insert account")

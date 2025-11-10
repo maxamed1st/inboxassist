@@ -52,6 +52,21 @@ export async function getAccountById(accountId: string) {
   }
 }
 
+export async function getAccountByUserId(userId: string) {
+  try{
+    const [ res ] = await db
+      .select()
+      .from(accountsTable)
+      .where(eq(accountsTable.userId, userId))
+      .limit(1)
+
+    return res;
+  } catch(err) {
+    console.error("Failed to get account", err)
+    return null
+  }
+}
+
 export async function deleteAccountByUserId(userId: string) {
   try{
     const [ res ] = await db
