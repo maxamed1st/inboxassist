@@ -3,6 +3,7 @@ import initializeRedis from "@/events/index";
 import initializeServer from "@/server";
 import initializeMail from "@/email/index";
 import initializeTelegramBot from "@/socials/telegram/index";
+import initializeNLP from "@/nlp/index"
 
 async function main() {
   // initializations
@@ -11,6 +12,7 @@ async function main() {
   initializeServer();
   await initializeMail();
   initializeTelegramBot();
+  initializeNLP();
 }
 
 main()
