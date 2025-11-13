@@ -1,6 +1,7 @@
 import { bot } from "@/socials/telegram/client";
 import { connectEmail, initializeUser } from "@/socials/telegram/utils/helpers";
 import { storeMessage } from "./storeMessage";
+import { publish } from "@/events/broker";
 
 export default async function handleCommands() {
   bot.start(async (ctx) => {
@@ -24,4 +25,21 @@ export default async function handleCommands() {
   });
 
   bot.command("connect", async (ctx) => connectEmail(ctx.from.id.toString() || ctx.chat.id.toString()));
+
+  bot.on("text", async (ctx) => {
+    // store user message
+    let message;
+
+    try {
+      message = await storeMessage(ctx.message, "user");
+    } catch (err) {
+      console.error("Failed to store message in database:", err);
+    }
+    if(!message) {
+      console.erro("Failed to store message in database");
+      return;
+    }
+
+    publish("message:user", { id: ctx.from.id.toString() || ctx.chat.id.toString(), content: ctx.message.text });
+  });
 }
