@@ -25,15 +25,15 @@ export async function summerizeEmail({ id }: { id: string }) {
       max_tokens: 200
   });
 
-  const message = response.choices[0]?.message.content;
+  const summary = response.choices[0]?.message.content;
 
-  if(!message) {
+  if(!summary) {
     throw new Error("Failed to get summary from nlp client");
   }
 
-  await storeSummary(emailId, message);
+  await storeSummary(emailId, summary);
 
-  publish("message:assistant", { id: userId, emailId, content: `${from.replace(/['"]/g, '')} \n\n ${message}` })
+  publish("message:assistant", { id: userId, emailId, content: `${from.replace(/['"]/g, '')} \n\n ${summary}` })
   } catch(err) {
     throw new Error(`Failed to summerize email ${id}: ${err}`)
   }
