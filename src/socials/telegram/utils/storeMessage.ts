@@ -4,7 +4,7 @@ import { getMessageByPlatformMessageId, insertMessage } from "@/db/queries/messa
 import { Message } from "telegraf/types";
 import { encrypt } from "@/utils/encryption";
 
-export async function storeMessage(message: Message, role: "system" | "user" | "assistant") {
+export async function storeMessage(message: Message, role: "system" | "user" | "assistant", emailId?: string) {
   try {
     //get userId from telegram user
     const telegramUserId = ('from' in message ? message.from?.id : message.chat?.id)?.toString();
@@ -39,7 +39,6 @@ export async function storeMessage(message: Message, role: "system" | "user" | "
     // Handle reply_to
     let replyToId: string | null = null;
     let references: string[] = [];
-    let emailId: string | null = null;
     
     if ('reply_to_message' in message && message.reply_to_message) {
       const replyToDbMessage = await getMessageByPlatformMessageId(user.id, message.reply_to_message.message_id.toString());
@@ -51,7 +50,7 @@ export async function storeMessage(message: Message, role: "system" | "user" | "
       }
 
       // keep track of email message is concerning
-      if (replyToDbMessage?.emailId) {
+      if (!emailId && replyToDbMessage?.emailId) {
         emailId = replyToDbMessage.emailId;
       }
     }
