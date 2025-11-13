@@ -3,6 +3,8 @@ import { nlpClient } from "../client";
 import { getEmailContent, storeSummary } from "./helpers";
 import {classifier, summerizer } from "./systemPrompt";
 import { getMessageById } from "@/db/queries/messages";
+import { zodResponseFormat, } from "openai/helpers/zod.mjs";
+import { z } from "zod";
 
 export async function summerizeEmail({ id }: { id: string }) {
   try {
@@ -51,37 +53,15 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
             content: content
           }
         ],
-      response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'classification',
-        strict: true,
-        schema: {
-          type: 'object',
-          properties: {
-            category: {
-              type: 'string',
-              enum: ['compose', 'edit', 'send', 'move', 'other']
-            },
-            folder: {
-              type: 'string'
-            }
-          },
-          required: ['category'],
-          additionalProperties: false,
-          if: {
-            properties: {
-              category: {
-                const: 'move'
-              }
-            },
-          },
-          then: {
-            required: ['folder']
-          }
-        },
-      },
-    },
+      response_format: zodResponseFormat(  
+        z.object({  
+          category: z.enum(['compose', 'edit', 'send', 'move', 'other']),  
+          folder: z.string().optional().nullable()  
+        }),  
+        'classification'  
+      ),
+      temperature: 0.2,
+      max_tokens: 20
     });
 
     const result = response.choices[0]?.message.content;
