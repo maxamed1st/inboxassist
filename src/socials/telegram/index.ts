@@ -1,10 +1,10 @@
 import { sendMessage } from "@/socials/telegram/utils/sendMessage"
 import { subscribe } from "@/events/broker";
-import handleCommands from "./utils/commands";
+import handleIncomingMessage from "@/socials/telegram/utils/incomingMessage";
 
 export default async function main() {
   // handle commands
-  await handleCommands();
+  await handleIncomingMessage();
 
   // register listeners
   subscribe("message:system", "telegram_bot", async ({id, content}) => {

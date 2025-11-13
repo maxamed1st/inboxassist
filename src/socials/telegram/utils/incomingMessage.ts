@@ -3,7 +3,7 @@ import { connectEmail, initializeUser } from "@/socials/telegram/utils/helpers";
 import { storeMessage } from "./storeMessage";
 import { publish } from "@/events/broker";
 
-export default async function handleCommands() {
+export default async function handleIncomingMessage() {
   bot.start(async (ctx) => {
     // store user message
     await storeMessage(ctx.message, "user");
