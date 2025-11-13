@@ -41,6 +41,6 @@ export default async function handleIncomingMessage() {
       return;
     }
 
-    publish("message:user", { id: ctx.from.id.toString() || ctx.chat.id.toString(), content: ctx.message.text });
+    publish("message:user", { id: message.id, content: ctx.message.text });
   });
 }
