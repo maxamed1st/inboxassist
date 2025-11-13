@@ -9,7 +9,7 @@ export type Channels =
 export interface MessagePayloads {
   // chat messages
   "message:user": { id: string, content: string };
-  "message:assistant": { id: string, content: string };
+  "message:assistant": { id: string, content: string, emailId?: string };
   "message:system": { id: string, content: string };
   "message:prune": { userId: string };
 
