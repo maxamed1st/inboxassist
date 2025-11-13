@@ -37,3 +37,18 @@ export async function getMessageByPlatformMessageId(userId: string, platformMess
     return null
   }
 }
+
+export async function getMessageById(messageId: string) {
+  try{
+    const [ res ] = await db
+      .select()
+      .from(messagesTable)
+      .where(eq(messagesTable.id, messageId))
+      .limit(1)
+
+    return res;
+  } catch(err) {
+    console.error("Failed to get message by id", err)
+    return null
+  }
+}
