@@ -33,7 +33,7 @@ export async function summerizeEmail({ id }: { id: string }) {
 
   await storeSummary(emailId, message);
 
-  publish("message:assistant", { id: userId, content: `${from.replace(/['"]/g, '')} \n\n ${message}` })
+  publish("message:assistant", { id: userId, emailId, content: `${from.replace(/['"]/g, '')} \n\n ${message}` })
   } catch(err) {
     throw new Error(`Failed to summerize email ${id}: ${err}`)
   }
