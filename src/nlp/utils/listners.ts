@@ -110,7 +110,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
     } 
 
     else {
-      console.log("undefined user intent", id);
+      console.log("undefined user intent", result);
     }
   } catch(err) {
     throw new Error(`Failed to classify user intent ${id}: ${err}`)
