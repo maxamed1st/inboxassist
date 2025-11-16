@@ -72,21 +72,21 @@ export async function sendEmail({ emailId }: { emailId: string }){
   }
   const client = transporter({
       host: "smtp.gmail.com",
-      emailAddress : email.from,
+      emailAddress : decrypt(email.from),
       accessToken : decrypt(account.accessToken),
   });
 
   client.sendMail({
-      from: email.from,
-      to: email.to,
-      subject: email.subject,
-      html: email.content.html ?? "",
-      text: email.content.text ?? "",
+      from: decrypt(email.from),
+      to: decrypt(email.to),
+      subject: decrypt(email.subject),
+      html: email.content.html ? decrypt(email.content.html) : "",
+      text: email.content.text ? decrypt(email.content.text) : "",
   })
 
   await publish("message:system", {
       id: email.userId!,
-      content: "Email sent to" + email.to
+      content: "Email sent to" + decrypt(email.to)
   });
 }
 
