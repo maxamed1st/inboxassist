@@ -86,7 +86,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     if(message === "compose" || message === "edit") {
       if(!emailId) {
-        throw new Error(`EmailId missing for compose action ${id}`);
+        throw new Error(`EmailId missing for compose/edit action ${id}`);
       }
 
       publish("action:compose", { id, emailId, userMessage: content })
@@ -94,7 +94,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     else if (message === "send") {
       if(!emailId) {
-        throw new Error(`EmailId missing for compose action ${id}`);
+        throw new Error(`EmailId missing for send action ${id}`);
       }
       
       publish("action:send", { id, emailId })
@@ -102,7 +102,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     else if (message === "move") {
       if(!emailId) {
-        throw new Error(`EmailId missing for compose action ${id}`);
+        throw new Error(`EmailId missing for move action ${id}`);
       }
       
       const folder = parsed.folder;
