@@ -1,6 +1,7 @@
 import { getUserIdByTelegramId, insertConnection } from "@/db/queries/connections"
 import { insertUser } from "@/db/queries/user"
 import { publish } from "@/events/broker";
+import { bot } from "../client";
 
 export async function initializeUser(telegramUserId: string) {
     const existingUser = await getUserIdByTelegramId(telegramUserId);
@@ -33,13 +34,9 @@ export async function initializeUser(telegramUserId: string) {
 }
 
 export async function connectEmail(telegramUserId: string) {
-    let user;
-    user = await getUserIdByTelegramId(telegramUserId);
+    const user = await getUserIdByTelegramId(telegramUserId);
     if(!user) {
-        user = await initializeUser(telegramUserId);
-    }
-    if(!user.id) {
-        console.error("Could not get userID for telegram user:", telegramUserId)
+        await bot.telegram.sendMessage(telegramUserId, "Please initialize your assistant first by sending /start");
         return;
     }
     await publish("email:connect", { userId: user.id, platform: "gmail"})
