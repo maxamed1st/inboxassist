@@ -111,7 +111,7 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
 
   const lock = await client.getMailboxLock('INBOX');
   try {
-    await client.messageMove(email.emailId, folder);
+    await client.messageMove(email.externalEmailId, folder);
   } catch (err) {
     throw new Error(`Failed to move email: ${err}`)
   } finally {
