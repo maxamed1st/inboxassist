@@ -22,7 +22,7 @@ new Worker("fetch-new-emails", async (job) => {
 export async function syncEmails(host: string, accountId: string) {
   await fetchNewEmailsQueue.upsertJobScheduler(`fetch-emails:${accountId}`,
     {
-      every: 5 * 60 * 1000,
+      every: 3 * 60 * 1000,
     },
     {
       name: "fetch-emails",
