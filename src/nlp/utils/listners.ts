@@ -43,7 +43,11 @@ export async function summerizeEmail({ id }: { id: string }) {
 
 export async function classifyUserIntent({ id, content }: { id: string, content: string }) {
   try {
-    const prevMessages = await getPreviouseMessages(id);
+    const userMessage = await getMessageById(id);
+    if(!userMessage) {
+      throw new Error("Failed to fetch user message");
+    }
+
     const messages: ChatCompletionMessageParam[] = [
       {
         role: "system",
@@ -51,16 +55,18 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       }
     ];
 
+    const prevMessages = userMessage.references[0] ? await getPreviouseMessages(userMessage.references[0]): null;
     if(prevMessages && prevMessages.length > 0) {
-      messages.push(
-        ...prevMessages.map(msg => ({
+      for(const msg of prevMessages) {
+        messages.push({
           role: msg.role,
           content: decrypt(msg.content)
-        }))
-      );
+        });
+      }
     }
 
-    messages.push({
+    // Add the current user message unless it is already included in previous messages
+    (!prevMessages || prevMessages.length == 0) && messages.push({
       role: "user",
       content: content
     });
@@ -90,11 +96,6 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
     const message = parsed.category
     if(!message) {
       throw new Error("Failed to classify user intent");
-    }
-
-    const userMessage = await getMessageById(id);
-    if(!userMessage) {
-      throw new Error("Failed to fetch user message");
     }
 
     const emailId = userMessage.emailId
