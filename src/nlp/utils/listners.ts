@@ -2,9 +2,11 @@ import { publish } from "@/events/broker";
 import { nlpClient } from "../client";
 import { getEmailContent, storeSummary } from "./helpers";
 import {classifier, summerizer } from "./systemPrompt";
-import { getMessageById } from "@/db/queries/messages";
+import { getMessageById, getPreviouseMessages } from "@/db/queries/messages";
 import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
+import { decrypt } from "@/utils/encryption";
+import { ChatCompletionMessageParam } from "openai/resources";
 
 export async function summerizeEmail({ id }: { id: string }) {
   try {
@@ -41,18 +43,31 @@ export async function summerizeEmail({ id }: { id: string }) {
 
 export async function classifyUserIntent({ id, content }: { id: string, content: string }) {
   try {
+    const prevMessages = await getPreviouseMessages(id);
+    const messages: ChatCompletionMessageParam[] = [
+      {
+        role: "system",
+        content: classifier
+      }
+    ];
+
+    if(prevMessages && prevMessages.length > 0) {
+      messages.push(
+        ...prevMessages.map(msg => ({
+          role: msg.role,
+          content: decrypt(msg.content)
+        }))
+      );
+    }
+
+    messages.push({
+      role: "user",
+      content: content
+    });
+
     const response = await nlpClient.chat.completions.create({
       model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: classifier
-          },
-          {
-            role: "user",
-            content: content
-          }
-        ],
+        messages: messages,
       response_format: zodResponseFormat(  
         z.object({  
           category: z.enum(['compose', 'edit', 'send', 'move', 'other']),  
