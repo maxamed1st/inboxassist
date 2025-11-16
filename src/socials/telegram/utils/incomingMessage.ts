@@ -7,7 +7,7 @@ import { message } from "telegraf/filters";
 export default async function handleIncomingMessage() {
   bot.start(async (ctx) => {
 
-    const user = await initializeUser(ctx.from.id.toString() || ctx.chat.id.toString());
+    const user = await initializeUser(ctx.chat.id.toString());
 
     let messageText;
     switch(user.isNewUser) {
@@ -22,7 +22,7 @@ export default async function handleIncomingMessage() {
     await ctx.reply(messageText);
   });
 
-  bot.command("connect", async (ctx) => connectEmail(ctx.from.id.toString() || ctx.chat.id.toString()));
+  bot.command("connect", async (ctx) => connectEmail(ctx.chat.id.toString()));
 
   bot.on(message("text"), async (ctx) => {
     // store user message

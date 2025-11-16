@@ -6,7 +6,7 @@ import { encrypt } from "@/utils/encryption";
 export async function storeMessage(message: Message, role: "system" | "user" | "assistant", emailId?: string) {
   try {
     //get userId from telegram user
-    const telegramUserId = ('from' in message ? message.from?.id : message.chat?.id)?.toString();
+    const telegramUserId = message.chat.id.toString();
     if (!telegramUserId) {
       throw new Error("No user ID found in message");
     }
