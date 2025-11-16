@@ -65,6 +65,11 @@ export async function sendEmail({ emailId }: { emailId: string }){
     throw new Error(`Failed to fetch email: ${emailId}`);
   }
 
+  if(email.status !== "draft") {
+    console.error(`Email is not a draft: ${emailId}`);
+    return;
+  }
+
   const account = await getAccountById(email.accountId!)
 
   if(!account) {
