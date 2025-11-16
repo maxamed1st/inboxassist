@@ -6,8 +6,6 @@ import { message } from "telegraf/filters";
 
 export default async function handleIncomingMessage() {
   bot.start(async (ctx) => {
-    // store user message
-    await storeMessage(ctx.message, "user");
 
     const user = await initializeUser(ctx.from.id.toString() || ctx.chat.id.toString());
 
@@ -21,8 +19,7 @@ export default async function handleIncomingMessage() {
         messageText = "Welcome to inboxassist - Your frictionless email assist.  \n Run /connect to start managing your emails";
         break;
     }
-    const message = await ctx.reply(messageText);
-    await storeMessage(message, "system");
+    await ctx.reply(messageText);
   });
 
   bot.command("connect", async (ctx) => connectEmail(ctx.from.id.toString() || ctx.chat.id.toString()));
