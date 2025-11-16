@@ -1,4 +1,3 @@
-import { initializeUser } from "@/socials/telegram/utils/helpers";
 import { getUserIdByTelegramId } from "@/db/queries/connections"
 import { getMessageByPlatformMessageId, insertMessage } from "@/db/queries/messages";
 import { Message } from "telegraf/types";
@@ -12,14 +11,9 @@ export async function storeMessage(message: Message, role: "system" | "user" | "
       throw new Error("No user ID found in message");
     }
 
-    let user;
-    user = await getUserIdByTelegramId(telegramUserId);
+    const user = await getUserIdByTelegramId(telegramUserId);
 
     if(!user) {
-        user = await initializeUser(telegramUserId);
-    }
-
-    if(!user.id) {
         throw new Error(`Could not get userID for telegram user: ${telegramUserId}`);
     }
 
