@@ -49,6 +49,8 @@ export async function storeMessage(message: Message, role: "system" | "user" | "
       }
     }
 
+    const threadId = references[0] ? references[0] : replyToId ? replyToId : null;
+
     //prepare message data
     const messageDate = new Date(message.date);
 
@@ -58,6 +60,7 @@ export async function storeMessage(message: Message, role: "system" | "user" | "
       emailId,
       replyToId,
       references,
+      threadId,
       content: encrypt(content),
       role,
       createdAt: messageDate,
