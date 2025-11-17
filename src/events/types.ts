@@ -9,15 +9,15 @@ export type Channels =
 export interface MessagePayloads {
   // chat messages
   "message:user": { id: string, content: string };
-  "message:assistant": { id: string, content: string, emailId?: string };
-  "message:system": { id: string, content: string };
+  "message:assistant": { id: string, content: string, emailId?: string, threadId?: string };
+  "message:system": { id: string, content: string, threadId?: string };
   "message:prune": { userId: string };
 
   // user triggered actions
-  "action:compose": { id: string, emailId?: string, userMessage: string }; // emailId in case of composing a reply
-  "action:edit": { id: string, emailId: string, userMessage: string };
-  "action:send": { id: string, emailId: string };
-  "action:move": { id: string, emailId: string, folder: string };
+  "action:compose": { id: string, emailId?: string, userMessage: string, threadId?: string }; // emailId in case of composing a reply
+  "action:edit": { id: string, emailId: string, userMessage: string, threadId?: string };
+  "action:send": { id: string, emailId: string, threadId?: string };
+  "action:move": { id: string, emailId: string, folder: string, threadId?: string };
 
   // email events
   "email:new": { id: string };
