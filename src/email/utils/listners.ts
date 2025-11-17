@@ -121,15 +121,17 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
 
     if(!moved) {
       const boxes = await client.list()
-      await publish("message:system", {
+      await publish("message:assistant", {
         id: email.userId,
         content: `Failed to move email to: ${folder}, Folder does not exist. \nHere are the existing folders:\n\n${boxes.map(item => item.name).join(' ')}`,
+        emailId: email.id,
         threadId
       })
     } else {
-        await publish("message:system", {
+        await publish("message:assistant", {
           id: email.userId,
           content: `Email has been moved to folder: ${folder}`,
+          emailId: email.id,
           threadId
         });
     }
