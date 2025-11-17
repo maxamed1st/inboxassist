@@ -1,4 +1,4 @@
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { db } from "../client";
 import { messagesTable } from "../schema";
 
@@ -58,7 +58,11 @@ export async function getPreviouseMessages(threadId: string) {
     const res = await db
       .select({ content: messagesTable.content, role: messagesTable.role })
       .from(messagesTable)
-      .where(eq(messagesTable.threadId, threadId));
+      .where(
+        or(
+          eq(messagesTable.id, threadId),
+          eq(messagesTable.threadId, threadId)
+      ))
 
     return res;
   } catch(err) {
