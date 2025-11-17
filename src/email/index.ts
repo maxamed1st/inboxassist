@@ -1,5 +1,7 @@
 import { subscribe } from "@/events/broker";
-import { connect, disconnect, moveEmail, pruneEmails, sendEmail } from "@/email/utils/listners";
+import { connect, disconnect, pruneEmails } from "@/email/listners/commands";
+import { sendEmail } from "@/email/listners/sendEmail"
+import { moveEmail } from "@/email/listners/moveEmail"
 
 export default async function main() {
   /* register event listners */
