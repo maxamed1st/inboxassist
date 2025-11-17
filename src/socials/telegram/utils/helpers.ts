@@ -41,3 +41,12 @@ export async function connectEmail(telegramUserId: string) {
     }
     await publish("email:connect", { userId: user.id, platform: "gmail"})
 }
+
+export async function disconnectEmail(telegramUserId: string) {
+    const user = await getUserIdByTelegramId(telegramUserId);
+    if(!user) {
+        await bot.telegram.sendMessage(telegramUserId, "You have no email connected");
+        return;
+    }
+    await publish("email:disconnect", { userId: user.id})
+}
