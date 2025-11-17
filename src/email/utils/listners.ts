@@ -58,7 +58,7 @@ export async function disconnect({ userId }: { userId: string }){
   });
 }
 
-export async function sendEmail({ emailId }: { emailId: string }){
+export async function sendEmail({ emailId, threadId }: { emailId: string, threadId?: string }){
   const email = await getEmailById(emailId);
 
   if(!email) {
@@ -91,11 +91,12 @@ export async function sendEmail({ emailId }: { emailId: string }){
 
   await publish("message:system", {
       id: email.userId!,
-      content: "Email sent to" + decrypt(email.to)
+      content: "Email sent to" + decrypt(email.to),
+      threadId
   });
 }
 
-export async function moveEmail({ emailId, folder }: { emailId: string, folder: string }){
+export async function moveEmail({ emailId, folder, threadId }: { emailId: string, folder: string, threadId?: string }){
   const email = await getEmailById(emailId);
   if (!email) {
     throw new Error(`Failed to get email from db: ${emailId}`);
@@ -122,12 +123,14 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
       const boxes = await client.list()
       await publish("message:system", {
         id: email.userId,
-        content: `Failed to move email to: ${folder}, Folder does not exist. \nHere are the existing folders:\n\n${boxes.map(item => item.name).join(' ')}`
+        content: `Failed to move email to: ${folder}, Folder does not exist. \nHere are the existing folders:\n\n${boxes.map(item => item.name).join(' ')}`,
+        threadId
       })
     } else {
         await publish("message:system", {
           id: email.userId,
-          content: `Email has been moved to folder: ${folder}`
+          content: `Email has been moved to folder: ${folder}`,
+          threadId
         });
     }
   } catch (err) {

@@ -2,7 +2,7 @@ import { getTelegramUserId } from "@/db/queries/connections";
 import { bot } from "@/socials/telegram/client";
 import { storeMessage } from "./storeMessage";
 
-export async function sendMessage({ id, content, emailId }: { id: string, content: string, emailId?: string }) {
+export async function sendMessage({ id, content, emailId, threadId }: { id: string, content: string, emailId?: string, threadId?: string }) {
   const telegramUser = await getTelegramUserId(id)
   if (!telegramUser) {
     console.error("Could not find Telegram connection for:", id);
@@ -16,7 +16,7 @@ export async function sendMessage({ id, content, emailId }: { id: string, conten
     throw new Error("Failed to send message to telegram user");
   }
 
-  const storedMessage = await storeMessage(message, "assistant", emailId);
+  const storedMessage = await storeMessage(message, "assistant", emailId, threadId);
 
   if (!storedMessage) {
     console.error("Failed to store message in database");
