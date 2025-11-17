@@ -72,7 +72,7 @@ export async function deleteAccountByUserId(userId: string) {
     const [ res ] = await db
       .delete(accountsTable)
       .where(eq(accountsTable.userId, userId))
-      .returning({providerAccountId: accountsTable.providerAccountId})
+      .returning({id: accountsTable.id})
 
     return res;
   } catch(err) {

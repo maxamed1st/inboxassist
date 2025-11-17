@@ -49,10 +49,8 @@ export async function disconnect({ userId }: { userId: string }){
     throw new Error(`Failed to disconnect email for: ${userId}`);
   }
 
-  const emailAddress = decrypt(res.providerAccountId);
-
-  await stopRefereshingTokens(emailAddress); 
-  await cancelEmailSync(emailAddress);
+  await stopRefereshingTokens(res.id); 
+  await cancelEmailSync(res.id);
 
   await publish("message:system", {
     id: userId,
