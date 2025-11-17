@@ -117,23 +117,32 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
 
   const lock = await client.getMailboxLock('INBOX');
   try {
-    const moved = await client.messageMove(email.externalEmailId, folder);
+    const boxes = await client.list()
+    let targetBox = boxes.find(b => b.name.trim().toLowerCase() == folder.trim().toLowerCase()) || boxes.find(b => b.name.trim().toLowerCase().includes(folder.trim().toLowerCase())) 
 
-    if(!moved) {
-      const boxes = await client.list()
+    if(!targetBox) {
       await publish("message:assistant", {
         id: email.userId,
         content: `Failed to move email to ${folder}, Folder does not exist. \n\nHere are the existing folders:\n${boxes.map(item => item.name).join(', ')}`,
         emailId: email.id,
         threadId
-      })
-    } else {
-        await publish("message:assistant", {
-          id: email.userId,
-          content: `Email has been moved to folder: ${folder}`,
-          emailId: email.id,
-          threadId
-        });
+      });
+      return;
+    }
+
+    const targetPath = targetBox.path;
+    const moved = await client.messageMove(email.externalEmailId, targetPath);
+
+    if(!moved) {
+      throw new Error(`Failed to move email`);
+    }
+    else {
+      await publish("message:assistant", {
+        id: email.userId,
+        content: `Email has been moved to folder: ${targetBox.name}`,
+        emailId: email.id,
+        threadId
+      });
     }
   } catch (err) {
     throw new Error(`Failed to move email: ${err}`)
