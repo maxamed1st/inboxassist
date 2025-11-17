@@ -119,9 +119,10 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
     const moved = await client.messageMove(email.externalEmailId, folder);
 
     if(!moved) {
+      const boxes = await client.list()
       await publish("message:system", {
         id: email.userId,
-        content: `Failed to move email to: ${folder}, Folder does not exist.`
+        content: `Failed to move email to: ${folder}, Folder does not exist. \nHere are the existing folders:\n\n${boxes.map(item => item.name).join(' ')}`
       })
     } else {
         await publish("message:system", {
