@@ -58,11 +58,7 @@ export async function getPreviouseMessages(threadId: string) {
     const res = await db
       .select({ content: messagesTable.content, role: messagesTable.role })
       .from(messagesTable)
-      .where(
-        or(
-          eq(messagesTable.id, threadId),
-          sql`${messagesTable.references}->>0 = ${threadId}`
-        ));
+      .where(eq(messagesTable.threadId, threadId));
 
     return res;
   } catch(err) {

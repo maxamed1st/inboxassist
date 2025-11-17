@@ -21,7 +21,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       }
     ];
 
-    const prevMessages = userMessage.references[0] ? await getPreviouseMessages(userMessage.references[0]): null;
+    const prevMessages = userMessage.threadId ? await getPreviouseMessages(userMessage.threadId): null;
     if(prevMessages && prevMessages.length > 0) {
       for(const msg of prevMessages) {
         messages.push({
