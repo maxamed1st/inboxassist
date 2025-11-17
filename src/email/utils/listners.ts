@@ -116,16 +116,23 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
 
   const lock = await client.getMailboxLock('INBOX');
   try {
-    await client.messageMove(email.externalEmailId, folder);
+    const moved = await client.messageMove(email.externalEmailId, folder);
+
+    if(!moved) {
+      await publish("message:system", {
+        id: email.userId,
+        content: `Failed to move email to: ${folder}, Folder does not exist.`
+      })
+    } else {
+        await publish("message:system", {
+          id: email.userId,
+          content: `Email has been moved to folder: ${folder}`
+        });
+    }
   } catch (err) {
     throw new Error(`Failed to move email: ${err}`)
   } finally {
     lock.release();
     await client.logout();
   }
-
-  await publish("message:system", {
-    id: email.userId,
-    content: `Email has been moved to folder: ${folder}`
-  });
 }
