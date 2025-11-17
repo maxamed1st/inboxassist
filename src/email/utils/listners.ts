@@ -123,7 +123,7 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
       const boxes = await client.list()
       await publish("message:assistant", {
         id: email.userId,
-        content: `Failed to move email to: ${folder}, Folder does not exist. \nHere are the existing folders:\n\n${boxes.map(item => item.name).join(' ')}`,
+        content: `Failed to move email to ${folder}, Folder does not exist. \n\nHere are the existing folders:\n${boxes.map(item => item.name).join(', ')}`,
         emailId: email.id,
         threadId
       })
