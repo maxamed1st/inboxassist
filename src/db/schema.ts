@@ -91,6 +91,8 @@ export const messagesTable = pgTable("messages", {
     .references((): any => messagesTable.id, { onDelete: "set null" }),
   platformMessageId: varchar({ length: 255 }),
   references: jsonb().default(sql`'[]'::jsonb`).notNull().$type<string[]>(),
+  threadId: uuid()
+    .references((): any => messagesTable.id, { onDelete: "set null" }),
   content: varchar({ length: 4096 }).notNull(),
   role: varchar({ length: 50 }).notNull().$type<"user" | "assistant" | "system">(),
   createdAt: timestamp().notNull(),
