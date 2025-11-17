@@ -21,7 +21,8 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       }
     ];
 
-    const prevMessages = userMessage.threadId ? await getPreviouseMessages(userMessage.threadId): null;
+    const threadId = userMessage.threadId ?? undefined;
+    const prevMessages = threadId ? await getPreviouseMessages(threadId): null;
     if(prevMessages && prevMessages.length > 0) {
       for(const msg of prevMessages) {
         messages.push({
@@ -71,7 +72,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
         throw new Error(`EmailId missing for compose/edit action ${id}`);
       }
 
-      publish("action:compose", { id, emailId, userMessage: content })
+      publish("action:compose", { id, emailId, userMessage: content, threadId })
     }
 
     else if (message === "send") {
@@ -79,7 +80,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
         throw new Error(`EmailId missing for send action ${id}`);
       }
       
-      publish("action:send", { id, emailId })
+      publish("action:send", { id, emailId, threadId })
     }
 
     else if (message === "move") {
@@ -88,7 +89,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       }
       
       const folder = parsed.folder;
-      publish("action:move", { id, emailId, folder });
+      publish("action:move", { id, emailId, folder, threadId });
     } 
 
     else {
