@@ -110,7 +110,7 @@ export async function moveEmail({ emailId, folder }: { emailId: string, folder: 
   const client = imapClient({
     host: "imap.gmail.com",
     accessToken: decrypt(account.accessToken),
-    emailAddress: account.providerAccountId,
+    emailAddress: decrypt(account.providerAccountId),
   });
   await client.connect();
 
