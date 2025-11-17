@@ -1,8 +1,8 @@
 import { googleOauth2Client } from "@/email/clients";
 import { getAccountByUserId, insertAccount, updateAccountById } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
-import { keepTokensFresh } from "../cron/queue/refreshTokens";
-import { syncEmails } from "../cron/queue/fetchNewEmails";
+import { keepTokensFresh } from "@/email/cron/refreshTokens";
+import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
 
 export async function gmailCallback(req: Request, res: Response) {

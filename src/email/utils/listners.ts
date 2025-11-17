@@ -2,8 +2,8 @@ import { publish } from "@/events/broker";
 import { googleOauth2Client, imapClient, transporter } from "@/email/clients";
 import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountById } from "@/db/queries/accounts";
-import { cancelEmailSync } from "../cron/queue/fetchNewEmails";
-import { stopRefereshingTokens } from "../cron/queue/refreshTokens";
+import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
+import { stopRefereshingTokens } from "@/email/cron/refreshTokens";
 import { decrypt } from "@/utils/encryption";
 
 export async function connect({ userId, platform }: { userId: string, platform: string }){
