@@ -117,6 +117,7 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
 
   const lock = await client.getMailboxLock('INBOX');
   try {
+    // find correct path
     const boxes = await client.list()
     let targetBox = boxes.find(b => b.name.trim().toLowerCase() == folder.trim().toLowerCase()) || boxes.find(b => b.name.trim().toLowerCase().includes(folder.trim().toLowerCase())) 
 
@@ -131,7 +132,12 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
     }
 
     const targetPath = targetBox.path;
-    const moved = await client.messageMove(email.externalEmailId, targetPath);
+    // get the correct uid
+    const messageId = email.externalEmailId;
+    const uids = await client.search({ header: {"Message-ID": messageId }});
+    if(!uids || !uids[0]) throw new Error(`Failed to find email to move`);
+
+    const moved = await client.messageMove(uids[0], targetPath);
 
     if(!moved) {
       throw new Error(`Failed to move email`);
