@@ -72,7 +72,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
         throw new Error(`EmailId missing for compose/edit action ${id}`);
       }
 
-      publish("action:compose", { id, emailId, userMessage: content, threadId })
+      publish(`action:${message as "compose" | "edit"}`, { id, emailId, userMessage: content, threadId })
     }
 
     else if (message === "send") {
