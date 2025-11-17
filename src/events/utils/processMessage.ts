@@ -1,7 +1,6 @@
 import { redisClient } from "@/events/client";
 import type { Channels, MessagePayloads } from "@/events/types";
 
-const DLQ_SUFFIX = ":dlq";
 const MAX_RETRIES = 3;
 
 /**
@@ -28,8 +27,7 @@ export async function processMessage<T extends Channels>(
     console.error(`[ERROR] ${group} failed message ${msg.id}:`, err);
 
     if (retries >= MAX_RETRIES) {
-      console.warn(`[DLQ] ${group} -> ${msg.id}`);
-      await redisClient.xadd(`${stream}${DLQ_SUFFIX}`, "*", "data", raw || "");
+      console.error(`[DLQ] ${group} -> ${msg.id}`);
       await redisClient.xack(stream, group, msg.id);
     } else {
       const payload = JSON.stringify({
