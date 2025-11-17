@@ -1,0 +1,37 @@
+import { publish } from "@/events/broker";
+import { nlpClient } from "../client";
+import { getEmailContent, storeSummary } from "@/nlp/utils/helpers";
+import { summerizer } from "@/nlp/utils/systemPrompt";
+
+export async function summerizeEmail({ id }: { id: string }) {
+  try {
+  const { userId, emailId, from, subject, content } = await getEmailContent(id);
+  const response = await nlpClient.chat.completions.create({
+    model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: summerizer
+        },
+        {
+          role: "user",
+          content: `from: ${from} \n\n subject: ${subject} \n\n content: ${content}`
+        }
+      ],
+      temperature: 0.3,
+      max_tokens: 200
+  });
+
+  const summary = response.choices[0]?.message.content;
+
+  if(!summary) {
+    throw new Error("Failed to get summary from nlp client");
+  }
+
+  await storeSummary(emailId, summary);
+
+  publish("message:assistant", { id: userId, emailId, content: `${from.replace(/['"]/g, '')} \n\n ${summary}` })
+  } catch(err) {
+    throw new Error(`Failed to summerize email ${id}: ${err}`)
+  }
+}
