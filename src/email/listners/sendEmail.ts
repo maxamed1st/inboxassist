@@ -48,9 +48,10 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
     return;
   }
 
-  await publish("message:system", {
+  await publish("message:assistant", {
       id: email.userId!,
       content: "Email sent to" + decrypt(email.to),
+      emailId: updatedEmail.id,
       threadId
   });
 }
