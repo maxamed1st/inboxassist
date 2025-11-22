@@ -1,6 +1,6 @@
 import { publish } from "@/events/broker";
 import { transporter } from "@/email/clients";
-import { getEmailById } from "@/db/queries/emails";
+import { getEmailById, updateEmailById } from "@/db/queries/emails";
 import { getAccountById } from "@/db/queries/accounts";
 import { decrypt } from "@/utils/encryption";
 
@@ -27,13 +27,21 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
       accessToken : decrypt(account.accessToken),
   });
 
-  client.sendMail({
+  const sent = await client.sendMail({
       from: decrypt(email.from),
       to: decrypt(email.to),
       subject: decrypt(email.subject),
       html: email.content.html ? decrypt(email.content.html) : "",
       text: email.content.text ? decrypt(email.content.text) : "",
   })
+
+  // update external emailId and status
+  const updatedEmail = await updateEmailById(emailId, {externalEmailId: sent.messageId, status: "sent"})
+
+  if(!updatedEmail) {
+    console.error(`Could not update email from draft to sent: ${emailId}`);
+    return;
+  }
 
   await publish("message:system", {
       id: email.userId!,
