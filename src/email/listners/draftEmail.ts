@@ -1,7 +1,7 @@
 import { getAccountByUserId } from "@/db/queries/accounts";
 import { getEmailById, insertEmail } from "@/db/queries/emails";
 import { publish } from "@/events/broker";
-import { encrypt } from "@/utils/encryption";
+import { decrypt, encrypt } from "@/utils/encryption";
 
 export async function createDraft({ id, content, inReplyToId, threadId }: { id: string, content: string, to?: string, inReplyToId?: string, threadId?: string }) {
   if(!inReplyToId) {
@@ -20,12 +20,18 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
     throw new Error(`Account doesnt exist for user ${id}`);
   }
 
+  // add sender to recipient list and remove reciever
+  let toAddresses: string[];
+  toAddresses = JSON.parse(decrypt(email.to));
+  toAddresses = toAddresses.filter( e => e !== decrypt(account.providerAccountId));
+  toAddresses.push(decrypt(email.from));
+
   const values = {
     userId: id,
     accountId: account.id,
     externalEmailId: encrypt(crypto.randomUUID()),
     from: account.providerAccountId,
-    to: email.from,
+    to: encrypt(JSON.stringify(toAddresses)),
     cc: email.cc,
     inReplyTo: email.externalEmailId,
     references: [ ...email.references, email.externalEmailId ],
