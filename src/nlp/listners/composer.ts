@@ -55,7 +55,7 @@ export async function composeEmail({ id, emailId, userMessage, threadId }: { id:
     throw new Error("Failed to get draft from nlp client");
   }
 
-  publish("message:user", { id: id, content: `${draft}` })
+  publish("email:composed", { id: id, content: `${draft}`, to: email?.from, inReplyToId: emailId, threadId })
   } catch(err) {
     throw new Error(`Failed to summerize email ${id}: ${err}`)
   }
