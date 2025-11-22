@@ -36,7 +36,12 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
   })
 
   // update external emailId and status
-  const updatedEmail = await updateEmailById(emailId, {externalEmailId: sent.messageId, status: "sent"})
+  const updatedEmail = await updateEmailById(emailId, {
+    externalEmailId: sent.messageId,
+    status: "sent",
+    date: new Date(),
+    updatedAt: new Date()
+  })
 
   if(!updatedEmail) {
     console.error(`Could not update email from draft to sent: ${emailId}`);
