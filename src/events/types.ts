@@ -22,7 +22,7 @@ export interface MessagePayloads {
   // email events
   "email:new": { id: string };
   "email:summarised": { id: string, content: string };
-  "email:composed": { id: string, content: string };
+  "email:composed": { id: string, content: string, to?: string, inReplyToId?: string, threadId?: string };
   "email:edited": { id: string, content: string };
   "email:sent": { id: string };
   "email:moved": { id: string };
