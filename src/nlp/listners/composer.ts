@@ -4,6 +4,7 @@ import { composer } from "@/nlp/utils/systemPrompt";
 import { getPreviouseMessages } from "@/db/queries/messages";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { decrypt } from "@/utils/encryption";
+import { getEmailContent } from "../utils/helpers";
 
 export async function composeEmail({ id, emailId, userMessage, threadId }: { id: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
@@ -13,6 +14,16 @@ export async function composeEmail({ id, emailId, userMessage, threadId }: { id:
         content: composer
       }
     ];
+
+    // add email to context
+    const email = emailId ? await getEmailContent(emailId) : null;
+
+    if(email) {
+      messages.push({
+        role: "system",
+        content: `from: ${email.from} \n\n subject: ${email.subject} \n\n content: ${email.content}`,
+      })
+    }
 
     // add previouse messages
     const prevMessages = threadId ? await getPreviouseMessages(threadId): null;
