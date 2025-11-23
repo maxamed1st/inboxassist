@@ -1,9 +1,10 @@
 import { publish } from "@/events/broker";
-import { googleOauth2Client } from "@/email/clients";
-import { deleteEmailsByUserId } from "@/db/queries/emails";
-import { deleteAccountByUserId } from "@/db/queries/accounts";
+import { googleOauth2Client, imapClient } from "@/email/clients";
+import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
+import { deleteAccountByUserId, getAccountByUserId } from "@/db/queries/accounts";
 import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
 import { stopRefereshingTokens } from "@/email/cron/refreshTokens";
+import { decrypt } from "@/utils/encryption";
 
 export async function connect({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
@@ -55,4 +56,63 @@ export async function disconnect({ userId }: { userId: string }){
     id: userId,
     content: "Email logged out"
   });
+}
+
+export async function toggleEmailReadStatus({userId, emailId, threadId }: { userId: string, emailId: string, threadId?: string }) {
+  const email = await getEmailById(emailId);
+
+  if(!email) {
+    throw new Error(`Email not found ${emailId}`);
+  }
+
+  const account = await getAccountByUserId(userId);
+
+  if(!account) {
+    throw new Error(`User account could not be found ${userId}`)
+  }
+
+  const client = imapClient({
+    host: "imap.gmail.com",
+    emailAddress: decrypt(account.providerAccountId),
+    accessToken: decrypt(account.accessToken),
+  });
+
+  await client.connect();
+
+  try {
+    const uid = await client.search({header: { "message-id": email.externalEmailId }});
+    
+    if(!uid || !uid[0]) {
+      throw new Error(`Email not found in imap server: ${emailId}`);
+    }
+
+    const message = await client.fetchOne(uid[0], { source: false, envelope: false });
+
+    if(!message) {
+      throw new Error(`Email not found in imap server: ${emailId}`);
+    }
+
+    const isSeen = message.flags?.has("//seen");
+
+    if(isSeen) {
+      await client.messageFlagsRemove(message.uid, ["//seen"]);
+      await publish("message:assistant", { 
+        id: userId,
+        content: "The email has been marked read",
+        emailId,
+        threadId
+      });
+    }
+    else {
+      await client.messageFlagsAdd(message.uid, ["//seen"]);
+      await publish("message:assistant", { 
+        id: userId,
+        content: "The email has been marked unread",
+        emailId,
+        threadId
+      });
+    }
+  } catch(err) {
+    throw new Error(`Failed to toggle seen flag: ${emailId}`)
+  }
 }
