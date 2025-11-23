@@ -100,6 +100,10 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       await publish("email:toggleReadStatus", { userId: userMessage.userId, emailId, threadId });
     }
 
+    else if (message === "other") {
+      await publish("action:unknown", { userId: userMessage.userId, emailId, userMessage: content, threadId });
+    }
+
     else {
       console.log("undefined user intent", result);
     }
