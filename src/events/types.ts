@@ -2,7 +2,7 @@ export type Channels =
   "message:user" | "message:assistant" | "message:system" | "message:prune" |
   "action:compose" | "action:send" | "action:edit" | "action:move" |
   "email:new" | "email:summarised" | "email:sent" | "email:moved" |
-  "email:composed" | "email:edited" |
+  "email:composed" | "email:edited" | "email:toggleReadStatus" |
   "email:connect" | "email:disconnect" | "email:prune" |
   "billing:subscribe" | "billing:manage";
 
@@ -26,6 +26,7 @@ export interface MessagePayloads {
   "email:edited": { id: string, content: string };
   "email:sent": { id: string };
   "email:moved": { id: string };
+  "email:toggleReadStatus": { userId: string, emailId: string, threadId?: string }
   "email:connect": { userId: string, platform: string };
   "email:disconnect": { userId: string };
   "email:prune": { userId: string };
