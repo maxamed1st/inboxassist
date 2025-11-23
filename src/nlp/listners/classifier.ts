@@ -43,7 +43,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
         messages: messages,
       response_format: zodResponseFormat(  
         z.object({  
-          category: z.enum(['compose', 'edit', 'send', 'move', 'other']),  
+          category: z.enum(['compose', 'edit', 'send', 'move', 'toggleReadStatus', 'other']),  
           folder: z.string().optional().nullable()  
         }),  
         'classification'  
@@ -91,6 +91,14 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       const folder = parsed.folder;
       publish("action:move", { id, emailId, folder, threadId });
     } 
+
+    else if (message === "toggleReadStatus") {
+      if(!emailId) {
+        throw new Error(`EmailId missing for move action ${id}`);
+      }
+
+      await publish("email:toggleReadStatus", { userId: userMessage.userId, emailId, threadId });
+    }
 
     else {
       console.log("undefined user intent", result);
