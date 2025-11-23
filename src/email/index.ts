@@ -1,5 +1,5 @@
 import { subscribe } from "@/events/broker";
-import { connect, disconnect, pruneEmails } from "@/email/listners/commands";
+import { connect, disconnect, pruneEmails, toggleEmailReadStatus } from "@/email/listners/commands";
 import { sendEmail } from "@/email/listners/sendEmail"
 import { moveEmail } from "@/email/listners/moveEmail"
 import { createDraft } from "./listners/draftEmail";
@@ -12,4 +12,5 @@ export default async function main() {
   subscribe("action:send", "email", sendEmail);
   subscribe("action:move", "email", moveEmail);
   subscribe("email:composed", "email", createDraft);
+  subscribe("email:toggleReadStatus", "email", toggleEmailReadStatus);
 }
