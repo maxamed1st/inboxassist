@@ -29,7 +29,7 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
 
   const sent = await client.sendMail({
       from: decrypt(email.from),
-      to: decrypt(email.to),
+      to: JSON.parse(decrypt(email.to)),
       subject: decrypt(email.subject),
       html: email.content.html ? decrypt(email.content.html) : "",
       text: email.content.text ? decrypt(email.content.text) : "",
