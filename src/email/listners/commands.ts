@@ -113,6 +113,6 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
       });
     }
   } catch(err) {
-    throw new Error(`Failed to toggle seen flag: ${emailId}`)
+    throw new Error(`Failed to toggle seen flag: ${emailId}: ${err}`)
   }
 }
