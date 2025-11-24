@@ -9,12 +9,13 @@ export const googleOauth2Client = new OAuth2Client(
   process.env.GOOGLE_REDIRECT_URI!
 );
 
-export function transporter({ host, port = 465, emailAddress, accessToken, type = "OAuth2" }:
+export function transporter({ host, port = 587, emailAddress, accessToken, type = "OAuth2" }:
   { host: string, port?: number, emailAddress: string, accessToken: string, type?: "OAuth2" | "OAUTH2" | "oauth2"  }) {
     const options : SMTPTransport.Options = {
       host,
       port,
-      secure: true,
+      secure: false,
+      requireTLS: true,
       auth: {
         type,
         user: emailAddress,
