@@ -7,7 +7,7 @@ import { encrypt } from "@/utils/encryption";
 
 export async function processEmail(message: FetchMessageObject, userId: string, accountId: string) {
   if (!message.source) {
-    return;
+    return false;
   }
   
   const parsed = await simpleParser(message.source);
@@ -52,15 +52,16 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
 
   if(existingEmail) {
     console.warn("Email already fetched");
-    return;
+    return false;
   }
 
   const emailId = await insertEmail(values);
 
   if (!emailId) {
     console.error("Failed to insert email in db:", values.externalEmailId);
-    return;
+    return false;
   }
 
   publish("email:new", { id: emailId.id } );
+  return true;
 }
