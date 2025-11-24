@@ -33,8 +33,8 @@ async function fetchNewEmails(host: string, accountId: string) {
     }
 
     for await (const message of client.fetch(uids, { source: true })) {
-      processEmail(message, account.userId, account.id);
-      client.messageFlagsAdd({ uid: message.uid }, ["//seen"]);
+      const processed = await processEmail(message, account.userId, account.id);
+      if(processed) await client.messageFlagsAdd(message.uid, ["\\seen"]);
     }
   } catch (error) {
     console.error("Error fetching email:", error);
