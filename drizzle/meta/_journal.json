@@ -71,6 +71,13 @@
       "when": 1764002729707,
       "tag": "0009_safe_sir_ram",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1764003795868,
+      "tag": "0010_clammy_paladin",
+      "breakpoints": true
     }
   ]
 }
