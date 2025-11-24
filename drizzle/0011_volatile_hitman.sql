@@ -1,0 +1,1 @@
+ALTER TABLE "emails" ALTER COLUMN "imapUid" SET NOT NULL;

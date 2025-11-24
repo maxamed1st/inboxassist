@@ -78,6 +78,13 @@
       "when": 1764003795868,
       "tag": "0010_clammy_paladin",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1764004195848,
+      "tag": "0011_volatile_hitman",
+      "breakpoints": true
     }
   ]
 }
