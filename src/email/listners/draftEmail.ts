@@ -24,7 +24,9 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
   let toAddresses: string[];
   toAddresses = JSON.parse(decrypt(email.to));
   toAddresses = toAddresses.filter( e => e !== decrypt(account.providerAccountId));
-  toAddresses.push(decrypt(email.from));
+  // extract email address
+  const recipient = decrypt(email.from).match(/<([^>]+)>/)?.[1] as string;
+  toAddresses.push(recipient);
 
   const values = {
     userId: id,
