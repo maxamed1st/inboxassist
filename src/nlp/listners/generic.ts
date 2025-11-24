@@ -1,15 +1,13 @@
+import { getPreviouseMessages } from "@/db/queries/messages";
 import { publish } from "@/events/broker";
 import { nlpClient } from "@/nlp/client";
 import { getEmailContent } from "@/nlp/utils/helpers";
 import { generic } from "@/nlp/utils/systemPrompt";
+import { decrypt } from "@/utils/encryption";
+import { ChatCompletionMessageParam } from "openai/resources";
 
 export async function genericGPT({ userId, emailId, userMessage, threadId }: { userId: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
-    const userMessage = await getMessageById(id);
-    if(!userMessage) {
-      throw new Error("Failed to fetch user message");
-    }
-
     const messages: ChatCompletionMessageParam[] = [
       {
         role: "system",
@@ -17,14 +15,13 @@ export async function genericGPT({ userId, emailId, userMessage, threadId }: { u
       }
     ];
     // add email as contenxt
-    const { from, subject, content } = emailId ? await getEmailContent(emailId) : null;
-    messages.push({
+    const email = emailId ? await getEmailContent(emailId) : null;
+    email && messages.push({
       role: "user",
-      content: `from: ${from} \n\n subject: ${subject} \n\n content: ${content}`
+      content: `from: ${email.from} \n\n subject: ${email.subject} \n\n content: ${email.content}`
     });
 
     // add previouse messages to context
-    const threadId = userMessage.threadId ?? undefined;
     const prevMessages = threadId ? await getPreviouseMessages(threadId): null;
     if(prevMessages && prevMessages.length > 0) {
       for(const msg of prevMessages) {
@@ -38,7 +35,7 @@ export async function genericGPT({ userId, emailId, userMessage, threadId }: { u
     // Add the current user message unless it is already included in previous messages
     (!prevMessages || prevMessages.length == 0) && messages.push({
       role: "user",
-      content: content
+      content: userMessage
     });
 
     
