@@ -1,6 +1,6 @@
 import { publish } from "@/events/broker";
 import { imapClient } from "@/email/clients";
-import { getEmailById } from "@/db/queries/emails";
+import { getEmailById, updateEmailById } from "@/db/queries/emails";
 import { getAccountById } from "@/db/queries/accounts";
 import { decrypt } from "@/utils/encryption";
 
@@ -52,6 +52,18 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
         emailId: email.id,
         threadId
       });
+
+      // Update local uid
+      const uidMap = moved.uidMap;
+      if(!uidMap || !uidMap.has(email.imapUid)) {
+        console.error("Failed to get new imap uid after move command");
+        return;
+      }
+
+      const updated = await updateEmailById(email.id, { imapUid: uidMap.get(email.imapUid) });
+      if(!updated) {
+        console.error("Failed to insert the new imap uid");
+      }
     }
   } catch (err) {
     throw new Error(`Failed to move email: ${err}`)
