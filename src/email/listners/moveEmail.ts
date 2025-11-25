@@ -40,12 +40,7 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
     }
 
     const targetPath = targetBox.path;
-    // get the correct uid
-    const messageId = email.externalEmailId;
-    const uids = await client.search({ header: {"Message-ID": messageId }});
-    if(!uids || !uids[0]) throw new Error(`Failed to find email to move`);
-
-    const moved = await client.messageMove(uids[0], targetPath);
+    const moved = await client.messageMove(email.imapUid, targetPath);
 
     if(!moved) {
       throw new Error(`Failed to move email`);
