@@ -63,6 +63,6 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
     return false;
   }
 
-  publish("email:new", { id: emailId.id } );
+  await publish("email:new", { id: emailId.id } );
   return true;
 }
