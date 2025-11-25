@@ -90,7 +90,7 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
     const isSeen = message.flags?.has("//seen");
 
     if(isSeen) {
-      await client.messageFlagsRemove(email.imapUid, ["\\seen"]);
+      await client.messageFlagsRemove(email.imapUid, ["\\seen"], { uid: true });
       await publish("message:assistant", { 
         id: userId,
         content: "The email has been marked read",
@@ -99,7 +99,7 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
       });
     }
     else {
-      await client.messageFlagsAdd(email.imapUid, ["\\seen"]);
+      await client.messageFlagsAdd(email.imapUid, ["\\seen"], { uid: true });
       await publish("message:assistant", { 
         id: userId,
         content: "The email has been marked unread",
