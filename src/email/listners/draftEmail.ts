@@ -52,5 +52,5 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
     throw new Error(`Could not insert draft`);
   }
 
-  publish("message:assistant", { id, emailId: draft.id, content, threadId })
+  publish("message:assistant", { id, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
 }
