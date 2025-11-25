@@ -78,9 +78,10 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
   });
 
   await client.connect();
+  const lock = await client.getMailboxLock('INBOX');
 
   try {
-    const message = await client.fetchOne(email.imapUid, { source: false, envelope: false });
+    const message = await client.fetchOne(email.imapUid, { source: false, envelope: false }, { uid: true });
 
     if(!message) {
       throw new Error(`Could not fetch email from imap server: ${emailId}`);
@@ -108,5 +109,8 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
     }
   } catch(err) {
     throw new Error(`Failed to toggle seen flag: ${emailId}: ${err}`)
+  } finally {
+    lock.release();
+    await client.logout();
   }
 }
