@@ -32,6 +32,7 @@ export const composer = `
 You are part of inboxassist - a frictionless email assistant. \n
 Your job is to compose a reply to an email.\n 
 The email to be replied to and the conversation with the user that is replying is available as context.
+If the email in the context is a draft then an email has already been composed and your job is to edit based on the users message
 `
 
 export const generic = `
