@@ -9,5 +9,6 @@ export default async function main() {
   subscribe("email:new", "nlp", summerizeEmail)
   subscribe("message:user", "nlp", classifyUserIntent)
   subscribe("action:compose", "nlp", composeEmail)
+  subscribe("action:edit", "nlp", composeEmail)
   subscribe("action:unknown", "nlp", genericGPT);
 }

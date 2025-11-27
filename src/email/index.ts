@@ -12,5 +12,6 @@ export default async function main() {
   subscribe("action:send", "email", sendEmail);
   subscribe("action:move", "email", moveEmail);
   subscribe("email:composed", "email", createDraft);
+  subscribe("email:edited", "email", createDraft);
   subscribe("email:toggleReadStatus", "email", toggleEmailReadStatus);
 }
