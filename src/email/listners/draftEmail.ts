@@ -1,5 +1,5 @@
 import { getAccountByUserId } from "@/db/queries/accounts";
-import { getEmailById, insertEmail } from "@/db/queries/emails";
+import { getEmailById, insertEmail, updateEmailById } from "@/db/queries/emails";
 import { publish } from "@/events/broker";
 import { decrypt, encrypt } from "@/utils/encryption";
 
@@ -53,4 +53,14 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
   }
 
   publish("message:assistant", { id, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
+}
+
+export async function updateDraft({ id, content, threadId }: { id: string, content: string, threadId?: string }) {
+  const updated = await updateEmailById(id, { content: { text: content } });
+
+  if(!updated) {
+    throw new Error(`Failed to update draft: ${id}`);
+  }
+
+  await publish("message:assistant", { id: updated.userId, emailId: updated.userId, content: `${content} \n\n Send or edit further?`, threadId })
 }
