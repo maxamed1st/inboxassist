@@ -1,11 +1,10 @@
 import { publish } from "@/events/broker";
 import { nlpClient } from "@/nlp/client";
 import {classifier } from "@/nlp/utils/systemPrompt";
-import { getMessageById, getPreviouseMessages } from "@/db/queries/messages";
+import { getMessageById } from "@/db/queries/messages";
 import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
-import { decrypt } from "@/utils/encryption";
-import { ChatCompletionMessageParam } from "openai/resources";
+import { buildContext } from "../utils/context";
 
 export async function classifyUserIntent({ id, content }: { id: string, content: string }) {
   try {
@@ -14,28 +13,14 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       throw new Error("Failed to fetch user message");
     }
 
-    const messages: ChatCompletionMessageParam[] = [
-      {
-        role: "system",
-        content: classifier
-      }
-    ];
-
+    const emailId = userMessage.emailId ?? undefined;
     const threadId = userMessage.threadId ?? undefined;
-    const prevMessages = threadId ? await getPreviouseMessages(threadId): null;
-    if(prevMessages && prevMessages.length > 0) {
-      for(const msg of prevMessages) {
-        messages.push({
-          role: msg.role,
-          content: decrypt(msg.content)
-        });
-      }
-    }
 
-    // Add the current user message unless it is already included in previous messages
-    (!prevMessages || prevMessages.length == 0) && messages.push({
-      role: "user",
-      content: content
+    const { messages } = await buildContext({
+      systemPrompt: classifier,
+      userMessage: content,
+      emailId,
+      threadId
     });
 
     const response = await nlpClient.chat.completions.create({
@@ -65,7 +50,6 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       throw new Error("Failed to classify user intent");
     }
 
-    const emailId = userMessage.emailId
 
     if(message === "compose" || message === "edit") {
       if(!emailId) {
