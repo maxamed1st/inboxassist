@@ -48,3 +48,31 @@ export async function checkout({ userId }: { userId: string }) {
     throw error
   }
 }
+
+export async function customerPortal({ userId }: { userId: string }) {
+  try {
+    const subscription = await getSubscriptionByUserId(userId);
+
+    if (!subscription) {
+      throw new Error(`user doesn't exist: ${userId}`);
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: subscription.providerCustomerId,
+      return_url: process.env.STRIPE_PORTAL_CALLBACK,
+    });
+
+    if(!session.url) {
+      throw new Error(`redirect url missing`)
+    }
+
+    await publish("message:system", {
+      id: userId,
+      content: `[Manage Subscription](${session.url})`
+    });
+
+  } catch (error) {
+    console.error("Failed to create customer portal", error);
+    throw error
+  }
+}
