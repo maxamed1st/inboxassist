@@ -50,3 +50,21 @@ export async function disconnectEmail(telegramUserId: string) {
     }
     await publish("email:disconnect", { userId: user.id})
 }
+
+export async function subscribe(telegramUserId: string) {
+    const user = await getUserIdByTelegramId(telegramUserId);
+    if(!user) {
+        await bot.telegram.sendMessage(telegramUserId, "You need to initialize your assistent with /start command first.");
+        return;
+    }
+    await publish("billing:subscribe", { userId: user.id})
+}
+
+export async function manageSubscription(telegramUserId: string) {
+    const user = await getUserIdByTelegramId(telegramUserId);
+    if(!user) {
+        await bot.telegram.sendMessage(telegramUserId, "You have no active subscription");
+        return;
+    }
+    await publish("billing:manage", { userId: user.id})
+}

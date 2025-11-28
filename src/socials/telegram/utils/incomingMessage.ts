@@ -1,5 +1,5 @@
 import { bot } from "@/socials/telegram/client";
-import { connectEmail, disconnectEmail, initializeUser } from "@/socials/telegram/utils/helpers";
+import { connectEmail, disconnectEmail, initializeUser, manageSubscription, subscribe } from "@/socials/telegram/utils/helpers";
 import { storeMessage } from "./storeMessage";
 import { publish } from "@/events/broker";
 import { message } from "telegraf/filters";
@@ -25,6 +25,10 @@ export default async function handleIncomingMessage() {
   bot.command("connect", async (ctx) => connectEmail(ctx.chat.id.toString()));
 
   bot.command("disconnect", async (ctx) => disconnectEmail(ctx.chat.id.toString()));
+
+  bot.command("subscribe", async (ctx) => subscribe(ctx.chat.id.toString()));
+
+  bot.command("manage_subscription", async (ctx) => manageSubscription(ctx.chat.id.toString()));
 
   bot.on(message("text"), async (ctx) => {
     // store user message
