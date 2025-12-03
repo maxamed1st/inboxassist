@@ -4,20 +4,14 @@ import { publish } from "@/events/broker";
 
 export async function checkout({ userId }: { userId: string }) {
   try {
-    const subscription = await getSubscriptionByUserId(userId);
-    let trialdays;
+    const activeSubscription = await getActiveSubscriptionByUserId(userId);
 
-    if (subscription) {
-      const activeSubscription = await getActiveSubscriptionByUserId(userId);
-      if (activeSubscription) {
-        await publish("message:system", {
-          id: userId,
-          content: `You already have a subscription. You can manage it with /manage_subscription.`
-        });
-        return;
-      }
-    } else {
-      trialdays = 7;
+    if (activeSubscription) {
+      await publish("message:system", {
+        id: userId,
+        content: `You already have a subscription. You can manage it with /manage_subscription.`
+      });
+      return;
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -32,7 +26,6 @@ export async function checkout({ userId }: { userId: string }) {
       cancel_url: process.env.STRIPE_CANCEL_CALLBACK,
       subscription_data: {
         metadata: { userId },
-        trial_period_days: trialdays
       },
       automatic_tax: {
         enabled: true
