@@ -4,6 +4,7 @@ import type{ Request, Response } from "express";
 import { keepTokensFresh } from "@/email/cron/refreshTokens";
 import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
+import { getActiveSubscriptionByUserId } from "@/db/queries/billing";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -62,9 +63,12 @@ export async function gmailCallback(req: Request, res: Response) {
       throw new Error("gmail_callback: Failed to insert account")
     }
 
-    // create background jobs to referesh tokens and fetch emails
+    // create background jobs to referesh tokens
     await keepTokensFresh("google", account.id);
-    await syncEmails("imap.gmail.com", account.id);
+
+    // sync emails if user has active subscription
+    const subscriptionIsActtive = await getActiveSubscriptionByUserId(userId);
+    if(subscriptionIsActtive) await syncEmails("imap.gmail.com", account.id);
 
     return res.status(200).send();
   } catch (error) {
