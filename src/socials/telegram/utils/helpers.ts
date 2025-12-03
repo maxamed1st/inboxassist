@@ -2,6 +2,7 @@ import { getUserIdByTelegramId, insertConnection } from "@/db/queries/connection
 import { insertUser } from "@/db/queries/user"
 import { publish } from "@/events/broker";
 import { bot } from "../client";
+import { queueTrialCancelation } from "./cron/cancelTrial";
 
 export async function initializeUser(telegramUserId: string) {
     const existingUser = await getUserIdByTelegramId(telegramUserId);
@@ -11,12 +12,15 @@ export async function initializeUser(telegramUserId: string) {
     }
 
     // initialize new user
-    const user = await insertUser({ createdAt: new Date(), updatedAt: new Date()})
+    const user = await insertUser({ subscriptionStatus: "active", createdAt: new Date(), updatedAt: new Date()})
 
     if (!user) {
         console.error("Failed to create internal usear for telegram user:", telegramUserId);
         return { isNewUser: null };
     };
+
+    // queue trial cancelation in 7 days
+    await queueTrialCancelation(user!.id);
 
     const connection = await insertConnection({
         userId: user.id,
