@@ -1,11 +1,11 @@
 import type Stripe from "stripe";
 
-export function getSubscriptionData(subscription: Stripe.Subscription, userId: string) {
+export function getSubscriptionData(subscription: Stripe.Subscription) {
   const item = subscription.items.data[0]!
 
   return {
     id: subscription.id,
-    userId,
+    userId: subscription.metadata.userId!,
     providerCustomerId: subscription.customer as string,
     providerSubscriptionId: subscription.id,
     plan: "standard",

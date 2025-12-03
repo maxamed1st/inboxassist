@@ -18,6 +18,7 @@ export async function checkout({ userId }: { userId: string }) {
       success_url: process.env.STRIPE_SUCCESS_CALLBACK,
       cancel_url: process.env.STRIPE_CANCEL_CALLBACK,
       subscription_data: {
+        metadata: { userId },
         trial_period_days: trialdays
       },
       automatic_tax: {
