@@ -1,11 +1,24 @@
 import { stripe } from "@/billing/client";
-import { getSubscriptionByUserId } from "@/db/queries/billing";
+import { getActiveSubscriptionByUserId, getSubscriptionByUserId } from "@/db/queries/billing";
 import { publish } from "@/events/broker";
 
 export async function checkout({ userId }: { userId: string }) {
   try {
     const subscription = await getSubscriptionByUserId(userId);
-    const trialdays = subscription ? undefined : 7;
+    let trialdays;
+
+    if (subscription) {
+      const activeSubscription = await getActiveSubscriptionByUserId(userId);
+      if (activeSubscription) {
+        await publish("message:system", {
+          id: userId,
+          content: `You already have a subscription. You can manage it with /manage_subscription.`
+        });
+        return;
+      }
+    } else {
+      trialdays = 7;
+    }
 
     const session = await stripe.checkout.sessions.create({
       line_items: [
