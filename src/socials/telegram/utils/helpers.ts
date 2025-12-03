@@ -12,7 +12,7 @@ export async function initializeUser(telegramUserId: string) {
     }
 
     // initialize new user
-    const user = await insertUser({ subscriptionStatus: "active", createdAt: new Date(), updatedAt: new Date()})
+    const user = await insertUser({ subscriptionStatus: "trialing", createdAt: new Date(), updatedAt: new Date()})
 
     if (!user) {
         console.error("Failed to create internal usear for telegram user:", telegramUserId);
