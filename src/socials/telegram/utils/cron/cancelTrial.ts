@@ -1,5 +1,6 @@
 import { Queue, Worker } from "bullmq";
 import { getUserIdById, updateUserById } from "@/db/queries/user";
+import { publish } from "@/events/broker";
 
 async function cancelTrial(userId: string) {
   const user = await getUserIdById(userId);
@@ -17,6 +18,11 @@ async function cancelTrial(userId: string) {
   if (!updatedUser) {
     throw new Error(`Failed to cancel trial for user:${userId}`);
   }
+
+  await publish("message:system", {
+    id: userId,
+    content: "Your trial period has ended. Please use /subscribe to continue managing emails with the assitant.",
+  });
 }
 
 const cancelTrialQueue = new Queue("cancel-trial", { connection: { url: process.env.REDIS_URL! } });
