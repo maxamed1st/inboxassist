@@ -7,7 +7,7 @@ export const usersTable = pgTable("users", {
   email: text(),
   name: text(),
   subscriptionStatus: varchar({ length: 50 }),
-  subscriptionId: integer(),
+  subscriptionId: varchar({ length: 255 }),
   createdAt: timestamp().notNull(),
   updatedAt: timestamp().notNull(),
 });
