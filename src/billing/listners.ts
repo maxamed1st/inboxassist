@@ -1,8 +1,6 @@
-import Stripe from "stripe";
+import { stripe } from "@/billing/client";
 import { getSubscriptionByUserId } from "@/db/queries/billing";
 import { publish } from "@/events/broker";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function checkout({ userId }: { userId: string }) {
   try {
