@@ -24,6 +24,7 @@ export async function stripeWebhook(req: Request, res: Response) {
     const subscription = event.data.object as Stripe.Subscription;
     let values;
     let sub;
+    let updatedUser;
 
     switch (event.type) {
       case "customer.subscription.created":
@@ -37,7 +38,7 @@ export async function stripeWebhook(req: Request, res: Response) {
           console.error("Failed to insert subscription:");
           return res.status(500).send("Internal Server Error");
         }
-        const updatedUser = await updateUserById(sub.userId, {
+        updatedUser = await updateUserById(sub.userId, {
           subscriptionId: sub.id,
           subscriptionStatus: sub.status,
         });
@@ -56,6 +57,14 @@ export async function stripeWebhook(req: Request, res: Response) {
         });
         if (!sub) {
           console.error("Failed to update subscription:");
+          return res.status(500).send("Internal Server Error");
+        }
+        updatedUser = await updateUserById(sub.userId, {
+          subscriptionId: sub.id,
+          subscriptionStatus: sub.status,
+        });
+        if (!updatedUser) {
+          console.error("Failed to update user with subscription info:");
           return res.status(500).send("Internal Server Error");
         }
         break;
