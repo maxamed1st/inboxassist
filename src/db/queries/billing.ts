@@ -16,3 +16,21 @@ export async function getSubscriptionByUserId(userId: string) {
     return null
   }
 }
+
+export async function updateSubscriptionById(subscriptionId: string, values: Partial<typeof subscriptionsTable.$inferInsert>) {
+  try{
+    const [ res ] = await db
+      .update(subscriptionsTable)
+      .set({
+          ...values,
+      }
+      )
+      .where(eq(subscriptionsTable.id, subscriptionId))
+      .returning();
+
+    return res;
+  } catch(err) {
+    console.error("Failed to update subscription", err)
+    return null
+  }
+}
