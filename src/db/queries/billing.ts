@@ -2,6 +2,22 @@ import { db } from "@/db/client";
 import { subscriptionsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+export async function insertSubscription(values: typeof subscriptionsTable.$inferInsert) {
+  try{
+    const [ res ] = await db
+      .insert(subscriptionsTable)
+      .values({
+          ...values,
+      })
+      .returning();
+
+    return res;
+  } catch(err) {
+    console.error("Failed to create subscription", err)
+    return null
+  }
+}
+
 export async function getSubscriptionByUserId(userId: string) {
   try{
     const [ res ] = await db
