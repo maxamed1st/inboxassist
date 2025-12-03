@@ -3,6 +3,7 @@ import { connectEmail, disconnectEmail, initializeUser, manageSubscription, subs
 import { storeMessage } from "./storeMessage";
 import { publish } from "@/events/broker";
 import { message } from "telegraf/filters";
+import { getUserIdById } from "@/db/queries/user";
 
 export default async function handleIncomingMessage() {
   bot.start(async (ctx) => {
@@ -44,6 +45,19 @@ export default async function handleIncomingMessage() {
       return;
     }
 
-    publish("message:user", { id: message.id, content: ctx.message.text });
+    const user = await getUserIdById(message.userId);
+    if(!user) {
+      console.error("User not found for message:", message.id);
+      return;
+    }
+
+    if(user.subscriptionStatus !== "active" && user.subscriptionStatus !== "trialing") {
+      await ctx.reply(
+        "Your subscription is not active. Please /subscribe to continue managing your email with the assistant."
+      );
+      return;
+    }
+
+    await publish("message:user", { id: message.id, content: ctx.message.text });
   });
 }
