@@ -4,6 +4,8 @@ import type Stripe from "stripe";
 import { insertSubscription, updateSubscriptionById } from "@/db/queries/billing";
 import { getSubscriptionData } from "@/billing/utils/getSubscriptionData";
 import { updateUserById } from "@/db/queries/user";
+import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
+import { getAccountByUserId } from "@/db/queries/accounts";
 
 export async function stripeWebhook(req: Request, res: Response) {
   const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -49,6 +51,25 @@ export async function stripeWebhook(req: Request, res: Response) {
         break;
 
       case "customer.subscription.updated":
+        values = getSubscriptionData(subscription);
+        sub = await updateSubscriptionById(subscription.id, {
+            ...values,
+            updatedAt: new Date(),
+        });
+        if (!sub) {
+          console.error("Failed to update subscription:");
+          return res.status(500).send("Internal Server Error");
+        }
+        updatedUser = await updateUserById(sub.userId, {
+          subscriptionId: sub.id,
+          subscriptionStatus: sub.status,
+        });
+        if (!updatedUser) {
+          console.error("Failed to update user with subscription info:");
+          return res.status(500).send("Internal Server Error");
+        }
+        break;
+
       case "customer.subscription.deleted":
         values = getSubscriptionData(subscription);
         sub = await updateSubscriptionById(subscription.id, {
@@ -67,6 +88,14 @@ export async function stripeWebhook(req: Request, res: Response) {
           console.error("Failed to update user with subscription info:");
           return res.status(500).send("Internal Server Error");
         }
+
+        // remove email sync if it exists
+        const account = await getAccountByUserId(sub.userId);
+        if (!account) {
+          console.error("Failed to find account for user:", sub.userId);
+          return res.status(500).send("Internal Server Error");
+        }
+        await cancelEmailSync(account.id);
         break;
     }
 }
