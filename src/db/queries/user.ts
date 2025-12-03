@@ -18,6 +18,21 @@ export async function insertUser(values: typeof usersTable.$inferInsert) {
   }
 }
 
+export async function getUserIdById(userId: string) {
+  try {
+  const [res] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, userId))
+    .limit(1);
+
+  return res;
+  } catch(err) {
+    console.error("Failed to get User:", err)
+    return null;
+  }
+}
+
 export async function updateUserById(userId: string, values: Partial<typeof usersTable.$inferInsert>) {
   try{
     const [ res ] = await db
