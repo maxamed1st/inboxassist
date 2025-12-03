@@ -1,5 +1,6 @@
 import express from "express";
-import authRouter from "@/email/api/routes"
+import authRouter from "@/email/api/routes";
+import webhookRouter from "@/billing/api/routes";
 
 export default function server() {
     const app = express();
@@ -7,6 +8,7 @@ export default function server() {
 
     app.use(express.json());
     app.use(authRouter);
+    app.use(webhookRouter);
 
     app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
