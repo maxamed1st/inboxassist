@@ -3,6 +3,7 @@ import { stripe } from "@/billing/client";
 import type Stripe from "stripe";
 import { insertSubscription, updateSubscriptionById } from "@/db/queries/billing";
 import { getSubscriptionData } from "@/billing/utils/getSubscriptionData";
+import { updateUserById } from "@/db/queries/user";
 
 export async function stripeWebhook(req: Request, res: Response) {
   const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -34,6 +35,14 @@ export async function stripeWebhook(req: Request, res: Response) {
         });
         if (!sub) {
           console.error("Failed to insert subscription:");
+          return res.status(500).send("Internal Server Error");
+        }
+        const updatedUser = await updateUserById(sub.userId, {
+          subscriptionId: sub.id,
+          subscriptionStatus: sub.status,
+        });
+        if (!updatedUser) {
+          console.error("Failed to update user with subscription info:");
           return res.status(500).send("Internal Server Error");
         }
         break;
