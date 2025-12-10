@@ -22,8 +22,8 @@ export async function checkout({ userId }: { userId: string }) {
         },
       ],
       mode: 'subscription',
-      success_url: process.env.STRIPE_SUCCESS_CALLBACK,
-      cancel_url: process.env.STRIPE_CANCEL_CALLBACK,
+      success_url: process.env.BOT_URL,
+      cancel_url: process.env.BOT_URL,
       subscription_data: {
         metadata: { userId },
       },
@@ -64,7 +64,7 @@ export async function customerPortal({ userId }: { userId: string }) {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: subscription.providerCustomerId,
-      return_url: process.env.STRIPE_PORTAL_CALLBACK,
+      return_url: process.env.BOT_URL,
     });
 
     if(!session.url) {
