@@ -70,7 +70,7 @@ export async function gmailCallback(req: Request, res: Response) {
     const subscriptionIsActtive = await getActiveSubscriptionByUserId(userId);
     if(subscriptionIsActtive) await syncEmails("imap.gmail.com", account.id);
 
-    return res.status(200).send();
+    return res.redirect(process.env.BOT_URL!);
   } catch (error) {
     console.error("Gmail OAuth callback error:", error);
     return res.status(500).json({ error: "OAuth callback failed" });
