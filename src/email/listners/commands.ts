@@ -1,22 +1,15 @@
 import { publish } from "@/events/broker";
-import { googleOauth2Client, imapClient } from "@/email/clients";
+import { imapClient } from "@/email/clients";
 import { deleteEmailsByUserId, getEmailById } from "@/db/queries/emails";
 import { deleteAccountByUserId, getAccountByUserId } from "@/db/queries/accounts";
 import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
 import { stopRefereshingTokens } from "@/email/cron/refreshTokens";
 import { decrypt } from "@/utils/encryption";
+import { getGmailAuthUrl } from "../utils/authUrl";
 
 export async function connect({ userId, platform }: { userId: string, platform: string }){
   if (platform === "gmail") {
-    const scopes = [
-      "https://mail.google.com/"
-    ];
-    const authUrl = googleOauth2Client.generateAuthUrl({
-    access_type: "offline",
-    scope: scopes,
-    prompt: "consent",
-    state: userId
-    });
+    const authUrl = getGmailAuthUrl(userId)
 
     if (!authUrl) {
       throw new Error("Failed to generate auth url")
