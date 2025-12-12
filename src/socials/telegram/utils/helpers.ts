@@ -43,7 +43,7 @@ export async function connectEmail(telegramUserId: string) {
         await bot.telegram.sendMessage(telegramUserId, "Please initialize your assistant first by sending /start");
         return;
     }
-    await publish("email:connect", { userId: user.id, platform: "gmail"})
+    await publish("email:connect", { userId: user.id, platform: "microsoft"})
 }
 
 export async function disconnectEmail(telegramUserId: string) {
