@@ -2,11 +2,12 @@ import { OAuth2Client } from "google-auth-library";
 import nodemailer from "nodemailer";
 import { ImapFlow } from "imapflow";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
-import { PublicClientApplication } from "@azure/msal-node"
+import { ConfidentialClientApplication } from "@azure/msal-node"
 
-export const microsoftOauthClient = new PublicClientApplication({
+export const microsoftOauthClient = new ConfidentialClientApplication({
   auth: {
     clientId: process.env.MICROSOFT_CLIENT_ID!,
+    clientSecret: process.env.MICROSFT_SECRET_ID,
     authority: "https://login.microsoftonline.com/common/",
   }
 });
