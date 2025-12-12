@@ -5,21 +5,26 @@ import { deleteAccountByUserId, getAccountByUserId } from "@/db/queries/accounts
 import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
 import { stopRefereshingTokens } from "@/email/cron/refreshTokens";
 import { decrypt } from "@/utils/encryption";
-import { getGmailAuthUrl } from "../utils/authUrl";
+import { getGmailAuthUrl, getMicrosoftAuthUrl } from "../utils/authUrl";
 
-export async function connect({ userId, platform }: { userId: string, platform: string }){
+export async function connect({ userId, platform }: { userId: string, platform: string }) {
+  let authUrl;
   if (platform === "gmail") {
-    const authUrl = getGmailAuthUrl(userId)
-
-    if (!authUrl) {
-      throw new Error("Failed to generate auth url")
-    }
-
-    await publish("message:system", {
-    id: userId,
-    content: `[Authorize Gmail](${authUrl})`
-    });
+    authUrl = getGmailAuthUrl(userId)
   }
+
+  else if (platform === "microsoft") {
+    authUrl = getMicrosoftAuthUrl(userId);
+  }
+
+  if (!authUrl) {
+    throw new Error("Failed to generate auth url")
+  }
+
+  await publish("message:system", {
+    id: userId,
+    content: `[Connect your email](${authUrl})`
+  });
 }
 
 export async function pruneEmails({ userId }: { userId: string }){
