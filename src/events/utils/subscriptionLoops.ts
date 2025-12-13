@@ -3,7 +3,7 @@ import { processMessage } from "@/events/utils/processMessage";
 import { Channels, MessagePayloads } from "@/events/types";
 
 const CLAIM_IDLE_MS = 60000; // 60s idle before retry
-const BLOCK_MS = 600;
+const BLOCK_MS = 100;
 
 // helper to parse messages
 function parseFields(fields?: string[]): Record<string, string> {
