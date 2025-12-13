@@ -10,7 +10,7 @@ import { getGmailAuthUrl, getMicrosoftAuthUrl } from "../utils/authUrl";
 export async function connect({ userId, platform }: { userId: string, platform: string }) {
   let authUrl;
   if (platform === "microsoft") {
-    authUrl = getMicrosoftAuthUrl(userId);
+    authUrl = await getMicrosoftAuthUrl(userId);
   }
 
   else if (platform === "gmail") {
