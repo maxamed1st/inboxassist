@@ -20,7 +20,7 @@ export async function initializeUser(telegramUserId: string) {
     };
 
     // queue trial cancelation in 7 days
-    await queueTrialCancelation(user!.id);
+    await queueTrialCancelation(user.id);
 
     const connection = await insertConnection({
         userId: user.id,
