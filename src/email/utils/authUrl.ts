@@ -15,11 +15,11 @@ export function getGmailAuthUrl(userId: string) {
 }
 
 export async function getMicrosoftAuthUrl(userId: string) {
-  const scopes = [ "Mail.read", "Mail.send" ]
+  const scopes = [ "Mail.read", "Mail.send", "user.read" ]
 
   const authUrl = await microsoftOauthClient.getAuthCodeUrl({
     scopes,
-    redirectUri: process.env.BOT_URL!,
+    redirectUri: process.env.MICROSOFT_REDIRECT_URI!,
     state: userId
   })
 

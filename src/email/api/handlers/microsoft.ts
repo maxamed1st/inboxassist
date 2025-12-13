@@ -17,7 +17,7 @@ export async function microsftCallback(req: Request, res: Response) {
     const tokens = await microsoftOauthClient.acquireTokenByCode({
       code: query.code,
       scopes: ["Mail.read", "Mail.send"],
-      redirectUri: process.env.BOT_URL!,
+      redirectUri: process.env.MICROSOFT_REDIRECT_URI!,
     });
 
     if (!tokens || !tokens.accessToken) {

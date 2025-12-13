@@ -7,8 +7,8 @@ import { ConfidentialClientApplication } from "@azure/msal-node"
 export const microsoftOauthClient = new ConfidentialClientApplication({
   auth: {
     clientId: process.env.MICROSOFT_CLIENT_ID!,
-    clientSecret: process.env.MICROSOFT_SECRET_ID,
-    authority: "https://login.microsoftonline.com/common/",
+    clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+    authority: "https://login.microsoftonline.com/common",
   }
 });
 
