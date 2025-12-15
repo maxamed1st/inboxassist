@@ -13,7 +13,7 @@ async function cancelTrial(userId: string) {
     return; // Subscrription is managed by stripe, no action needed
   }
 
-  const updatedUser = await updateUserById(userId, { subscriptionStatus: "cancelled", updatedAt: new Date() });
+  const updatedUser = await updateUserById(userId, { subscriptionStatus: "inactive", updatedAt: new Date() });
 
   if (!updatedUser) {
     throw new Error(`Failed to cancel trial for user:${userId}`);
