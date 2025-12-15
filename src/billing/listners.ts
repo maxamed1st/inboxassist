@@ -1,12 +1,15 @@
 import { stripe } from "@/billing/client";
-import { getActiveSubscriptionByUserId, getSubscriptionByUserId } from "@/db/queries/billing";
+import { getSubscriptionByUserId } from "@/db/queries/billing";
+import { getUserIdById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
 
 export async function checkout({ userId }: { userId: string }) {
   try {
-    const activeSubscription = await getActiveSubscriptionByUserId(userId);
+    const user = await getUserIdById(userId);
 
-    if (activeSubscription) {
+    if(!user) throw new Error (`Failed to get user: ${userId}`)
+
+    if (user.subscriptionStatus === "active") {
       await publish("message:system", {
         id: userId,
         content: `You already have a subscription. You can manage it with /manage_subscription.`

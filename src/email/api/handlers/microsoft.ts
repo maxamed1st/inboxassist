@@ -2,8 +2,8 @@ import { microsoftOauthClient } from "@/email/clients";
 import { getAccountByUserId, insertAccount, updateAccountById } from "@/db/queries/accounts";
 import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
-import { getActiveSubscriptionByUserId } from "@/db/queries/billing";
 import type { Request, Response } from "express";
+import { getUserIdById } from "@/db/queries/user";
 
 export async function microsftCallback(req: Request, res: Response) {
   try {
@@ -67,8 +67,15 @@ export async function microsftCallback(req: Request, res: Response) {
     }
 
     // sync emails if user has active subscription
-    const subscriptionIsActtive = await getActiveSubscriptionByUserId(userId);
-    if (subscriptionIsActtive) await syncEmails("imap.microsft.com", account.id);
+    const user = await getUserIdById(userId);
+
+    if (!user) {
+      throw new Error("microsoft_callback: Failed to get user")
+    }
+
+    if (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") {
+      await syncEmails("outlook.office365.com", account.id);
+    }
 
     return res.redirect(process.env.BOT_URL!);
   } catch (error) {
