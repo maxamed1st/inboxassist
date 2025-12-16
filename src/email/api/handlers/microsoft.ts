@@ -4,6 +4,7 @@ import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
 import type { Request, Response } from "express";
 import { getUserIdById } from "@/db/queries/user";
+import { publish } from "@/events/broker";
 
 export async function microsftCallback(req: Request, res: Response) {
   try {
@@ -87,6 +88,11 @@ export async function microsftCallback(req: Request, res: Response) {
     if (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") {
       await syncEmails("outlook.office365.com", account.id);
     }
+
+    await publish("message:system", {
+      id: userId,
+      content: "Your email has been connected successfully"
+    })
 
     return res.redirect(process.env.BOT_URL!);
   } catch (error) {
