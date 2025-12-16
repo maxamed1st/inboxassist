@@ -4,7 +4,7 @@ import type{ Request, Response } from "express";
 import { keepTokensFresh } from "@/email/cron/refreshTokens";
 import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
-import { getActiveSubscriptionByUserId } from "@/db/queries/billing";
+import { getUserIdById } from "@/db/queries/user";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -67,8 +67,16 @@ export async function gmailCallback(req: Request, res: Response) {
     await keepTokensFresh("google", account.id);
 
     // sync emails if user has active subscription
-    const subscriptionIsActtive = await getActiveSubscriptionByUserId(userId);
-    if(subscriptionIsActtive) await syncEmails("imap.gmail.com", account.id);
+    // sync emails if user has active subscription
+    const user = await getUserIdById(userId);
+
+    if (!user) {
+      throw new Error("microsoft_callback: Failed to get user")
+    }
+
+    if (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") {
+      await syncEmails("outlook.office365.com", account.id);
+    }
 
     return res.redirect(process.env.BOT_URL!);
   } catch (error) {
