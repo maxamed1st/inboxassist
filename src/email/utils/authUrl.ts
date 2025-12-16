@@ -15,7 +15,12 @@ export function getGmailAuthUrl(userId: string) {
 }
 
 export async function getMicrosoftAuthUrl(userId: string) {
-  const scopes = [ "Mail.read", "Mail.send", "user.read" ]
+  const scopes = [
+    "https://outlook.office.com/IMAP.AccessAsUser.All",
+    "https://outlook.office.com/SMTP.send",
+    "user.read",
+    "offline_access",
+  ]
 
   const authUrl = await microsoftOauthClient.getAuthCodeUrl({
     scopes,

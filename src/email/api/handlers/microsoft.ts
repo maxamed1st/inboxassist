@@ -16,7 +16,11 @@ export async function microsftCallback(req: Request, res: Response) {
     const userId = String(req.query.state);
     const tokens = await microsoftOauthClient.acquireTokenByCode({
       code: query.code,
-      scopes: ["Mail.read", "Mail.send"],
+      scopes: [
+        "https://outlook.office.com/IMAP.AccessAsUser.All",
+        "https://outlook.office.com/SMTP.send",
+        "offline_access",
+      ],
       redirectUri: process.env.MICROSOFT_REDIRECT_URI!,
     });
 
@@ -26,8 +30,15 @@ export async function microsftCallback(req: Request, res: Response) {
     }
 
     // get the email address
+    const graphTokens = await microsoftOauthClient.acquireTokenSilent({
+      account: tokens.account!,
+      scopes: [
+        "user.read"
+      ],
+    });
+ 
     const response = await fetch('https://graph.microsoft.com/v1.0/me/', {
-      headers: { Authorization: `Bearer ${tokens.accessToken}` }
+      headers: { Authorization: `Bearer ${graphTokens.accessToken}` }
     });
 
     const profile = await response.json() as { mail: string | null, userPrincipalName: string }
