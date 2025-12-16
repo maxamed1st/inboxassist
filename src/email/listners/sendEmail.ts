@@ -22,7 +22,7 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
     throw new Error(`Failed to get account for; ${email.userId}`);
   }
   const client = transporter({
-      host: "smtp.gmail.com",
+      host: "smtp.office365.com",
       emailAddress : decrypt(email.from),
       accessToken : decrypt(account.accessToken),
   });
