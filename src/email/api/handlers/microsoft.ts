@@ -25,7 +25,7 @@ export async function microsftCallback(req: Request, res: Response) {
     });
 
     if (!tokens || !tokens.accessToken) {
-      console.error("Gmail callback missing tokens");
+      console.error("microsoft_callback missing tokens");
       return res.status(401).json({ error: "Missing tokens" });
     }
 
@@ -90,7 +90,7 @@ export async function microsftCallback(req: Request, res: Response) {
 
     return res.redirect(process.env.BOT_URL!);
   } catch (error) {
-    console.error("Gmail OAuth callback error:", error);
+    console.error("microsoft_callback OAuth callback error:", error);
     return res.status(500).json({ error: "OAuth callback failed" });
   }
 }
