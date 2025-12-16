@@ -23,7 +23,7 @@ export async function composeEmail({ id, emailId, userMessage, threadId }: { id:
           content: z.string(),
           edited: z.string()
         }),  
-        'compose email'  
+        'composer'  
       ),
       temperature: 0.7,
       max_tokens: 400
