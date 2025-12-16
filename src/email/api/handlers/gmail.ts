@@ -5,6 +5,7 @@ import { keepTokensFresh } from "@/email/cron/refreshTokens";
 import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
 import { getUserIdById } from "@/db/queries/user";
+import { publish } from "@/events/broker";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -78,6 +79,10 @@ export async function gmailCallback(req: Request, res: Response) {
       await syncEmails("outlook.office365.com", account.id);
     }
 
+    await publish("message:system", {
+      id: userId,
+      content: "Your email has been connected successfully"
+    })
     return res.redirect(process.env.BOT_URL!);
   } catch (error) {
     console.error("Gmail OAuth callback error:", error);
