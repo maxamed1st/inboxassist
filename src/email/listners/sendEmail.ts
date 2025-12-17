@@ -50,7 +50,7 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
 
   await publish("message:assistant", {
       id: email.userId!,
-      content: "Email sent to" + JSON.parse(decrypt(email.to)).slice(1, -1), // remove quotes
+      content: "Email sent to" + JSON.parse(decrypt(email.to)),
       emailId: updatedEmail.id,
       threadId
   });
