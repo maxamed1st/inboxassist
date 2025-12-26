@@ -2,9 +2,10 @@ import { getPreviouseMessages } from "@/db/queries/messages";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { decrypt } from "@/utils/encryption";
 import { getEmailContent } from "../utils/helpers";
+import { getUserById } from "@/db/queries/user";
 
-export async function buildContext({ systemPrompt, userMessage, emailId, threadId }:
-  { systemPrompt: string, userMessage?: string, emailId?: string | null, threadId?: string | null }
+export async function buildContext({ userId, systemPrompt, userMessage, emailId, threadId }:
+  { userId?: string, systemPrompt: string, userMessage?: string, emailId?: string | null, threadId?: string | null }
 ) {
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -12,6 +13,16 @@ export async function buildContext({ systemPrompt, userMessage, emailId, threadI
       content: systemPrompt
     }
   ];
+
+  // add user info to context
+  const user = userId ? await getUserById(userId): null;
+
+  if(user) {
+    messages.push({
+      role: "user",
+      content: `Here is the current users information:\nDisplay name: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
+    })
+  }
 
   // add email to context
   const email = emailId ? await getEmailContent(emailId) : null;
