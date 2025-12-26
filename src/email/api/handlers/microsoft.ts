@@ -3,7 +3,7 @@ import { getAccountByUserId, insertAccount, updateAccountById } from "@/db/queri
 import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
 import type { Request, Response } from "express";
-import { getUserIdById } from "@/db/queries/user";
+import { getUserIdById, updateUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
 
 export async function microsftCallback(req: Request, res: Response) {
@@ -42,7 +42,7 @@ export async function microsftCallback(req: Request, res: Response) {
       headers: { Authorization: `Bearer ${graphTokens.accessToken}` }
     });
 
-    const profile = await response.json() as { mail: string | null, userPrincipalName: string }
+    const profile = await response.json() as { mail: string | null, userPrincipalName: string, displayName: string }
     if (!profile || (!profile.mail && !profile.userPrincipalName)) {
       throw new Error("microsoft callback missing email field");
     }
@@ -93,6 +93,16 @@ export async function microsftCallback(req: Request, res: Response) {
       id: userId,
       content: "Your email has been connected successfully"
     })
+
+    // update user info
+    const updatedUser = updateUserById(userId, {
+      name: encrypt(profile.displayName),
+      email: encrypt(providerAccountId)
+    })
+
+    if(!updatedUser) {
+      throw new Error(`micrsoft_callback: Failed to update user table: ${userId}`)
+    }
 
     return res.redirect(process.env.BOT_URL!);
   } catch (error) {
