@@ -18,7 +18,7 @@ export async function insertUser(values: typeof usersTable.$inferInsert) {
   }
 }
 
-export async function getUserIdById(userId: string) {
+export async function getUserById(userId: string) {
   try {
   const [res] = await db
     .select()

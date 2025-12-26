@@ -3,7 +3,7 @@ import { connectEmail, disconnectEmail, initializeUser, manageSubscription, subs
 import { storeMessage } from "./storeMessage";
 import { publish } from "@/events/broker";
 import { message } from "telegraf/filters";
-import { getUserIdById } from "@/db/queries/user";
+import { getUserById } from "@/db/queries/user";
 
 export default async function handleIncomingMessage() {
   bot.start(async (ctx) => {
@@ -45,7 +45,7 @@ export default async function handleIncomingMessage() {
       return;
     }
 
-    const user = await getUserIdById(message.userId);
+    const user = await getUserById(message.userId);
     if(!user) {
       console.error("User not found for message:", message.id);
       return;

@@ -1,9 +1,9 @@
 import { Queue, Worker } from "bullmq";
-import { getUserIdById, updateUserById } from "@/db/queries/user";
+import { getUserById, updateUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
 
 async function cancelTrial(userId: string) {
-  const user = await getUserIdById(userId);
+  const user = await getUserById(userId);
 
   if (!user) {
     throw new Error(`User not found for cancelling trial: ${userId}`);

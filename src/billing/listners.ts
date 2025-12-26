@@ -1,11 +1,11 @@
 import { stripe } from "@/billing/client";
 import { getSubscriptionByUserId } from "@/db/queries/billing";
-import { getUserIdById } from "@/db/queries/user";
+import { getUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
 
 export async function checkout({ userId }: { userId: string }) {
   try {
-    const user = await getUserIdById(userId);
+    const user = await getUserById(userId);
 
     if(!user) throw new Error (`Failed to get user: ${userId}`)
 

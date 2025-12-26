@@ -4,7 +4,7 @@ import type{ Request, Response } from "express";
 import { keepTokensFresh } from "@/email/cron/refreshTokens";
 import { syncEmails } from "@/email/cron/fetchNewEmails";
 import { encrypt } from "@/utils/encryption";
-import { getUserIdById } from "@/db/queries/user";
+import { getUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
 
 export async function gmailCallback(req: Request, res: Response) {
@@ -69,7 +69,7 @@ export async function gmailCallback(req: Request, res: Response) {
 
     // sync emails if user has active subscription
     // sync emails if user has active subscription
-    const user = await getUserIdById(userId);
+    const user = await getUserById(userId);
 
     if (!user) {
       throw new Error("microsoft_callback: Failed to get user")
