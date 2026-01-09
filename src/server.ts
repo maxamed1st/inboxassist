@@ -6,8 +6,8 @@ export default function server() {
     const app = express();
     const PORT = process.env.PORT || 3000;
 
-    app.use(authRouter);
     app.use(webhookRouter);
+    app.use(authRouter);
 
     app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
