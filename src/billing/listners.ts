@@ -35,10 +35,6 @@ export async function checkout({ userId }: { userId: string }) {
       },
       tax_id_collection: {
         enabled: true
-      },
-      customer_update: {
-        address: "auto",
-        name: "auto"
       }
     });
 
