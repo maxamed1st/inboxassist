@@ -54,7 +54,7 @@ export async function getActiveSubscriptionByUserId(userId: string) {
   }
 }
 
-export async function updateSubscriptionById(subscriptionId: string, values: Partial<typeof subscriptionsTable.$inferInsert>) {
+export async function updateSubscriptionById(providerSubscriptionId: string, values: Partial<typeof subscriptionsTable.$inferInsert>) {
   try{
     const [ res ] = await db
       .update(subscriptionsTable)
@@ -62,7 +62,7 @@ export async function updateSubscriptionById(subscriptionId: string, values: Par
           ...values,
       }
       )
-      .where(eq(subscriptionsTable.id, subscriptionId))
+      .where(eq(subscriptionsTable.providerSubscriptionId, providerSubscriptionId))
       .returning();
 
     return res;
