@@ -4,6 +4,7 @@ import { microsftCallback } from "./handlers/microsoft";
 
 const router = express.Router();
 
+router.use(express.json());
 router.get("/gmail/callback", gmailCallback);
 router.get("/microsoft/callback", microsftCallback);
 
