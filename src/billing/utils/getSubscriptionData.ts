@@ -4,7 +4,6 @@ export function getSubscriptionData(subscription: Stripe.Subscription) {
   const item = subscription.items.data[0]!
 
   return {
-    id: subscription.id,
     userId: subscription.metadata.userId!,
     providerCustomerId: subscription.customer as string,
     providerSubscriptionId: subscription.id,
