@@ -9,8 +9,8 @@ export function getSubscriptionData(subscription: Stripe.Subscription) {
     providerSubscriptionId: subscription.id,
     plan: "standard",
     status: subscription.status,
-    periodStart: item.current_period_start * 1000,
-    periodEnd: item.current_period_end * 1000,
+    periodStart: new Date(item.current_period_start * 1000),
+    periodEnd: new Date(item.current_period_end * 1000),
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
   }
 }
