@@ -1,8 +1,7 @@
 export type Channels = 
   "message:user" | "message:assistant" | "message:system" | "message:prune" |
   "action:compose" | "action:send" | "action:edit" | "action:move" | "action:unknown" |
-  "email:new" | "email:summarised" | "email:sent" | "email:moved" |
-  "email:composed" | "email:edited" | "email:toggleReadStatus" |
+  "email:new" | "email:composed" | "email:edited" | "email:toggleReadStatus" |
   "email:connect" | "email:disconnect" | "email:prune" |
   "billing:subscribe" | "billing:manage";
 
