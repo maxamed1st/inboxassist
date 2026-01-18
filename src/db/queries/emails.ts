@@ -50,7 +50,7 @@ export async function insertEmail(emailData: typeof emailsTable.$inferInsert) {
     const [ res ] = await db
       .insert(emailsTable)
       .values(emailData)
-      .returning({ id: emailsTable.id });
+      .returning();
 
     return res;
   } catch(err) {

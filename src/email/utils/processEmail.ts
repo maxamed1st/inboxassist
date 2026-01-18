@@ -56,13 +56,13 @@ export async function processEmail(message: FetchMessageObject, userId: string, 
     return false;
   }
 
-  const emailId = await insertEmail(values);
+  const email = await insertEmail(values);
 
-  if (!emailId) {
+  if (!email) {
     console.error("Failed to insert email in db:", values.externalEmailId);
     return false;
   }
 
-  await publish("email:new", { id: emailId.id } );
+  await publish("email:new", { id: email.id } );
   return true;
 }
