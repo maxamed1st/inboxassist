@@ -2,10 +2,10 @@ import { getTelegramUserId } from "@/db/queries/connections";
 import { bot } from "@/socials/telegram/client";
 import { storeMessage } from "./storeMessage";
 
-export async function sendMessage({ id, content, emailId, threadId }: { id: string, content: string, emailId?: string, threadId?: string }) {
-  const telegramUser = await getTelegramUserId(id)
+export async function sendMessage({ userId, content, emailId, threadId }: { userId: string, content: string, emailId?: string, threadId?: string }) {
+  const telegramUser = await getTelegramUserId(userId)
   if (!telegramUser) {
-    console.error("Could not find Telegram connection for:", id);
+    console.error("Could not find Telegram connection for:", userId);
     return;
   }
   const message = await bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "Markdown"}).catch( async (err) => {
