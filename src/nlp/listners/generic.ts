@@ -26,7 +26,7 @@ export async function genericGPT({ userId, emailId, userMessage, threadId }: { u
     throw new Error("Failed to get generic response from nlp client");
   }
 
-  publish("message:assistant", { id: userId, emailId, content: message })
+  publish("message:assistant", { userId: userId, emailId, content: message })
   } catch(err) {
     throw new Error(`Failed to respond to a generic query from ${userId}: ${err}`)
   }

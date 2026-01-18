@@ -52,7 +52,7 @@ export async function createDraft({ userId, content, inReplyToId, threadId }: { 
     throw new Error(`Could not insert draft`);
   }
 
-  publish("message:assistant", { id: userId, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
+  publish("message:assistant", { userId, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
 }
 
 export async function updateDraft({ id, content, threadId }: { id: string, content: string, threadId?: string }) {
@@ -62,5 +62,5 @@ export async function updateDraft({ id, content, threadId }: { id: string, conte
     throw new Error(`Failed to update draft: ${id}`);
   }
 
-  await publish("message:assistant", { id: updated.userId, emailId: updated.userId, content: `${content} \n\n Send or edit further?`, threadId })
+  await publish("message:assistant", { userId: updated.userId, emailId: updated.userId, content: `${content} \n\n Send or edit further?`, threadId })
 }

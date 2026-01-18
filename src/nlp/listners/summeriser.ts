@@ -31,7 +31,7 @@ export async function summerizeEmail({ userId, emailId }: { userId: string, emai
       throw new Error(`Summerizer: email from context builder is null: ${emailId}`);
     }
 
-    publish("message:assistant", { id: userId, emailId, content: `${email.from.replace(/['"]/g, '')} \n\n ${summary}` })
+    publish("message:assistant", { userId: userId, emailId, content: `${email.from.replace(/['"]/g, '')} \n\n ${summary}` })
   } catch (err) {
     throw new Error(`Failed to summerize email ${emailId}: ${err}`)
   }

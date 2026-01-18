@@ -90,7 +90,7 @@ export async function microsftCallback(req: Request, res: Response) {
     }
 
     await publish("message:system", {
-      id: userId,
+      userId,
       content: "Your email has been connected successfully"
     })
 

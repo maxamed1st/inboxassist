@@ -8,8 +8,8 @@ export type Channels =
 export interface MessagePayloads {
   // chat messages
   "message:user": { id: string, content: string };
-  "message:assistant": { id: string, content: string, emailId?: string, threadId?: string };
-  "message:system": { id: string, content: string, threadId?: string };
+  "message:assistant": { userId: string, content: string, emailId?: string, threadId?: string };
+  "message:system": { userId: string, content: string, threadId?: string };
   "message:prune": { userId: string };
 
   // user triggered actions

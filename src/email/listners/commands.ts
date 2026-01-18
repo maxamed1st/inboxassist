@@ -22,7 +22,7 @@ export async function connect({ userId, platform }: { userId: string, platform: 
   }
 
   await publish("message:system", {
-    id: userId,
+    userId,
     content: `[Connect your email](${authUrl})`
   });
 }
@@ -35,7 +35,7 @@ export async function pruneEmails({ userId }: { userId: string }){
   }
 
   await publish("message:system", {
-   id: userId,
+   userId,
     content: "All emails have been removed from the system"
   });
 }
@@ -54,7 +54,7 @@ export async function disconnect({ userId }: { userId: string }){
   }
 
   await publish("message:system", {
-    id: userId,
+    userId,
     content: "Email logged out"
   });
 }
@@ -93,7 +93,7 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
     if(isSeen) {
       await client.messageFlagsRemove(email.imapUid, ["\\seen"], { uid: true });
       await publish("message:assistant", { 
-        id: userId,
+        userId,
         content: "The email has been marked unread",
         emailId,
         threadId
@@ -102,7 +102,7 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
     else {
       await client.messageFlagsAdd(email.imapUid, ["\\seen"], { uid: true });
       await publish("message:assistant", { 
-        id: userId,
+        userId,
         content: "The email has been marked read",
         emailId,
         threadId

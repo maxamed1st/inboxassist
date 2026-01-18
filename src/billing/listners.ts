@@ -11,7 +11,7 @@ export async function checkout({ userId }: { userId: string }) {
 
     if (user.subscriptionStatus === "active") {
       await publish("message:system", {
-        id: userId,
+        userId,
         content: `You already have a subscription. You can manage it with /manage_subscription.`
       });
       return;
@@ -43,7 +43,7 @@ export async function checkout({ userId }: { userId: string }) {
     }
 
     await publish("message:system", {
-      id: userId,
+      userId: userId,
       content: `[checkout](${session.url})`
     });
 
@@ -71,7 +71,7 @@ export async function customerPortal({ userId }: { userId: string }) {
     }
 
     await publish("message:system", {
-      id: userId,
+      userId: userId,
       content: `[Manage Subscription](${session.url})`
     });
 

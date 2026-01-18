@@ -20,7 +20,7 @@ async function cancelTrial(userId: string) {
   }
 
   await publish("message:system", {
-    id: userId,
+    userId: userId,
     content: "Your trial period has ended. Please use /subscribe to continue managing emails with the assitant.",
   });
 }
