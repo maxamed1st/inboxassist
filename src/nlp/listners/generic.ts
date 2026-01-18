@@ -6,6 +6,7 @@ import { buildContext } from "../utils/context";
 export async function genericGPT({ userId, emailId, userMessage, threadId }: { userId: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
     const { messages } = await buildContext({
+      userId,
       systemPrompt: generic,
       userMessage,
       emailId,

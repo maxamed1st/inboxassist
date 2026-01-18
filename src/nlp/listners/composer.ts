@@ -8,6 +8,7 @@ import z from "zod";
 export async function composeEmail({ id, emailId, userMessage, threadId }: { id: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
     const { messages, email } = await buildContext({
+      userId: id,
       systemPrompt: composer,
       userMessage,
       emailId,

@@ -17,6 +17,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
     const threadId = userMessage.threadId ?? undefined;
 
     const { messages } = await buildContext({
+      userId: userMessage.userId,
       systemPrompt: classifier,
       userMessage: content,
       emailId,
