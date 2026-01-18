@@ -58,6 +58,6 @@ export default async function handleIncomingMessage() {
       return;
     }
 
-    await publish("message:user", { id: message.id, content: ctx.message.text });
+    await publish("message:user", { messageId: message.id, content: ctx.message.text });
   });
 }

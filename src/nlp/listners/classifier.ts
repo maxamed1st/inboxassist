@@ -6,9 +6,9 @@ import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
 import { buildContext } from "../utils/context";
 
-export async function classifyUserIntent({ id, content }: { id: string, content: string }) {
+export async function classifyUserIntent({ messageId, content }: { messageId: string, content: string }) {
   try {
-    const userMessage = await getMessageById(id);
+    const userMessage = await getMessageById(messageId);
     if(!userMessage) {
       throw new Error("Failed to fetch user message");
     }
@@ -54,7 +54,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     if(message === "compose" || message === "edit") {
       if(!emailId) {
-        throw new Error(`EmailId missing for compose/edit action ${id}`);
+        throw new Error(`EmailId missing for compose/edit action ${messageId}`);
       }
 
       await publish(`action:${message as "compose" | "edit"}`, { userId: userMessage.userId, emailId, userMessage: content, threadId })
@@ -62,7 +62,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     else if (message === "send") {
       if(!emailId) {
-        throw new Error(`EmailId missing for send action ${id}`);
+        throw new Error(`EmailId missing for send action ${messageId}`);
       }
       
       await publish("action:send", { userId: userMessage.userId, emailId, threadId })
@@ -70,7 +70,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     else if (message === "move") {
       if(!emailId) {
-        throw new Error(`EmailId missing for move action ${id}`);
+        throw new Error(`EmailId missing for move action ${messageId}`);
       }
       
       const folder = parsed.folder;
@@ -79,7 +79,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
 
     else if (message === "toggleReadStatus") {
       if(!emailId) {
-        throw new Error(`EmailId missing for move action ${id}`);
+        throw new Error(`EmailId missing for move action ${messageId}`);
       }
 
       await publish("email:toggleReadStatus", { userId: userMessage.userId, emailId, threadId });
@@ -93,6 +93,6 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       console.log("undefined user intent", result);
     }
   } catch(err) {
-    throw new Error(`Failed to classify user intent ${id}: ${err}`)
+    throw new Error(`Failed to classify user intent ${messageId}: ${err}`)
   }
 }
