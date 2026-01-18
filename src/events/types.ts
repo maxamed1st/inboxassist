@@ -21,7 +21,7 @@ export interface MessagePayloads {
   "action:unknown": { userId: string, emailId?: string, userMessage: string, threadId?: string };
 
   // email events
-  "email:new": { id: string };
+  "email:new": { userId: string, emailId: string };
   "email:summarised": { id: string, content: string };
   "email:composed": { id: string, content: string, to?: string, inReplyToId?: string, threadId?: string };
   "email:edited": { id: string, content: string };
