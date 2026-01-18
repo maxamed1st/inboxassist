@@ -57,7 +57,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
         throw new Error(`EmailId missing for compose/edit action ${id}`);
       }
 
-      await publish(`action:${message as "compose" | "edit"}`, { id: userMessage.userId, emailId, userMessage: content, threadId })
+      await publish(`action:${message as "compose" | "edit"}`, { userId: userMessage.userId, emailId, userMessage: content, threadId })
     }
 
     else if (message === "send") {
@@ -65,7 +65,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
         throw new Error(`EmailId missing for send action ${id}`);
       }
       
-      await publish("action:send", { id: userMessage.userId, emailId, threadId })
+      await publish("action:send", { userId: userMessage.userId, emailId, threadId })
     }
 
     else if (message === "move") {
@@ -74,7 +74,7 @@ export async function classifyUserIntent({ id, content }: { id: string, content:
       }
       
       const folder = parsed.folder;
-      await publish("action:move", { id: userMessage.userId, emailId, folder, threadId });
+      await publish("action:move", { userId: userMessage.userId, emailId, folder, threadId });
     } 
 
     else if (message === "toggleReadStatus") {

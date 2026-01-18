@@ -14,10 +14,10 @@ export interface MessagePayloads {
   "message:prune": { userId: string };
 
   // user triggered actions
-  "action:compose": { id: string, emailId?: string, userMessage: string, threadId?: string }; // emailId in case of composing a reply
-  "action:edit": { id: string, emailId: string, userMessage: string, threadId?: string };
-  "action:send": { id: string, emailId: string, threadId?: string };
-  "action:move": { id: string, emailId: string, folder: string, threadId?: string };
+  "action:compose": { userId: string, emailId?: string, userMessage: string, threadId?: string }; // emailId in case of composing a reply
+  "action:edit": { userId: string, emailId: string, userMessage: string, threadId?: string };
+  "action:send": { userId: string, emailId: string, threadId?: string };
+  "action:move": { userId: string, emailId: string, folder: string, threadId?: string };
   "action:unknown": { userId: string, emailId?: string, userMessage: string, threadId?: string };
 
   // email events

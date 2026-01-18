@@ -5,10 +5,10 @@ import { buildContext } from "../utils/context";
 import { zodResponseFormat } from "openai/helpers/zod.mjs";
 import z from "zod";
 
-export async function composeEmail({ id, emailId, userMessage, threadId }: { id: string, emailId?: string, userMessage: string, threadId?: string }) {
+export async function composeEmail({ userId, emailId, userMessage, threadId }: { userId: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
     const { messages, email } = await buildContext({
-      userId: id,
+      userId,
       systemPrompt: composer,
       userMessage,
       emailId,
@@ -43,15 +43,15 @@ export async function composeEmail({ id, emailId, userMessage, threadId }: { id:
     }
 
     if(parsed.edited) {
-      await publish("email:composed", { id: id, content: `${parsed.content}`, to: email?.from, inReplyToId: emailId, threadId })
+      await publish("email:composed", { id: userId, content: `${parsed.content}`, to: email?.from, inReplyToId: emailId, threadId })
     } else {
       if(!emailId) {
-        throw new Error(`Email missing for the email to edit: ${id}`)
+        throw new Error(`Email missing for the email to edit: ${userId}`)
       }
 
       await publish("email:edited", { id: emailId, content: `${parsed.content}` })
     }
   } catch (err) {
-    throw new Error(`Failed to summerize email ${id}: ${err}`)
+    throw new Error(`Failed to summerize email ${emailId}: ${err}`)
   }
 }
