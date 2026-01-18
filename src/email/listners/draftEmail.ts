@@ -3,7 +3,7 @@ import { getEmailById, insertEmail, updateEmailById } from "@/db/queries/emails"
 import { publish } from "@/events/broker";
 import { decrypt, encrypt } from "@/utils/encryption";
 
-export async function createDraft({ id, content, inReplyToId, threadId }: { id: string, content: string, to?: string, inReplyToId?: string, threadId?: string }) {
+export async function createDraft({ userId, content, inReplyToId, threadId }: { userId: string, content: string, to?: string, inReplyToId?: string, threadId?: string }) {
   if(!inReplyToId) {
     throw new Error("Composed reply missing inReplyToId");
   }
@@ -14,10 +14,10 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
     throw new Error(`Email associated with the draft doesn't exist in db: ${inReplyToId}`);
   }
 
-  const account = await getAccountByUserId(id);
+  const account = await getAccountByUserId(userId);
 
   if(!account) {
-    throw new Error(`Account doesnt exist for user ${id}`);
+    throw new Error(`Account doesnt exist for user ${userId}`);
   }
 
   // add sender to recipient list and remove reciever
@@ -29,7 +29,7 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
   toAddresses.push(recipient);
 
   const values = {
-    userId: id,
+    userId,
     accountId: account.id,
     externalEmailId: encrypt(crypto.randomUUID()),
     imapUid: 0,
@@ -52,7 +52,7 @@ export async function createDraft({ id, content, inReplyToId, threadId }: { id: 
     throw new Error(`Could not insert draft`);
   }
 
-  publish("message:assistant", { id, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
+  publish("message:assistant", { id: userId, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
 }
 
 export async function updateDraft({ id, content, threadId }: { id: string, content: string, threadId?: string }) {

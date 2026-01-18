@@ -43,13 +43,13 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
     }
 
     if(parsed.edited) {
-      await publish("email:composed", { id: userId, content: `${parsed.content}`, to: email?.from, inReplyToId: emailId, threadId })
+      await publish("email:composed", { userId: userId, content: `${parsed.content}`, to: email?.from, inReplyToId: emailId, threadId })
     } else {
       if(!emailId) {
         throw new Error(`Email missing for the email to edit: ${userId}`)
       }
 
-      await publish("email:edited", { id: emailId, content: `${parsed.content}` })
+      await publish("email:edited", { userId: emailId, content: `${parsed.content}` })
     }
   } catch (err) {
     throw new Error(`Failed to summerize email ${emailId}: ${err}`)

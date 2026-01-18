@@ -23,8 +23,8 @@ export interface MessagePayloads {
   // email events
   "email:new": { userId: string, emailId: string };
   "email:summarised": { id: string, content: string }; // not implemented
-  "email:composed": { id: string, content: string, to?: string, inReplyToId?: string, threadId?: string };
-  "email:edited": { id: string, content: string };
+  "email:composed": { userId: string, content: string, to?: string, inReplyToId?: string, threadId?: string };
+  "email:edited": { userId: string, content: string };
   "email:sent": { id: string }; // not implemented
   "email:moved": { id: string }; // not implemented
   "email:toggleReadStatus": { userId: string, emailId: string, threadId?: string }
