@@ -6,7 +6,7 @@ import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
 import { buildContext } from "../utils/context";
 
-export async function classifyUserIntent({ messageId, content }: { messageId: string, content: string }) {
+export async function classifyUserIntent({ userId, messageId, content }: { userId: string, messageId: string, content: string }) {
   try {
     const userMessage = await getMessageById(messageId);
     if(!userMessage) {
@@ -17,7 +17,7 @@ export async function classifyUserIntent({ messageId, content }: { messageId: st
     const threadId = userMessage.threadId ?? undefined;
 
     const { messages } = await buildContext({
-      userId: userMessage.userId,
+      userId,
       systemPrompt: classifier,
       userMessage: content,
       emailId,
@@ -57,7 +57,7 @@ export async function classifyUserIntent({ messageId, content }: { messageId: st
         throw new Error(`EmailId missing for compose/edit action ${messageId}`);
       }
 
-      await publish(`action:${message as "compose" | "edit"}`, { userId: userMessage.userId, emailId, userMessage: content, threadId })
+      await publish(`action:${message as "compose" | "edit"}`, { userId, emailId, userMessage: content, threadId })
     }
 
     else if (message === "send") {
@@ -65,7 +65,7 @@ export async function classifyUserIntent({ messageId, content }: { messageId: st
         throw new Error(`EmailId missing for send action ${messageId}`);
       }
       
-      await publish("action:send", { userId: userMessage.userId, emailId, threadId })
+      await publish("action:send", { userId, emailId, threadId })
     }
 
     else if (message === "move") {
@@ -74,7 +74,7 @@ export async function classifyUserIntent({ messageId, content }: { messageId: st
       }
       
       const folder = parsed.folder;
-      await publish("action:move", { userId: userMessage.userId, emailId, folder, threadId });
+      await publish("action:move", { userId, emailId, folder, threadId });
     } 
 
     else if (message === "toggleReadStatus") {
@@ -82,11 +82,11 @@ export async function classifyUserIntent({ messageId, content }: { messageId: st
         throw new Error(`EmailId missing for move action ${messageId}`);
       }
 
-      await publish("email:toggleReadStatus", { userId: userMessage.userId, emailId, threadId });
+      await publish("email:toggleReadStatus", { userId, emailId, threadId });
     }
 
     else if (message === "other") {
-      await publish("action:unknown", { userId: userMessage.userId, emailId, userMessage: content, threadId });
+      await publish("action:unknown", { userId, emailId, userMessage: content, threadId });
     }
 
     else {
