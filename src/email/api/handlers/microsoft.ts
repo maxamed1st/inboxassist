@@ -54,6 +54,8 @@ export async function microsftCallback(req: Request, res: Response) {
       userId,
       provider: "microsoft",
       providerAccountId: encrypt(providerAccountId),
+      providerIMAP: encrypt("outlook.office365.com"),
+      providerSMTP: encrypt("smtp.office365.com"),
       accessToken: encrypt(tokens.accessToken),
       refreshToken: "",
       expiresAt: tokens.expiresOn ? new Date(tokens.expiresOn) : null,
@@ -86,7 +88,7 @@ export async function microsftCallback(req: Request, res: Response) {
     }
 
     if (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") {
-      await syncEmails("outlook.office365.com", account.id);
+      await syncEmails(account.id);
     }
 
     await publish("message:system", {

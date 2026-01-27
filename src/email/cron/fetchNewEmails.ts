@@ -8,7 +8,7 @@ import { decrypt } from "@/utils/encryption";
 
 const fetchNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
 
-async function fetchNewEmails(host: string, accountId: string) {
+async function fetchNewEmails(accountId: string) {
   const account = await getAccountById(accountId);
   if (!account?.accessToken) {
     console.warn("No access token found for account", accountId);
@@ -16,7 +16,7 @@ async function fetchNewEmails(host: string, accountId: string) {
   }
 
   const client = imapClient({
-    host,
+    host: decrypt(account.providerIMAP),
     emailAddress: decrypt(account.providerAccountId),
     accessToken: decrypt(account.accessToken),
   });
@@ -49,10 +49,10 @@ async function fetchNewEmails(host: string, accountId: string) {
 }
 
 new Worker("fetch-new-emails", async (job) => {
-    const { host, accountId } = job.data;
-    if (host && accountId) {
+    const { accountId } = job.data;
+    if (accountId) {
       try {
-        await fetchNewEmails(host, accountId);
+        await fetchNewEmails(accountId);
       } catch (error) {
         console.error(`Failed to fetch new emails for ${accountId}:`, error);
         const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
@@ -64,14 +64,14 @@ new Worker("fetch-new-emails", async (job) => {
   connection: { url: process.env.REDIS_URL! },
 });
 
-export async function syncEmails(host: string, accountId: string) {
+export async function syncEmails(accountId: string) {
   await fetchNewEmailsQueue.upsertJobScheduler(`fetch-emails:${accountId}`,
     {
       every: 3 * 60 * 1000,
     },
     {
       name: "fetch-emails",
-      data: { host, accountId },
+      data: { accountId },
       opts: {
       attempts: 3,
       backoff: { type: "exponential" },
