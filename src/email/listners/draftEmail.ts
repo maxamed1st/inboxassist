@@ -3,7 +3,7 @@ import { getEmailById, insertEmail, updateEmailById } from "@/db/queries/emails"
 import { publish } from "@/events/broker";
 import { decrypt, encrypt } from "@/utils/encryption";
 
-export async function createDraft({ userId, content, inReplyToId, threadId }: { userId: string, content: string, to?: string, inReplyToId?: string, threadId?: string }) {
+export async function createDraft({ userId, content, inReplyToId, threadId }: { userId: string, content: string, inReplyToId?: string, threadId?: string }) {
   if(!inReplyToId) {
     throw new Error("Composed reply missing inReplyToId");
   }

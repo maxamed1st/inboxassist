@@ -21,7 +21,7 @@ export interface MessagePayloads {
 
   // email events
   "email:new": { userId: string, emailId: string };
-  "email:composed": { userId: string, content: string, to?: string, inReplyToId?: string, threadId?: string };
+  "email:composed": { userId: string, content: string,  inReplyToId?: string, threadId?: string };
   "email:edited": { userId: string, emailId: string, content: string,  threadId?: string };
   "email:toggleReadStatus": { userId: string, emailId: string, threadId?: string }
   "email:connect": { userId: string, platform: string };
