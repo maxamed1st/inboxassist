@@ -42,10 +42,6 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
       throw new Error("Failed to get draft from nlp client");
     }
 
-    if(!userId) {
-        throw new Error(`userId for the email to edit: ${userId}`)
-    }
-
     if(!emailId) {
         throw new Error(`Email missing for the email to edit: ${userId}`)
     }
