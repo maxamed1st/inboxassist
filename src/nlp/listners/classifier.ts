@@ -51,7 +51,6 @@ export async function classifyUserIntent({ userId, messageId, content }: { userI
       throw new Error("Failed to classify user intent");
     }
 
-
     if(message === "compose" || message === "edit") {
       if(!emailId) {
         throw new Error(`EmailId missing for compose/edit action ${messageId}`);
