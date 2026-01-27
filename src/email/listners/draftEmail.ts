@@ -55,12 +55,12 @@ export async function createDraft({ userId, content, inReplyToId, threadId }: { 
   publish("message:assistant", { userId, emailId: draft.id, content: `${content} \n\n Send or edit?`, threadId })
 }
 
-export async function updateDraft({ id, content, threadId }: { id: string, content: string, threadId?: string }) {
-  const updated = await updateEmailById(id, { content: { text: content } });
+export async function updateDraft({ userId, emailId, content, threadId }: { userId: string, emailId: string, content: string, threadId?: string }) {
+  const updated = await updateEmailById(emailId, { content: { text: encrypt(content) } });
 
   if(!updated) {
-    throw new Error(`Failed to update draft: ${id}`);
+    throw new Error(`Failed to update draft: ${emailId}`);
   }
 
-  await publish("message:assistant", { userId: updated.userId, emailId: updated.userId, content: `${content} \n\n Send or edit further?`, threadId })
+  await publish("message:assistant", { userId, emailId, content: `${content} \n\n Send or edit further?`, threadId })
 }
