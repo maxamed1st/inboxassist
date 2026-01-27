@@ -17,7 +17,7 @@ export default async function handleIncomingMessage() {
           \n You can also use /connect to authorize your email.";
         break;
       default:
-        messageText = "Welcome to inboxassist - Your frictionless email assist.  \n Run /connect to start managing your emails";
+        messageText = "Welcome to inboxassist - Your frictionless email assist. \nRun /connect to start managing your emails";
         break;
     }
     await ctx.reply(messageText);
