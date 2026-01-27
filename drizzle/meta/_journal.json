@@ -92,6 +92,13 @@
       "when": 1767986627034,
       "tag": "0012_cuddly_ultron",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1769528470286,
+      "tag": "0013_chemical_the_stranger",
+      "breakpoints": true
     }
   ]
 }
