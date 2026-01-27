@@ -1,21 +1,12 @@
 import { publish } from "@/events/broker";
 import { nlpClient } from "@/nlp/client";
 import {classifier } from "@/nlp/utils/systemPrompt";
-import { getMessageById } from "@/db/queries/messages";
 import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
 import { buildContext } from "../utils/context";
 
-export async function classifyUserIntent({ userId, messageId, content }: { userId: string, messageId: string, content: string }) {
+export async function classifyUserIntent({ userId, messageId, content, emailId, threadId }: { userId: string, messageId: string, content: string, emailId?: string, threadId?: string }) {
   try {
-    const userMessage = await getMessageById(messageId);
-    if(!userMessage) {
-      throw new Error("Failed to fetch user message");
-    }
-
-    const emailId = userMessage.emailId ?? undefined;
-    const threadId = userMessage.threadId ?? undefined;
-
     const { messages } = await buildContext({
       userId,
       systemPrompt: classifier,
