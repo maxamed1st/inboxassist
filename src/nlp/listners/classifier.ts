@@ -78,7 +78,7 @@ export async function classifyUserIntent({ userId, messageId, content }: { userI
 
     else if (message === "toggleReadStatus") {
       if(!emailId) {
-        throw new Error(`EmailId missing for move action ${messageId}`);
+        throw new Error(`EmailId missing for toggle action ${messageId}`);
       }
 
       await publish("email:toggleReadStatus", { userId, emailId, threadId });
