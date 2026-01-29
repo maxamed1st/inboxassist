@@ -1,0 +1,1 @@
+ALTER TABLE "emails" ALTER COLUMN "from" SET DATA TYPE text;
