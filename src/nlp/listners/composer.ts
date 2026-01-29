@@ -33,17 +33,17 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
     const result = response.choices[0]?.message.content;
 
     if(!result) {
-      throw new Error("Failed to get response from nlp composer");
+      throw new Error("composer: Failed to get response from nlp composer");
     }
 
     const parsed = JSON.parse(result) as { subject: string, content: string };
 
     if (!parsed.content) {
-      throw new Error("Failed to get draft from nlp client");
+      throw new Error("composer: Failed to get draft from nlp client");
     }
 
     if(!emailId) {
-        throw new Error(`Email missing for the email to edit: ${userId}`)
+        throw new Error(`comopser: Email id missing: ${userId}`)
     }
 
     if(!email) {
@@ -60,6 +60,6 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
       await publish("email:composed", { userId, content: `${parsed.content}`, inReplyToId: emailId, subject: parsed.subject, threadId })
     }
   } catch (err) {
-    throw new Error(`Failed to generate email ${emailId}: ${err}`)
+    throw new Error(`composer: Failed to generate email ${emailId}: ${err}`)
   }
 }
