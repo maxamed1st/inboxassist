@@ -19,8 +19,8 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
 
   if(user) {
     messages.push({
-      role: "user",
-      content: `Here is the current users information:\nDisplay name: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
+      role: "system",
+      content: `Corrent User:\nDisplay name: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
     })
   }
 
@@ -29,7 +29,7 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
 
   if (email) {
     messages.push({
-      role: "user",
+      role: "system",
       content: `from: ${email.from} \n\n subject: ${email.subject} \n\n content: ${email.content}`,
     })
   }
