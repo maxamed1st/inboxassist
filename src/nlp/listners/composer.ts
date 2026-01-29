@@ -3,11 +3,12 @@ import { nlpClient } from "../client";
 import { composer } from "@/nlp/utils/systemPrompt";
 import { buildContext } from "../utils/context";
 import { zodResponseFormat } from "openai/helpers/zod.mjs";
+import { decrypt } from "@/utils/encryption";
 import z from "zod";
 
 export async function composeEmail({ userId, emailId, userMessage, threadId }: { userId: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
-    const { messages } = await buildContext({
+    const { messages, email, user } = await buildContext({
       userId,
       systemPrompt: composer,
       userMessage,
@@ -22,7 +23,6 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
         z.object({  
           subject: z.string(),  
           content: z.string(),
-          edited: z.string()
         }),  
         'composer'  
       ),
@@ -36,7 +36,7 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
       throw new Error("Failed to get response from nlp composer");
     }
 
-    const parsed = JSON.parse(result) as { subject: string, content: string, edited: boolean };
+    const parsed = JSON.parse(result) as { subject: string, content: string };
 
     if (!parsed.content) {
       throw new Error("Failed to get draft from nlp client");
@@ -46,12 +46,20 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
         throw new Error(`Email missing for the email to edit: ${userId}`)
     }
 
-    if(parsed.edited) {
+    if(!email) {
+        throw new Error(`composer: Failed to get email object from context builder: ${userId}`)
+    }
+
+    if(!user) {
+        throw new Error(`composer: Failed to get user object from context builder: ${userId}`)
+    }
+
+    if(email.from == decrypt(user.email!)) {
       await publish("email:edited", { userId, emailId, content: `${parsed.content}`, threadId })
     } else {
       await publish("email:composed", { userId, content: `${parsed.content}`, inReplyToId: emailId, subject: parsed.subject, threadId })
     }
   } catch (err) {
-    throw new Error(`Failed to summerize email ${emailId}: ${err}`)
+    throw new Error(`Failed to generate email ${emailId}: ${err}`)
   }
 }
