@@ -54,7 +54,7 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
         throw new Error(`composer: Failed to get user object from context builder: ${userId}`)
     }
 
-    if(decrypt(email.from) == decrypt(user.email!)) {
+    if(email.from == decrypt(user.email!)) {
       await publish("email:edited", { userId, emailId, content: `${parsed.content}`, threadId })
     } else {
       await publish("email:composed", { userId, content: `${parsed.content}`, inReplyToId: emailId, subject: parsed.subject, threadId })
