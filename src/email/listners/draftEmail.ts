@@ -33,7 +33,7 @@ export async function createDraft({ userId, content, inReplyToId, subject, threa
     accountId: account.id,
     externalEmailId: encrypt(crypto.randomUUID()),
     imapUid: 0,
-    from: encrypt(account.providerAccountId),
+    from: account.providerAccountId,
     to: encrypt(JSON.stringify(toAddresses)),
     cc: email.cc,
     inReplyTo: email.externalEmailId,
