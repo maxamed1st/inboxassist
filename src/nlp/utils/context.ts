@@ -53,5 +53,5 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
     });
   }
 
-  return { messages, email }
+  return { messages, email, user }
 }
