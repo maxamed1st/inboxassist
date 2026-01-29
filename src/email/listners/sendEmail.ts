@@ -48,9 +48,11 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
     return;
   }
 
+  const reciever = decrypt(email.to);
+
   await publish("message:assistant", {
       userId: email.userId!,
-      content: `Email sent to ${JSON.parse(decrypt(email.to))}`,
+      content: `Email sent to ${JSON.parse(reciever)}`,
       emailId: updatedEmail.id,
       threadId
   });
