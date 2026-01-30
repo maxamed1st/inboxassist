@@ -1,11 +1,8 @@
 import type { Request, Response } from "express";
 import { stripe } from "@/billing/client";
 import type Stripe from "stripe";
-import { insertSubscription, updateSubscriptionById } from "@/db/queries/billing";
 import { getSubscriptionData } from "@/billing/utils/getSubscriptionData";
-import { updateUserById } from "@/db/queries/user";
-import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
-import { getAccountByUserId } from "@/db/queries/accounts";
+import { updateSub } from "../utils/updateSubscription";
 
 export async function stripeWebhook(req: Request, res: Response) {
   const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -18,84 +15,60 @@ export async function stripeWebhook(req: Request, res: Response) {
       stripeSignature!,
       stripeWebhookSecret
     );
-    } catch (err) {
-      console.error("Error constructing Stripe event:", err);
-      return res.status(400).send(`Webhook Error: Failed to construct event`);
+  } catch (err) {
+    console.error("Error constructing Stripe event:", err);
+    return res.status(400).send(`Webhook Error: Failed to construct event`);
+  }
+
+  const subscription = event.data.object as Stripe.Subscription;
+
+  switch (event.type) {
+    case "customer.subscription.created": {
+      const values = getSubscriptionData(subscription);
+
+      const subUpdated = await updateSub({
+        type: "insert",
+        values: { ...values, createdAt: new Date(), updatedAt: new Date() },
+        subscription,
+      });
+
+      if (!subUpdated) {
+        return res.status(500).send("Internal Server Error");
+      }
+
+      break;
     }
 
-    const subscription = event.data.object as Stripe.Subscription;
-    let values;
-    let sub;
-    let updatedUser;
+    case "customer.subscription.updated": {
+      const values = getSubscriptionData(subscription);
 
-    switch (event.type) {
-      case "customer.subscription.created":
-        values = getSubscriptionData(subscription);
-        sub = await insertSubscription({
-            ...values,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-        if (!sub) {
-          console.error("Failed to insert subscription:");
-          return res.status(500).send("Internal Server Error");
-        }
-        updatedUser = await updateUserById(sub.userId, {
-          subscriptionId: sub.id,
-          subscriptionStatus: sub.status,
-        });
-        if (!updatedUser) {
-          console.error("Failed to update user with subscription info:");
-          return res.status(500).send("Internal Server Error");
-        }
-        break;
+      const subUpdated = await updateSub({
+        type: "update",
+        values: { ...values, updateAt: new Date() },
+        subscription
+      })
 
-      case "customer.subscription.updated":
-        values = getSubscriptionData(subscription);
-        sub = await updateSubscriptionById(subscription.id, {
-            ...values,
-            updatedAt: new Date(),
-        });
-        if (!sub) {
-          console.error("Failed to update subscription:");
-          return res.status(500).send("Internal Server Error");
-        }
-        updatedUser = await updateUserById(sub.userId, {
-          subscriptionId: sub.id,
-          subscriptionStatus: sub.status,
-        });
-        if (!updatedUser) {
-          console.error("Failed to update user with subscription info:");
-          return res.status(500).send("Internal Server Error");
-        }
-        break;
+      if (!subUpdated) {
+        return res.status(500).send("Internal Server Error");
+      }
 
-      case "customer.subscription.deleted":
-        values = getSubscriptionData(subscription);
-        sub = await updateSubscriptionById(subscription.id, {
-            ...values,
-            updatedAt: new Date(),
-        });
-        if (!sub) {
-          console.error("Failed to update subscription:");
-          return res.status(500).send("Internal Server Error");
-        }
-        updatedUser = await updateUserById(sub.userId, {
-          subscriptionId: sub.id,
-          subscriptionStatus: sub.status,
-        });
-        if (!updatedUser) {
-          console.error("Failed to update user with subscription info:");
-          return res.status(500).send("Internal Server Error");
-        }
-
-        // remove email sync if it exists
-        const account = await getAccountByUserId(sub.userId);
-        if (!account) {
-          console.error("Failed to find account for user:", sub.userId);
-          return res.status(500).send("Internal Server Error");
-        }
-        await cancelEmailSync(account.id);
-        break;
+      break;
     }
+
+    case "customer.subscription.deleted": {
+      const values = getSubscriptionData(subscription);
+
+      const subUpdated = await updateSub({
+        type: "delete",
+        values: { ...values, updatedAt: new Date() },
+        subscription,
+      })
+
+      if (!subUpdated) {
+        return res.status(500).send("Internal Server Error");
+      }
+
+      break;
+    }
+  }
 }
