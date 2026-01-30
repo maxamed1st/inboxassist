@@ -27,7 +27,7 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
   try {
     // find correct path
     const boxes = await client.list()
-    let targetBox = boxes.find(b => b.name.trim().toLowerCase() == folder.trim().toLowerCase()) || boxes.find(b => b.name.trim().toLowerCase().includes(folder.trim().toLowerCase())) 
+    const targetBox = boxes.find(b => b.name.trim().toLowerCase() == folder.trim().toLowerCase()) || boxes.find(b => b.name.trim().toLowerCase().includes(folder.trim().toLowerCase())) 
 
     if(!targetBox) {
       await publish("message:assistant", {
