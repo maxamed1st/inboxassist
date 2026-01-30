@@ -5,6 +5,7 @@ import { defineConfig } from "eslint/config";
 import stylistic from "@stylistic/eslint-plugin";
 
 export default defineConfig([
+  tseslint.configs.recommended,
   {
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     plugins: {
@@ -12,7 +13,9 @@ export default defineConfig([
       "@stylistic": stylistic
     },
     extends: ["js/recommended"],
-    languageOptions: { globals: globals.node }
+    languageOptions: { globals: globals.node },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
   },
-  tseslint.configs.recommended,
 ]);
