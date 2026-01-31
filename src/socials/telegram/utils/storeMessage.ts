@@ -3,7 +3,7 @@ import { getMessageByPlatformMessageId, insertMessage } from "@/db/queries/messa
 import { Message } from "telegraf/types";
 import { encrypt } from "@/utils/encryption";
 
-export async function storeMessage(message: Message, role: "system" | "user" | "assistant", emailId?: string, threadId?: string) {
+export async function storeMessage(message: Message, role: "user" | "assistant", emailId?: string, threadId?: string) {
   try {
     //get userId from telegram user
     const telegramUserId = message.chat.id.toString();
