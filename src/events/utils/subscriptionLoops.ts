@@ -1,4 +1,4 @@
-import { redisClient } from "@/events/client";
+import { redisClient } from "@/events/clients";
 import { processMessage } from "@/events/utils/processMessage";
 import { Channels, MessagePayloads } from "@/events/types";
 

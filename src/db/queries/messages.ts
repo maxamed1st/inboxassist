@@ -1,5 +1,5 @@
 import { and, eq, or } from "drizzle-orm";
-import { db } from "../client";
+import { db } from "@/db/clients";
 import { messagesTable } from "../schema";
 
 export async function insertMessage(values: typeof messagesTable.$inferInsert) {

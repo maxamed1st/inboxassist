@@ -1,4 +1,4 @@
-import { redisClient } from "@/events/client";
+import { redisClient } from "@/events/clients";
 import type { Channels, MessagePayloads } from "@/events/types";
 import { consumeLoop, retryLoop } from "@/events/utils/subscriptionLoops";
 

@@ -1,5 +1,5 @@
 import { publish } from "@/events/broker";
-import { nlpClient } from "@/nlp/client";
+import { nlpClient } from "@/nlp/clients";
 import { generic } from "@/nlp/utils/systemPrompt";
 import { buildContext } from "../utils/context";
 

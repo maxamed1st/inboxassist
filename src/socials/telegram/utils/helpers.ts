@@ -1,7 +1,7 @@
 import { getUserIdByTelegramId, insertConnection } from "@/db/queries/connections"
 import { insertUser } from "@/db/queries/user"
 import { publish } from "@/events/broker";
-import { bot } from "../client";
+import { bot } from "@/socials/telegram/clients";
 import { queueTrialCancelation } from "./cron/cancelTrial";
 
 export async function initializeUser(telegramUserId: string) {

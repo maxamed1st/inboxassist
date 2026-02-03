@@ -1,4 +1,4 @@
-import { db } from "@/db/client";
+import { db } from "@/db/clients";
 import { subscriptionsTable } from "@/db/schema";
 import { and, or, eq } from "drizzle-orm";
 

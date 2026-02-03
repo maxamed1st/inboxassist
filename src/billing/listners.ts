@@ -1,4 +1,4 @@
-import { stripe } from "@/billing/client";
+import { stripe } from "@/billing/clients";
 import { getSubscriptionByUserId } from "@/db/queries/billing";
 import { getUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";

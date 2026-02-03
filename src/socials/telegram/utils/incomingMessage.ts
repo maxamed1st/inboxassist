@@ -1,4 +1,4 @@
-import { bot } from "@/socials/telegram/client";
+import { bot } from "@/socials/telegram/clients";
 import { connectEmail, disconnectEmail, initializeUser, manageSubscription, subscribe } from "@/socials/telegram/utils/helpers";
 import { storeMessage } from "./storeMessage";
 import { publish } from "@/events/broker";

@@ -1,5 +1,5 @@
 import { usersTable } from "../schema";
-import { db } from "../client";
+import { db } from '@/db/clients';
 import { eq } from "drizzle-orm";
 
 export async function insertUser(values: typeof usersTable.$inferInsert) {

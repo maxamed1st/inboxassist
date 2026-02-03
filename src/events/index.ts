@@ -1,4 +1,4 @@
-import "@/events/client";
+import "@/events/clients";
 
 export default async function main() {}
 

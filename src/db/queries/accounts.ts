@@ -1,4 +1,4 @@
-import { db } from "@/db/client";
+import { db } from "@/db/clients";
 import { accountsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 

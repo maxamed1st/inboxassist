@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { stripe } from "@/billing/client";
+import { stripe } from "@/billing/clients";
 import type Stripe from "stripe";
 import { getSubscriptionData } from "@/billing/utils/getSubscriptionData";
 import { updateSub } from "../utils/updateSubscription";

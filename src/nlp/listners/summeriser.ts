@@ -1,5 +1,5 @@
 import { publish } from "@/events/broker";
-import { nlpClient } from "../client";
+import { nlpClient } from "@/nlp/clients";
 import { storeSummary } from "@/nlp/utils/helpers";
 import { summerizer } from "@/nlp/utils/systemPrompt";
 import { buildContext } from "../utils/context";

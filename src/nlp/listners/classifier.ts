@@ -1,5 +1,5 @@
 import { publish } from "@/events/broker";
-import { nlpClient } from "@/nlp/client";
+import { nlpClient } from "@/nlp/clients";
 import {classifier } from "@/nlp/utils/systemPrompt";
 import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
