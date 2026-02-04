@@ -18,6 +18,7 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
 
     const response = await nlpClient.chat.completions.create({
       model: "gpt-4o-mini",
+      store: false,
       messages: messages,
       response_format: zodResponseFormat(  
         z.object({  

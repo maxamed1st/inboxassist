@@ -14,6 +14,7 @@ export async function summerizeEmail({ userId, emailId }: { userId: string, emai
 
     const response = await nlpClient.chat.completions.create({
       model: "gpt-4o-mini",
+      store: false,
       messages,
       temperature: 0.3,
       max_tokens: 200

@@ -15,9 +15,10 @@ export async function genericGPT({ userId, emailId, userMessage, threadId }: { u
     
     const response = await nlpClient.chat.completions.create({
       model: "gpt-4o-mini",
+      store: false,
       messages: messages,
-        temperature: 0.7,
-        max_tokens: 250
+      temperature: 0.7,
+      max_tokens: 250
     });
 
   const message = response.choices[0]?.message.content;

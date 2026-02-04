@@ -17,7 +17,8 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
 
     const response = await nlpClient.chat.completions.create({
       model: "gpt-4o-mini",
-        messages: messages,
+      store: false,
+      messages: messages,
       response_format: zodResponseFormat(  
         z.object({  
           category: z.enum(['compose', 'edit', 'send', 'move', 'toggleReadStatus', 'other']),  
