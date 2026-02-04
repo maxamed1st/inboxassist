@@ -14,7 +14,7 @@ export async function publish<T extends Channels>(
   const stream = `${STREAM_PREFIX}${channel}`;
   const payload = JSON.stringify({ message, retries: 0 });
   await redisClient.xadd(stream, "*", "data", payload);
-  console.log(`[PUBLISH] ${channel}`, message);
+  console.log(`[PUBLISH] ${channel}`);
 }
 
 /**
