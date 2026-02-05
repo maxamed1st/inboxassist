@@ -3,8 +3,37 @@ import { publish } from "@/events/broker";
 import { googleOauth2Client } from "@/email/clients";
 import { getAccountById, updateAccountById } from "@/db/queries/accounts";
 import { encrypt, decrypt} from "@/utils/encryption"
+import { microsoftOauthClient } from "@/email/clients";
 
 // refresh access token when expired
+async function refreshMicrosoftTokens(accountId: string) {
+  const account = await getAccountById(accountId);
+  if (!account) {
+    throw new Error("No account found for" + accountId);
+  }
+
+  const allAccounts = await microsoftOauthClient.getTokenCache().getAllAccounts();
+  const userAccount = allAccounts.find(a => a.username == decrypt(account.providerAccountId));
+
+  const tokens = await microsoftOauthClient.acquireTokenSilent({
+    account: userAccount!,
+    scopes: [
+        "https://outlook.office.com/IMAP.AccessAsUser.All",
+        "https://outlook.office.com/SMTP.send",
+        "offline_access",
+      ],
+  });
+
+  const updatedAccount = await updateAccountById(accountId, {
+    accessToken: encrypt(tokens.accessToken),
+    expiresAt: new Date(tokens.expiresOn!)
+  });
+
+  if(!updatedAccount) {
+    throw new Error(`Failed to referesh tokens for: ${accountId}`);
+  }
+}
+
 async function refreshGmailTokens(accountId: string) {
   const account = await getAccountById(accountId);
   if (!account) {
@@ -46,6 +75,21 @@ new Worker("refresh-account-tokens", async (job) => {
           return;
         }
         throw error; // let the job be retried
+      }
+    }
+    
+    if (provider === "microsoft" && accountId) {
+      try {
+        await refreshMicrosoftTokens(accountId);
+      } catch(error) {
+        console.error(`Failed to refresh tokens for ${accountId}:`, error);
+        const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
+        if (isLastAttempt) {
+          // reauthenticate user
+          publish("email:connect", { userId, platform: "microsoft" });
+          return;
+        }
+        throw error;
       }
     }
 }, {
