@@ -12,11 +12,16 @@ async function refreshMicrosoftTokens(accountId: string) {
     throw new Error("No account found for" + accountId);
   }
 
-  const allAccounts = await microsoftOauthClient.getTokenCache().getAllAccounts();
-  const userAccount = allAccounts.find(a => a.username == decrypt(account.providerAccountId));
+  const homeAccountId = decrypt(account.refreshToken);
+
+  const userAccount = await microsoftOauthClient.getTokenCache().getAccountByHomeId(homeAccountId);
+
+  if(!userAccount) {
+    throw new Error(`refresh: Failed to get userAccount from cache: ${accountId}`);
+  }
 
   const tokens = await microsoftOauthClient.acquireTokenSilent({
-    account: userAccount!,
+    account: userAccount,
     scopes: [
         "https://outlook.office.com/IMAP.AccessAsUser.All",
         "https://outlook.office.com/SMTP.send",

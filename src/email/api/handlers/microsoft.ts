@@ -51,6 +51,7 @@ export async function microsftCallback(req: Request, res: Response) {
     // prepare values for DB insert
     const providerAccountId = profile.mail || profile.userPrincipalName;
     const now = new Date();
+    const refreshToken = tokens.account?.homeAccountId // store homeAccountId to referesh tokens later
     const values = {
       userId,
       provider: "microsoft",
@@ -58,7 +59,7 @@ export async function microsftCallback(req: Request, res: Response) {
       providerIMAP: encrypt("outlook.office365.com"),
       providerSMTP: encrypt("smtp.office365.com"),
       accessToken: encrypt(tokens.accessToken),
-      refreshToken: "",
+      refreshToken: refreshToken ? encrypt(refreshToken) : "",
       expiresAt: tokens.expiresOn ? new Date(tokens.expiresOn) : null,
       updatedAt: now,
     };
