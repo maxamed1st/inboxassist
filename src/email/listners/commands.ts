@@ -48,10 +48,7 @@ export async function disconnect({ userId }: { userId: string }){
   }
 
   await cancelEmailSync(res.id);
-
-  if(res.provider === "google") {
-    await stopRefereshingTokens(res.id); 
-  }
+  await stopRefereshingTokens(res.id);
 
   await publish("message:system", {
     userId,
