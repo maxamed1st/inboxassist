@@ -114,7 +114,7 @@ export async function keepTokensFresh( provider: string, accountId: string) {
       data: { provider, accountId },
       opts: {
       attempts: 3,
-      backoff: { type: "exponential", delay: 60000 },
+      backoff: { type: "exponential" },
       removeOnComplete: true,
       removeOnFail: false,
       },
