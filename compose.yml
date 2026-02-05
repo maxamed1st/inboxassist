@@ -1,11 +1,13 @@
+name: inboxassist_dev
+
 services:
   app:
     build:
       context: .
       target: dev
-    container_name: inboxassist
+    container_name: inboxassist_dev
     ports:
-      - "127.0.0.1:6000:3000"
+      - "127.0.0.1:6500:3000"
     env_file:
       - .env
     volumes:
@@ -22,7 +24,7 @@ services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: inboxassist_pg
+    container_name: inboxassist_pg_dev
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -42,7 +44,7 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: inboxassist_redis
+    container_name: inboxassist_redis_dev
     restart: unless-stopped
     networks:
       - inboxassist
