@@ -5,6 +5,7 @@ import { encrypt } from "@/utils/encryption";
 import type { Request, Response } from "express";
 import { getUserById, updateUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
+import { keepTokensFresh } from "@/email/cron/refreshTokens";
 
 export async function microsftCallback(req: Request, res: Response) {
   try {
@@ -89,6 +90,7 @@ export async function microsftCallback(req: Request, res: Response) {
 
     if (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") {
       await syncEmails(account.id);
+      await keepTokensFresh("microsoft", account.id);
     }
 
     await publish("message:system", {

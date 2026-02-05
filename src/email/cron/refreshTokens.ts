@@ -62,7 +62,7 @@ async function refreshGmailTokens(accountId: string) {
 const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
 
 new Worker("refresh-account-tokens", async (job) => {
-    const { provider, accountId, userId } = job.data;
+    const { provider, accountId } = job.data;
     if (provider === "google" && accountId) {
       try {
         await refreshGmailTokens(accountId);
@@ -71,7 +71,8 @@ new Worker("refresh-account-tokens", async (job) => {
         const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
         if (isLastAttempt) {
           // reauthenticate user
-          publish("email:connect", { userId, platform: "gmail" });
+          const account = await getAccountById(accountId);
+          publish("email:connect", { userId: account?.userId!, platform: "gmail" });
           return;
         }
         throw error; // let the job be retried
@@ -86,7 +87,8 @@ new Worker("refresh-account-tokens", async (job) => {
         const isLastAttempt = job.attemptsMade + 1 >= (job.opts.attempts ?? 1);
         if (isLastAttempt) {
           // reauthenticate user
-          publish("email:connect", { userId, platform: "microsoft" });
+          const account = await getAccountById(accountId);
+          publish("email:connect", { userId: account?.userId!, platform: "microsoft" });
           return;
         }
         throw error;
