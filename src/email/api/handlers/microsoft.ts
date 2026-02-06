@@ -79,7 +79,7 @@ export async function microsftCallback(req: Request, res: Response) {
       providerIMAP: encrypt("outlook.office365.com"),
       providerSMTP: encrypt("smtp.office365.com"),
       accessToken: encrypt(tokens.accessToken),
-      refreshToken: userTokenCache,
+      refreshToken: encrypt(userTokenCache),
       expiresAt: tokens.expiresOn ? new Date(tokens.expiresOn) : null,
       updatedAt: now,
     };
