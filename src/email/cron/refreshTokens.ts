@@ -94,7 +94,7 @@ new Worker("refresh-account-tokens", async (job) => {
         if (isLastAttempt) {
           // reauthenticate user
           const account = await getAccountById(accountId);
-          publish("message:system", { userId: account?.userId!, content: "You need to sync your emails again"});
+          publish("message:system", { userId: account?.userId!, content: "You need to sync your email again"});
           publish("email:connect", { userId: account?.userId!, platform: "microsoft" });
           return;
         }
