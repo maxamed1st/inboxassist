@@ -4,6 +4,7 @@ import { googleOauth2Client } from "@/email/clients";
 import { getAccountById, updateAccountById } from "@/db/queries/accounts";
 import { encrypt, decrypt} from "@/utils/encryption"
 import { microsoftOauthClient } from "@/email/clients";
+import { cancelEmailSync } from "./fetchNewEmails";
 
 // refresh access token when expired
 async function refreshMicrosoftTokens(accountId: string) {
@@ -96,6 +97,8 @@ new Worker("refresh-account-tokens", async (job) => {
           const account = await getAccountById(accountId);
           publish("message:system", { userId: account?.userId!, content: "You need to sync your email again"});
           publish("email:connect", { userId: account?.userId!, platform: "microsoft" });
+          stopRefereshingTokens(accountId);
+          cancelEmailSync(accountId);
           return;
         }
         throw error;
