@@ -47,6 +47,11 @@ export async function microsftCallback(req: Request, res: Response) {
       return res.status(401).json({ error: "Missing tokens" });
     }
 
+    //extract user token cache
+    const homeAccountId = tokens.account?.homeAccountId!;
+    const fullCache = microsoftOauthClient.getTokenCache().serialize();
+    const userTokenCache = partitionTokenCache(fullCache, homeAccountId);
+
     // get the email address
     const graphTokens = await microsoftOauthClient.acquireTokenSilent({
       account: tokens.account!,
@@ -63,11 +68,6 @@ export async function microsftCallback(req: Request, res: Response) {
     if (!profile || (!profile.mail && !profile.userPrincipalName)) {
       throw new Error("microsoft callback missing email field");
     }
-
-    //extract user token cache
-    const homeAccountId = tokens.account?.homeAccountId!;
-    const fullCache = microsoftOauthClient.getTokenCache().serialize();
-    const userTokenCache = partitionTokenCache(fullCache, homeAccountId);
 
     // prepare values for DB insert
     const providerAccountId = profile.mail || profile.userPrincipalName;
