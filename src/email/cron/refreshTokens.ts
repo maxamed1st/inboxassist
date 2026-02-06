@@ -117,8 +117,8 @@ new Worker("refresh-account-tokens", async (job) => {
 export async function keepTokensFresh( provider: string, accountId: string) {
   await refreshTokensQueue.upsertJobScheduler(`refresh-tokens:${accountId}`,
     {
-      every: 50 * 60 * 1000,
-      startDate: new Date(Date.now() + 50 * 60 * 1000)
+      every: 55 * 60 * 1000,
+      startDate: new Date(Date.now() + 55 * 60 * 1000)
     },
     {
       name: "refresh-tokens",
