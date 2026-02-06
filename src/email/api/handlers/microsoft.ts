@@ -10,7 +10,7 @@ import { keepTokensFresh } from "@/email/cron/refreshTokens";
 function partitionTokenCache(fullcache: string, homeAccountId: string) {
   const cache = JSON.parse(fullcache);
 
-  for (const key of cache) {
+  for (const key of ["AccessToken", "RefreshToken", "IdToken", "Account"]) {
     if(cache[key]) {
       cache[key] = cache[key].filter( (t: any) => t.homeAccountId == homeAccountId);
     }
