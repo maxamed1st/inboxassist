@@ -31,8 +31,11 @@ async function refreshMicrosoftTokens(accountId: string) {
       ],
   });
 
+  const serializedCache = microsoftOauthClient.getTokenCache().serialize(); 
+
   const updatedAccount = await updateAccountById(accountId, {
     accessToken: encrypt(tokens.accessToken),
+    refreshToken: encrypt(serializedCache),
     expiresAt: new Date(tokens.expiresOn!)
   });
 
