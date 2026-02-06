@@ -13,6 +13,9 @@ async function refreshMicrosoftTokens(accountId: string) {
     throw new Error("No account found for" + accountId);
   }
 
+  // clear cache state
+  microsoftOauthClient.getTokenCache().deserialize("");
+
   const userCache = decrypt(account.refreshToken);
   microsoftOauthClient.getTokenCache().deserialize(userCache)
 
