@@ -11,6 +11,10 @@ function partitionTokenCache(fullcache: string, homeAccountId: string) {
   const cache = JSON.parse(fullcache);
 
   for (const key of ["AccessToken", "RefreshToken", "IdToken", "Account"]) {
+    if(!Array.isArray(cache[key])) {
+      cache[key] = [];
+    }
+
     if(cache[key]) {
       cache[key] = cache[key].filter( (t: any) => t.homeAccountId == homeAccountId);
     }
