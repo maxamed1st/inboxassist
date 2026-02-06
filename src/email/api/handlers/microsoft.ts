@@ -7,6 +7,18 @@ import { getUserById, updateUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
 import { keepTokensFresh } from "@/email/cron/refreshTokens";
 
+function partitionTokenCache(fullcache: string, homeAccountId: string) {
+  const cache = JSON.parse(fullcache);
+
+  for (const key of cache) {
+    if(cache[key]) {
+      cache[key] = cache[key].filter( (t: any) => t.homeAccountId == homeAccountId);
+    }
+  }
+
+  return JSON.stringify(cache);
+}
+
 export async function microsftCallback(req: Request, res: Response) {
   try {
     const query = req.query as { code?: string; state?: string };
@@ -48,10 +60,14 @@ export async function microsftCallback(req: Request, res: Response) {
       throw new Error("microsoft callback missing email field");
     }
 
+    //extract user token cache
+    const homeAccountId = tokens.account?.homeAccountId!;
+    const fullCache = microsoftOauthClient.getTokenCache().serialize();
+    const userTokenCache = partitionTokenCache(fullCache, homeAccountId);
+
     // prepare values for DB insert
     const providerAccountId = profile.mail || profile.userPrincipalName;
     const now = new Date();
-    const refreshToken = tokens.account?.homeAccountId // store homeAccountId to referesh tokens later
     const values = {
       userId,
       provider: "microsoft",
@@ -59,7 +75,7 @@ export async function microsftCallback(req: Request, res: Response) {
       providerIMAP: encrypt("outlook.office365.com"),
       providerSMTP: encrypt("smtp.office365.com"),
       accessToken: encrypt(tokens.accessToken),
-      refreshToken: refreshToken ? encrypt(refreshToken) : "",
+      refreshToken: userTokenCache,
       expiresAt: tokens.expiresOn ? new Date(tokens.expiresOn) : null,
       updatedAt: now,
     };
