@@ -9,15 +9,20 @@ import { keepTokensFresh } from "@/email/cron/refreshTokens";
 
 function partitionTokenCache(fullcache: string, homeAccountId: string) {
   const cache = JSON.parse(fullcache);
+  const filtered: any = {}
 
   for (const key of ["AccessToken", "RefreshToken", "IdToken", "Account", "AppMetaData"]) {
-    if(!Array.isArray(cache[key])) {
-      cache[key] = [];
+    if (cache[key]) {
+      filtered[key] = {};
+      for (const [k, v] of Object.entries(cache[key])) {
+        if ((v as any).home_account_id == homeAccountId) {
+          filtered[key][k] = v;
+        }
+      }
     }
-    cache[key] = cache[key].filter( (t: any) => t.homeAccountId == homeAccountId);
   }
 
-  return JSON.stringify(cache);
+  return JSON.stringify(filtered);
 }
 
 export async function microsftCallback(req: Request, res: Response) {
