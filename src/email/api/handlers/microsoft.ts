@@ -14,10 +14,7 @@ function partitionTokenCache(fullcache: string, homeAccountId: string) {
     if(!Array.isArray(cache[key])) {
       cache[key] = [];
     }
-
-    if(cache[key]) {
-      cache[key] = cache[key].filter( (t: any) => t.homeAccountId == homeAccountId);
-    }
+    cache[key] = cache[key].filter( (t: any) => t.homeAccountId == homeAccountId);
   }
 
   return JSON.stringify(cache);
