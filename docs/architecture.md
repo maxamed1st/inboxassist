@@ -149,7 +149,3 @@ Events that are not workflows don't need/have payload.
 - Socials
 - Billing
 
----
-
-#### Notes
-**Absolute paths**: Use absolute paths when referencing other files
