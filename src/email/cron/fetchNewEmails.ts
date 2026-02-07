@@ -1,4 +1,4 @@
-import { Queue, Worker } from "bullmq";
+import { Queue,  Worker } from "bullmq";
 import { imapClient } from "@/email/clients";
 import { getAccountById } from "@/db/queries/accounts";
 import { processEmail } from "@/email/utils/processEmail";
@@ -9,42 +9,46 @@ import { decrypt } from "@/utils/encryption";
 const fetchNewEmailsQueue = new Queue("fetch-new-emails", { connection: { url: process.env.REDIS_URL! } });
 
 async function fetchNewEmails(accountId: string) {
-  const account = await getAccountById(accountId);
-  if (!account?.accessToken) {
-    console.warn("No access token found for account", accountId);
-    return;
-  }
-
-  const client = imapClient({
-    host: decrypt(account.providerIMAP),
-    emailAddress: decrypt(account.providerAccountId),
-    accessToken: decrypt(account.accessToken),
-  });
-  await client.connect();
-
-  const lock = await client.getMailboxLock('INBOX');
   try {
-    // Search for unseen in the last 10 minutes
-    const since = new Date(Date.now() - 10 * 60 * 1000);
-    const uids = await client.search({ seen: false, since });
-
-    if (!uids) {
+    const account = await getAccountById(accountId);
+    if (!account?.accessToken) {
+      console.warn("No access token found for account", accountId);
       return;
     }
 
-    const processedUids: number[] = [];
+    const client = imapClient({
+      host: decrypt(account.providerIMAP),
+      emailAddress: decrypt(account.providerAccountId),
+      accessToken: decrypt(account.accessToken),
+    });
+    await client.connect();
 
-    for await (const message of client.fetch(uids, { source: true })) {
-      const processed = await processEmail(message, account.userId, account.id);
-      if(processed) processedUids.push(message.uid);
+    const lock = await client.getMailboxLock('INBOX');
+    try {
+      // Search for unseen in the last 10 minutes
+      const since = new Date(Date.now() - 10 * 60 * 1000);
+      const uids = await client.search({ seen: false, since });
+
+      if (!uids) {
+        return;
+      }
+
+      const processedUids: number[] = [];
+
+      for await (const message of client.fetch(uids, { source: true })) {
+        const processed = await processEmail(message, account.userId, account.id);
+        if(processed) processedUids.push(message.uid);
+      }
+
+      await client.messageFlagsAdd(processedUids, ["\\seen"], { uid: true });
+    } catch (error) {
+      console.error("Error fetching email:", error);
+    } finally {
+      lock.release();
+      await client.logout();
     }
-
-    await client.messageFlagsAdd(processedUids, ["\\seen"], { uid: true });
   } catch (error) {
-    console.error("Error fetching email:", error);
-  } finally {
-    lock.release();
-    await client.logout();
+    console.error("imap error:", error);
   }
 }
 
