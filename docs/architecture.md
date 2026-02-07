@@ -33,7 +33,7 @@ Handles natural language tasks such as intent classification, email summarizatio
 - Classify user intents from messages (`compose`, `edit`, `send`, etc.)
 - Summarize incoming emails
 - Compose or edit email replies
-- Handle generic assistant messages
+- Handle generic user messages
 
 **Database tables:** `messages`, `emails`
 
