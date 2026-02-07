@@ -106,6 +106,13 @@
       "when": 1769707768669,
       "tag": "0014_adorable_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1770506052875,
+      "tag": "0015_bright_madripoor",
+      "breakpoints": true
     }
   ]
 }
