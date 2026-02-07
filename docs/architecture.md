@@ -105,7 +105,7 @@ Event ids map directly to relevant table id.
 
 #### New Email
 1. New email is fetched for users with an active subscription → `"email:new"` event is emitted
-2. **NLP / Summeriser** consumes the event → summerises the email and emits → `"email:summerised"`
+2. **NLP / Summeriser** consumes the event → summerises the email and emits → `"message:assistant"` with the summary as content
 3. **Socials** consume completed events and notify the user of results:
 
 #### Inactive Subscription
