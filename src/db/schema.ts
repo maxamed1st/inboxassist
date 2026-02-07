@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, pgTable, varchar, jsonb, uuid, boolean, timestamp, text } from "drizzle-orm/pg-core";
-import type { EmailContent, ActionPayload } from "../db/types";
+import type { EmailContent } from "@/db/types";
 
 export const usersTable = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
@@ -62,23 +62,6 @@ export const emailsTable = pgTable("emails", {
   bcc: text(),
   date: timestamp().notNull(),
   status: varchar({ length: 50 }).notNull().$type<"received" | "draft" | "sent">(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
-});
-
-export const actionsTable = pgTable("actions", {
-  id: uuid().primaryKey().defaultRandom(),
-  userId: uuid()
-    .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
-  emailId: uuid()
-    .references(() => emailsTable.id, { onDelete: "cascade" }),
-  parentId: uuid()
-    .references((): any => actionsTable.id, { onDelete: "set null" }),
-  type: varchar({ length: 50 }).notNull().$type<"compose" | "edit" | "send" | "move">(),
-  payload: jsonb().default(sql`'{}'::jsonb`).notNull().$type<ActionPayload>(),
-  status: varchar({ length: 50 }).notNull().$type<"pending" | "processing" | "completed" | "failed">(),
-  role: varchar({ length: 50 }).notNull().$type<"user" | "system">(),
   createdAt: timestamp().notNull(),
   updatedAt: timestamp().notNull(),
 });
