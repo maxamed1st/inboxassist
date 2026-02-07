@@ -11,8 +11,3 @@ export interface EmailContent {
   }>;
   summary?: string;
 }
-
-export interface ActionPayload {
-  userMessage?: string;
-  [key: string]: any;
-}
