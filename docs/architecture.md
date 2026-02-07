@@ -15,6 +15,7 @@ Handles email account management, sending, receiving, moving, and threading.
 - Send emails
 - Move emails between folders
 - Store emails in the database with status tracking: `"received" | "draft" | "sent"`
+- purge emails
 
 **Database tables:** `emails`, `accounts`
 
@@ -46,7 +47,7 @@ Handles all user interfaces. Currently, the MVP uses a **Telegram bot**, but the
 - Send assistant responses
 - Connect email account
 - Manage subscription
-- Purge database
+- Purge messages
 - Notify users of action results
 
 **Database tables:** `connections`, `users`, `messages`
