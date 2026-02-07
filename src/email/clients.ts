@@ -45,6 +45,7 @@ export function imapClient({ host, port = 993, emailAddress, accessToken, method
       user: emailAddress,
       accessToken: accessToken,
       loginMethod: method
-    }
+    },
+    logger: false,
   });
 }
