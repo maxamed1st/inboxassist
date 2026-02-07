@@ -22,7 +22,7 @@ Handles email account management, sending, receiving, moving, and threading.
 **Notes**
 - Email content is stored as JSONB, including main content and summaries for flexibility and future features
 - Recipients and references (`to`, `cc`, `bcc`, `references`) are JSONB arrays to support multiple recipients and threading
-- Threading can be maintained via `replyToId` in messages and `references` fields if necessary
+- Threading can be maintained via `inReplyToId` in messages and `references` fields if necessary
 
 ---
 
