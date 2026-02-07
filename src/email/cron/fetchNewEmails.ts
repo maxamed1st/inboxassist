@@ -24,9 +24,9 @@ async function fetchNewEmails(accountId: string) {
 
   const lock = await client.getMailboxLock('INBOX');
   try {
-    // Search for unseen emails since yesterday
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const uids = await client.search({ seen: false, since: yesterday });
+    // Search for unseen in the last 10 minutes
+    const since = new Date(Date.now() - 10 * 60 * 1000);
+    const uids = await client.search({ seen: false, since });
 
     if (!uids) {
       return;
