@@ -33,9 +33,8 @@ Handles natural language tasks such as intent classification, email summarizatio
 - Summarize incoming emails
 - Compose or edit email replies
 - Handle generic assistant messages
-- Create and track actions in the system
 
-**Database tables:** `actions`, `messages`, `emails`
+**Database tables:** `messages`, `emails`
 
 ---
 
@@ -83,12 +82,11 @@ All modules share access to a **PostgreSQL database** via `drizzle-orm`. Key tab
 - **accounts**: user email accounts and tokens
 - **connections**: user platform connections
 - **emails**: stored emails with threading and JSONB content
-- **actions**: user/system actions and nested workflows
 - **messages**: chat messages linked to emails
 - **subscriptions**: subscription lifecycle and metadata
 
 **Notes**
-- The database serves as the **source of truth**. Every action, message, and email must be persisted before events are emitted
+- The database serves as the **source of truth**. Every message and email must be persisted before events are emitted
 - All email and chat content encrypted at rest and in transit
 - Columns with JSONB are typed on the application level
 
@@ -101,7 +99,7 @@ Event ids map directly to relevant table id.
 
 #### User Message
 1. User sends a message → `"message:user"` event is emitted
-2. **NLP / Intent Classifier** consumes the event for users with an active subscription → creates an entry in `actions` table → emits `"action:ACTION_TYPE"`
+2. **NLP / Intent Classifier** consumes the event for users with an active subscription → emits `"action:ACTION_TYPE"`
 3. Email/NLP modules handle the action (compose, edit, send, move) → emit `"email:*"` or `"action:*"` events
 4. **Socials** consume completed events and notify the user of results:
 
