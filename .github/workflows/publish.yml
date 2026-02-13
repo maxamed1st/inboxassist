@@ -13,11 +13,11 @@ jobs:
       - name: Setup
         run: |
           touch .env
-          echo "DATABASE_USER={{ secrets.DATABASE_USER }}" | tee .env >> $GITHUB_ENV
-          echo "DATABASE_PASSWORD={{ secrets.DATABASE_PASSWORD }}" | tee .env >> $GITHUB_ENV
-          echo "DATABASE_NAME={{ secrets.DATABASE_NAME }}" | tee .env >> $GITHUB_ENV
-          echo "DATABASE_URL={{ secrets.DATABASE_URL }}" | tee .env >> $GITHUB_ENV
-          echo "REDIS_URL={{ secrets.REDIS_URL}}" | tee .env >> $GITHUB_ENV
+          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" | tee .env >> $GITHUB_ENV
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" | tee .env >> $GITHUB_ENV
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" | tee .env >> $GITHUB_ENV
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" | tee .env >> $GITHUB_ENV
+          echo "REDIS_URL=${{ secrets.REDIS_URL }}" | tee .env >> $GITHUB_ENV
       - name: Run tests
         run: docker compose up test --abort-on-container-exit
       - name: Teardown
