@@ -9,6 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Setup
+        run: |
+          echo <<EOF > .env
+          DATABASE_USER={{ SECRETS.DATABASE_USER }}
+          DATABASE_PASSWORD={{ SECRETS.DATABASE_PASSWORD }}
+          DATABASE_NAME={{ SECRETS.DATABASE_NAME }}
+          DATABASE_URL={{ SECRETS.DATABASE_URL }}
+          REDIS_URL={{ SECRETS.REDIS_URL}}
+          EOF
       - name: Run tests
         run: docker compose up test --abort-on-container-exit
       - name: Teardown
