@@ -58,6 +58,26 @@ services:
       timeout: 3s
       retries: 5
 
+  test:
+    build:
+      context: .
+      target: builder
+    container_name: inboxassist_test
+    env_file:
+      - .env
+    volumes:
+      - ./tests:/app/tests
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - inboxassist
+    entrypoint: ["/bin/sh", "-c", "npx drizzle-kit migrate && npm run test"]
+    profiles:
+      - test
+
 networks:
   inboxassist:
     driver: bridge

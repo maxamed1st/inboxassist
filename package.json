@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production node build.js",
     "start": "node dist/index.js",
     "dev": "NODE_ENV=development node build.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
