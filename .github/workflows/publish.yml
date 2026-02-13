@@ -19,6 +19,8 @@ jobs:
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           REDIS_URL=${{ secrets.REDIS_URL }}
           ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+          OPENAI_API_KEY=testkey
+          TELEGRAM_BOT_TOKEN=testtoken
           EOF
       - name: Run tests
         run: docker compose up test --abort-on-container-exit
