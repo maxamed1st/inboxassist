@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import { nlpClient } from "@/nlp/clients";
+import { bot } from "@/socials/telegram/clients";
 
 export function mockNLPClient() {
   const nlpMock = vi.fn().mockResolvedValue({
@@ -7,4 +8,16 @@ export function mockNLPClient() {
   });
 
   vi.spyOn(nlpClient.chat.completions, "create").mockImplementation(nlpMock);
+}
+
+export function mockBot() {
+  const now = new Date();
+
+  const sendMessageMock = vi.fn().mockResolvedValue({
+    chat: { id: 2 },
+    text: "mocked Message",
+    date: now,
+  });
+
+  vi.spyOn(bot.telegram, "sendMessage").mockImplementation(sendMessageMock);
 }
