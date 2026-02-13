@@ -13,11 +13,11 @@ jobs:
       - name: Setup
         run: |
           echo <<EOF > .env
-          DATABASE_USER={{ SECRETS.DATABASE_USER }}
-          DATABASE_PASSWORD={{ SECRETS.DATABASE_PASSWORD }}
-          DATABASE_NAME={{ SECRETS.DATABASE_NAME }}
-          DATABASE_URL={{ SECRETS.DATABASE_URL }}
-          REDIS_URL={{ SECRETS.REDIS_URL}}
+          DATABASE_USER={{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD={{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME={{ secrets.DATABASE_NAME }}
+          DATABASE_URL={{ secrets.DATABASE_URL }}
+          REDIS_URL={{ secrets.REDIS_URL}}
           EOF
       - name: Run tests
         run: docker compose up test --abort-on-container-exit
