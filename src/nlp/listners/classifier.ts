@@ -22,12 +22,13 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
       response_format: zodResponseFormat(  
         z.object({  
           category: z.enum(['compose', 'edit', 'send', 'move', 'toggleReadStatus', 'other']),  
+          emailId: z.string().optional().nullable(),
           folder: z.string().optional().nullable()  
         }),  
         'classification'  
       ),
       temperature: 0.2,
-      max_tokens: 20
+      max_tokens: 50
     });
 
     const result = response.choices[0]?.message.content;
@@ -37,6 +38,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
     }
 
     const parsed = JSON.parse(result);
+    emailId = parsed.emailId ?? emailId;
 
     const message = parsed.category
     if(!message) {
