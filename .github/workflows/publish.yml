@@ -24,6 +24,9 @@ jobs:
           MICROSOFT_CLIENT_ID=testid
           MICROSOFT_CLIENT_SECRET=testclient
           MICROSOFT_REDIRECT_URI=testuri
+          STRIPE_SECRET_KEY=testkey
+          STRIPE_PRICE_ID=testid
+          STRIPE_WEBHOOK_SECRET=testsecret
           EOF
       - name: Run tests
         run: docker compose up test --abort-on-container-exit
