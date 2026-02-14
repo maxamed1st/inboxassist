@@ -71,7 +71,7 @@ export async function getPreviouseMessages(threadId: string) {
   }
 }
 
-export async function getRecentMessages() {
+export async function getRecentMessages(limit: number = 20) {
   try{
     const res = await db
       .select({
@@ -81,7 +81,7 @@ export async function getRecentMessages() {
       })
       .from(messagesTable)
       .orderBy(desc(messagesTable.createdAt))
-      .limit(20)
+      .limit(limit)
 
     return res?.reverse();
   } catch(err) {
