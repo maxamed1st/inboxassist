@@ -21,5 +21,5 @@ export function mockBot() {
   });
 
   vi.spyOn(bot.telegram, "sendMessage").mockImplementation(sendMessageMock);
-  vi.spyOn(bot.telegram, "getMe")
+  vi.spyOn(bot, "launch")
 }
