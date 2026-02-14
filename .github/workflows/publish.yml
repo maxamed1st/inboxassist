@@ -21,6 +21,9 @@ jobs:
           ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
           OPENAI_API_KEY=testkey
           TELEGRAM_BOT_TOKEN=testtoken
+          MICROSOFT_CLIENT_ID=testid
+          MICROSOFT_CLIENT_SECRET=testclient
+          MICROSOFT_REDIRECT_URI=testuri
           EOF
       - name: Run tests
         run: docker compose up test --abort-on-container-exit
