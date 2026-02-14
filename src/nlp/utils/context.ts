@@ -1,4 +1,4 @@
-import { getPreviouseMessages } from "@/db/queries/messages";
+import { getRecentMessages } from "@/db/queries/messages";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { decrypt } from "@/utils/encryption";
 import { getEmailContent } from "../utils/helpers";
@@ -35,12 +35,12 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
   }
 
   // add previouse messages
-  const prevMessages = threadId ? await getPreviouseMessages(threadId) : null;
+  const prevMessages = await getRecentMessages();
   if (prevMessages && prevMessages.length > 0) {
     for (const msg of prevMessages) {
       messages.push({
         role: msg.role,
-        content: decrypt(msg.content)
+        content: `Message: ${decrypt(msg.content)}\nEmail id: ${msg.emailId}`
       });
     }
   }
