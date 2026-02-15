@@ -20,7 +20,7 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
   if (user) {
     messages.push({
       role: "system",
-      content: `Corrent User:\nDisplay name: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
+      content: `# Current User:\nName: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
     })
   }
 
@@ -30,7 +30,7 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
   if (email) {
     messages.push({
       role: "system",
-      content: `from: ${email.from} \n\n subject: ${email.subject} \n\n content: ${email.content}`,
+      content: `# Email\nFrom: ${email.from}\nSubject: ${email.subject}\nBody: ${email.content}`,
     })
   }
 
