@@ -4,13 +4,13 @@ import { decrypt } from "@/utils/encryption";
 import { getEmailContent } from "../utils/helpers";
 import { getUserById } from "@/db/queries/user";
 
-export async function buildContext({ userId, systemPrompt, userMessage, emailId, threadId }:
-  { userId: string, systemPrompt: string, userMessage?: string, emailId?: string | null, threadId?: string | null }
+export async function buildContext({ userId, ctx, userMessage, emailId, threadId }:
+  { userId: string, ctx: { type: string, systemPrompt: string }, userMessage?: string, emailId?: string | null, threadId?: string | null }
 ) {
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: systemPrompt
+      content: ctx.systemPrompt
     }
   ];
 
@@ -38,9 +38,11 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
   const prevMessages = await getRecentMessages(userId);
   if (prevMessages && prevMessages.length > 0) {
     for (const msg of prevMessages) {
+      //associate messages with emailIds for the classifier
+      const content = ctx.type == "classifier" ? `Message: ${decrypt(msg.content)}\nEmail id: ${msg.emailId}` : decrypt(msg.content) 
       messages.push({
         role: msg.role,
-        content: `Message: ${decrypt(msg.content)}\nEmail id: ${msg.emailId}`
+        content
       });
     }
   }

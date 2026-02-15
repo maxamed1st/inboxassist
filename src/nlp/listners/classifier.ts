@@ -9,7 +9,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
   try {
     const { messages } = await buildContext({
       userId,
-      systemPrompt: classifier,
+      ctx: { type: "classifier", systemPrompt: classifier },
       userMessage: content,
       emailId,
       threadId
