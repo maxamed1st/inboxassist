@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, or } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { db } from "@/db/clients";
 import { messagesTable } from "../schema";
 
@@ -71,7 +71,7 @@ export async function getPreviouseMessages(threadId: string) {
   }
 }
 
-export async function getRecentMessages(limit: number = 20) {
+export async function getRecentMessages(userId: string, limit: number = 20) {
   try{
     const res = await db
       .select({
@@ -80,6 +80,7 @@ export async function getRecentMessages(limit: number = 20) {
         emailId: messagesTable.emailId
       })
       .from(messagesTable)
+      .where(eq(messagesTable.userId, userId))
       .orderBy(desc(messagesTable.createdAt))
       .limit(limit)
 

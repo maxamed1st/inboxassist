@@ -17,7 +17,7 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
   // add user info to context
   const user = await getUserById(userId);
 
-  if(user) {
+  if (user) {
     messages.push({
       role: "system",
       content: `Corrent User:\nDisplay name: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
@@ -35,7 +35,7 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
   }
 
   // add previouse messages
-  const prevMessages = await getRecentMessages();
+  const prevMessages = await getRecentMessages(userId);
   if (prevMessages && prevMessages.length > 0) {
     for (const msg of prevMessages) {
       messages.push({
