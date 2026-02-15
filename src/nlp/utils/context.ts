@@ -36,7 +36,7 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
 
   // add previouse messages
   const prevMessages = await getRecentMessages(userId);
-  if (prevMessages && prevMessages.length > 0) {
+  if (ctx.type != "summarizer" && prevMessages && prevMessages.length > 0) {
     for (const msg of prevMessages) {
       //associate messages with emailIds for the classifier
       const content = ctx.type == "classifier" ? `Message: ${decrypt(msg.content)}\nEmail id: ${msg.emailId}` : decrypt(msg.content) 
