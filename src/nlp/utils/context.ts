@@ -5,7 +5,7 @@ import { getEmailContent } from "../utils/helpers";
 import { getUserById } from "@/db/queries/user";
 
 export async function buildContext({ userId, systemPrompt, userMessage, emailId, threadId }:
-  { userId?: string, systemPrompt: string, userMessage?: string, emailId?: string | null, threadId?: string | null }
+  { userId: string, systemPrompt: string, userMessage?: string, emailId?: string | null, threadId?: string | null }
 ) {
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -15,7 +15,7 @@ export async function buildContext({ userId, systemPrompt, userMessage, emailId,
   ];
 
   // add user info to context
-  const user = userId ? await getUserById(userId): null;
+  const user = await getUserById(userId);
 
   if(user) {
     messages.push({
