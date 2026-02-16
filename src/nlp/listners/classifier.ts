@@ -21,7 +21,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
       messages: messages,
       response_format: zodResponseFormat(  
         z.object({  
-          category: z.enum(['compose', 'edit', 'send', 'move', 'toggleReadStatus', 'other']),  
+          intent: z.enum(['compose', 'edit', 'send', 'move', 'toggleReadStatus', 'other']),  
           emailId: z.string().optional().nullable(),
           folder: z.string().optional().nullable()  
         }),  
@@ -40,7 +40,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
     const parsed = JSON.parse(result);
     emailId = parsed.emailId ?? emailId;
 
-    const message = parsed.category
+    const message = parsed.intent
     if(!message) {
       throw new Error("Failed to classify user intent");
     }
