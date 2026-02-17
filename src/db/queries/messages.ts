@@ -77,7 +77,8 @@ export async function getRecentMessages(userId: string, limit: number = 20) {
       .select({
         content: messagesTable.content,
         role: messagesTable.role,
-        emailId: messagesTable.emailId
+        emailId: messagesTable.emailId,
+        replyToId: messagesTable.replyToId
       })
       .from(messagesTable)
       .where(eq(messagesTable.userId, userId))
