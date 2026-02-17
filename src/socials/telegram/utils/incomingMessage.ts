@@ -42,7 +42,7 @@ export default async function handleIncomingMessage() {
     }
     if(!message) {
       console.error("Failed to store message in database");
-      return;
+      return ctx.reply("Something went wrong, If you haven't initialized your assistant than please use /start command otherwise try again")
     }
 
     const user = await getUserById(message.userId);

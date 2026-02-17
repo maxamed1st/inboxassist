@@ -1,4 +1,4 @@
-import { and, eq, or } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { db } from "@/db/clients";
 import { messagesTable } from "../schema";
 
@@ -65,6 +65,27 @@ export async function getPreviouseMessages(threadId: string) {
       ))
 
     return res;
+  } catch(err) {
+    console.error("Failed to get message by id", err)
+    return null
+  }
+}
+
+export async function getRecentMessages(userId: string, limit: number = 20) {
+  try{
+    const res = await db
+      .select({
+        content: messagesTable.content,
+        role: messagesTable.role,
+        emailId: messagesTable.emailId,
+        replyToId: messagesTable.replyToId
+      })
+      .from(messagesTable)
+      .where(eq(messagesTable.userId, userId))
+      .orderBy(desc(messagesTable.createdAt))
+      .limit(limit)
+
+    return res?.reverse();
   } catch(err) {
     console.error("Failed to get message by id", err)
     return null

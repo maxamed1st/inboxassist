@@ -10,7 +10,7 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
   try {
     const { messages, email, user } = await buildContext({
       userId,
-      systemPrompt: composer,
+      ctx: { type: "composer", systemPrompt: composer },
       userMessage,
       emailId,
       threadId

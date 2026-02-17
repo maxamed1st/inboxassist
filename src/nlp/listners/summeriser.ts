@@ -8,7 +8,7 @@ export async function summerizeEmail({ userId, emailId }: { userId: string, emai
   try {
     const { messages, email } = await buildContext({
       userId,
-      systemPrompt: summerizer,
+      ctx: { type: "summarizer", systemPrompt: summerizer },
       emailId
     })
 
