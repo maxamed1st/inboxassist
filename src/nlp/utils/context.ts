@@ -36,8 +36,6 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
 
   // construct chat history
   messages = await constructChatHistory({ userId, userMessage, ctxType: ctx.type, messages })
-
-  console.log(messages)
   
   return { messages, email, user }
 }
