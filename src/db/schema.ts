@@ -72,7 +72,7 @@ export const messagesTable = pgTable("messages", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   emailId: uuid()
-    .references(() => emailsTable.id, { onDelete: "set null" }),
+    .references(() => emailsTable.id, { onDelete: "cascade" }),
   replyToId: uuid()
     .references((): any => messagesTable.id, { onDelete: "set null" }),
   platformMessageId: varchar({ length: 255 }),
