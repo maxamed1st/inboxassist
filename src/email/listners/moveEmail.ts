@@ -43,27 +43,33 @@ export async function moveEmail({ emailId, folder, threadId }: { emailId: string
     const moved = await client.messageMove(email.imapUid, targetPath);
 
     if(!moved) {
-      throw new Error(`Failed to move email`);
-    }
-    else {
       await publish("message:assistant", {
         userId: email.userId,
-        content: `Email has been moved to folder: ${targetBox.name}`,
-        emailId: email.id,
+        content: `Could not move the email to ${targetBox.name}.`,
+        emailId,
         threadId
-      });
+      })
+      console.error(`Failed to move email`);
+      return;
+    }
 
-      // Update local uid
-      const uidMap = moved.uidMap;
-      if(!uidMap || !uidMap.has(email.imapUid)) {
-        console.error("Failed to get new imap uid after move command");
-        return;
-      }
+    await publish("message:assistant", {
+      userId: email.userId,
+      content: `Email has been moved to folder: ${targetBox.name}`,
+      emailId: email.id,
+      threadId
+    });
 
-      const updated = await updateEmailById(email.id, { imapUid: uidMap.get(email.imapUid) });
-      if(!updated) {
-        console.error("Failed to insert the new imap uid");
-      }
+    // Update local uid
+    const uidMap = moved.uidMap;
+    if(!uidMap || !uidMap.has(email.imapUid)) {
+      console.error("Failed to get new imap uid after move command");
+      return;
+    }
+
+    const updated = await updateEmailById(email.id, { imapUid: uidMap.get(email.imapUid) });
+    if(!updated) {
+      console.error("Failed to insert the new imap uid");
     }
   } catch (err) {
     throw new Error(`Failed to move email: ${err}`)
