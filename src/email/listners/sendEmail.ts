@@ -13,6 +13,12 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
 
   if(email.status !== "draft") {
     console.error(`Email is not a draft: ${emailId}`);
+    await publish("message:assistant", {
+      userId: email.userId,
+      content: "I seem to be trying to send an email that is not a draft, perhaps you want to draft an email or you were referring to send another one?",
+      emailId: email.id,
+      threadId
+    })
     return;
   }
 
@@ -45,7 +51,6 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
 
   if(!updatedEmail) {
     console.error(`Could not update email from draft to sent: ${emailId}`);
-    return;
   }
 
   const reciever = decrypt(email.to);
@@ -53,7 +58,7 @@ export async function sendEmail({ emailId, threadId }: { emailId: string, thread
   await publish("message:assistant", {
       userId: email.userId!,
       content: `Email sent to ${JSON.parse(reciever)}`,
-      emailId: updatedEmail.id,
+      emailId: email.id,
       threadId
   });
 }
