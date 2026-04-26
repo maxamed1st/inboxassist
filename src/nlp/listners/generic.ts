@@ -14,7 +14,7 @@ export async function genericGPT({ userId, emailId, userMessage, threadId }: { u
       });
     
     const response = await nlpClient.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "claude-haiku-4-5-20251001",
       store: false,
       messages: messages,
       temperature: 0.7,
