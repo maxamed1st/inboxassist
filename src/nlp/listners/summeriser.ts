@@ -13,7 +13,7 @@ export async function summerizeEmail({ userId, emailId }: { userId: string, emai
     })
 
     const response = await nlpClient.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "claude-haiku-4-5-20251001",
       store: false,
       messages,
       temperature: 0.3,

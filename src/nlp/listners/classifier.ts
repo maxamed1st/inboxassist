@@ -16,7 +16,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
     });
 
     const response = await nlpClient.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "claude-haiku-4-5-20251001",
       store: false,
       messages: messages,
       response_format: zodResponseFormat(  
