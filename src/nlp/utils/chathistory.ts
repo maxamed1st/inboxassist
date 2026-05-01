@@ -33,10 +33,12 @@ export async function constructChatHistory({ userId, userMessage, ctxType, messa
   }
 
   const replyToMessage = currentMessage?.replyToId ? await getMessageById(currentMessage.replyToId) : null;
-  replyToMessage && messages.push({
-    role: "system",
-    content: `The following message is a reply to: ${constructContent(replyToMessage)}`
-  })
+  if (replyToMessage) {
+    messages.push({
+      role: "system",
+      content: `The following message is a reply to: ${constructContent(replyToMessage)}`
+    })
+  }
 
   if (currentMessage) {
     messages.push({
