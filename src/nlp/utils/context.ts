@@ -29,7 +29,7 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
 
   if (email) {
     messages.push({
-      role: "system",
+      role: ctx.type == "summarizer" ? "user" : "system",
       content: `# Email\nFrom: ${email.from}\nSubject: ${email.subject}\nBody: ${email.content}`,
     })
   }

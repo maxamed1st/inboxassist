@@ -2,7 +2,7 @@ import { getUserIdByTelegramId, insertConnection } from "@/db/queries/connection
 import { insertUser } from "@/db/queries/user"
 import { publish } from "@/events/broker";
 import { bot } from "@/socials/telegram/clients";
-import { queueTrialCancelation } from "./cron/cancelTrial";
+import { queueTrialCancelation } from "@/socials/telegram/cron/cancelTrial";
 
 export async function initializeUser(telegramUserId: string) {
     const existingUser = await getUserIdByTelegramId(telegramUserId);

@@ -49,8 +49,13 @@ export async function microsftCallback(req: Request, res: Response) {
       return res.status(401).json({ error: "Missing tokens" });
     }
 
+    if(!tokens.account) {
+      console.error("microsoft_callback tokens missing account");
+      return res.status(401).json({ error: "Tokens Missing account" });
+    } 
+
     //extract user token cache
-    const homeAccountId = tokens.account?.homeAccountId!;
+    const homeAccountId = tokens.account.homeAccountId;
     const fullCache = microsoftOauthClient.getTokenCache().serialize();
     const userTokenCache = partitionTokenCache(fullCache, homeAccountId);
 
