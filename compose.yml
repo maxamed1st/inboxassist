@@ -11,8 +11,8 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/app:Z
+      - /app/node_modules:Z
     depends_on:
       postgres:
         condition: service_healthy
