@@ -7,7 +7,7 @@ services:
       target: dev
     container_name: inboxassist_dev
     ports:
-      - "127.0.0.1:6500:3000"
+      - "6500:3000"
     env_file:
       - .env
     volumes:
