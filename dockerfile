@@ -1,5 +1,5 @@
 # Use Node.js LTS version
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # -----------------------------
 # Install dependencies
