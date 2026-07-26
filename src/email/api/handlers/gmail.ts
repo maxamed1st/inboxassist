@@ -1,11 +1,7 @@
 import { googleOauth2Client } from "@/email/clients";
-import { getAccountByUserId, insertAccount, updateAccountById } from "@/db/queries/accounts";
 import type{ Request, Response } from "express";
-import { keepTokensFresh } from "@/email/cron/refreshTokens";
-import { syncEmails } from "@/email/cron/fetchNewEmails";
-import { encrypt } from "@/utils/encryption";
-import { getUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
+import { HandleNewEmailConnection } from "@/email/utils/HandleNewEmailConnection";
 
 export async function gmailCallback(req: Request, res: Response) {
   try {
@@ -27,58 +23,32 @@ export async function gmailCallback(req: Request, res: Response) {
     const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
       headers: { Authorization: `Bearer ${tokens.access_token}` }
     });
-
+ 
     const profile = await response.json() as { emailAddress: string }
     if(!profile || !profile.emailAddress) {
       throw new Error("Gmail callback missing email field");
     }
 
-    // prepare values for DB insert
-    const providerAccountId = profile.emailAddress;
-    const now = new Date();
-    const values = {
+    // get the display name
+    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` }
+    });
+    const userInfo = await userInfoResponse.json() as { name?: string };
+
+
+
+    await HandleNewEmailConnection({
       userId,
       provider: "google",
-      providerAccountId: encrypt(providerAccountId),
-      accessToken: encrypt(tokens.access_token),
-      refreshToken: encrypt(tokens.refresh_token),
-      expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
-      updatedAt: now,
-    };
-
-    // Check if user has account
-    let account;
-    const existingAccount = await getAccountByUserId(userId)
-
-    // insert into accounts table
-    if(existingAccount) {
-      account = await updateAccountById(existingAccount.id, values);
-    } else {
-      account = await insertAccount({
-        ...values,
-        createdAt: now
-      });
-    }
-    
-    if(!account) {
-      throw new Error("gmail_callback: Failed to insert account")
-    }
-
-    // create background jobs to referesh tokens
-    await keepTokensFresh("google", account.id);
-
-    // sync emails if user has active subscription
-    // sync emails if user has active subscription
-    const user = await getUserById(userId);
-
-    if (!user) {
-      throw new Error("microsoft_callback: Failed to get user")
-    }
-
-    if (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing") {
-      await syncEmails("outlook.office365.com", account.id);
-    }
-
+      providerAccountId: profile.emailAddress,
+      imapHost: "imap.gmail.com",
+      smtpHost: "smtp.gmail.com",
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiresAt: tokens.expiry_date || null,
+      displayName: userInfo.name || ""
+    });
+ 
     await publish("message:system", {
       userId,
       content: "Your email has been connected successfully"

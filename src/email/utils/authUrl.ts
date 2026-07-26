@@ -2,7 +2,8 @@ import { googleOauth2Client, microsoftOauthClient } from "../clients";
 
 export function getGmailAuthUrl(userId: string) {
   const scopes = [
-    "https://mail.google.com/"
+    "https://mail.google.com/",
+    "https://www.googleapis.com/auth/userinfo.profile"
   ];
   const authUrl = googleOauth2Client.generateAuthUrl({
     access_type: "offline",
