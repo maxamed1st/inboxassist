@@ -2,10 +2,10 @@ import { insertSubscription, updateSubscriptionById } from "@/db/queries/billing
 import { updateUserById } from "@/db/queries/user";
 import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
 import { getAccountByUserId } from "@/db/queries/accounts";
-import type Stripe from "stripe";
+import { UpdateSubParams } from "../types";
 
 
-export async function updateSub({ type, values, subscription }: { type: "insert" | "update" | "delete", values: any, subscription: Stripe.Subscription }) {
+export async function updateSub({ type, values, subscription }: UpdateSubParams) {
   let sub;
 
   if (type == "insert") {
