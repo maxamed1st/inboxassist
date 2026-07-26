@@ -44,7 +44,7 @@ export async function stripeWebhook(req: Request, res: Response) {
 
       const subUpdated = await updateSub({
         type: "update",
-        values: { ...values, updateAt: new Date() },
+        values: { ...values, updatedAt: new Date() },
         subscription
       })
 
