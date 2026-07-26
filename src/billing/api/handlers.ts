@@ -71,4 +71,6 @@ export async function stripeWebhook(req: Request, res: Response) {
       break;
     }
   }
+
+  return res.status(200).send();
 }
