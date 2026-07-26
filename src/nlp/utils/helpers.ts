@@ -1,5 +1,5 @@
 import { getEmailById, updateEmailById } from "@/db/queries/emails";
-import { decrypt } from "@/utils/encryption";
+import { decrypt, encrypt } from "@/utils/encryption";
 
 export async function getEmailContent(id: string ) {
   const email = await getEmailById(id);
@@ -31,7 +31,7 @@ export async function storeSummary( emailId: string, summary: string ) {
     return null;
   }
   const content = email.content
-  content.summary = summary;
+  content.summary = encrypt(summary);
 
   const updatedEmail = await updateEmailById(emailId, { content })
 
