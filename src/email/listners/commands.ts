@@ -70,7 +70,7 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
   }
 
   const client = imapClient({
-    host: account.providerIMAP,
+    host: decrypt(account.providerIMAP),
     emailAddress: decrypt(account.providerAccountId),
     accessToken: decrypt(account.accessToken),
   });
