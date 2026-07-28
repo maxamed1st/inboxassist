@@ -85,7 +85,7 @@ export async function toggleEmailReadStatus({userId, emailId, threadId }: { user
       throw new Error(`Could not fetch email from imap server: ${emailId}`);
     }
 
-    const isSeen = message.flags?.has("//seen");
+    const isSeen = message.flags?.has("\\seen");
 
     if(isSeen) {
       await client.messageFlagsRemove(email.imapUid, ["\\seen"], { uid: true });
