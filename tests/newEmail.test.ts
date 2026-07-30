@@ -3,6 +3,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { getEmailById } from "@/db/queries/emails";
 import { publish } from "@/events/broker";
+import { decrypt } from "@/utils/encryption";
 import { seedDB } from "./utils/seed";
 import { mockBot, mockNLPClient } from "./utils/mocks";
 import { sleep } from "./utils/helpers";
@@ -27,6 +28,7 @@ describe("integration test for new emails", () => {
     await sleep(1000);
 
     const emailWithSummary = await getEmailById(email.id);
-    expect(emailWithSummary?.content.summary).toBe("mocked response");
+    const summary = emailWithSummary?.content.summary
+    expect(decrypt(summary!)).toBe("mocked response");
   })
 })
