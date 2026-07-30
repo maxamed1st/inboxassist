@@ -63,11 +63,3 @@ export function decrypt(encryptedString: string) {
   
   return decrypted;
 }
-
-// hash fields for look up
-export function hashForLookup(text: string) {
-  return crypto
-    .createHash('sha256')
-    .update(text.toLowerCase().trim())
-    .digest('hex');
-}
