@@ -51,5 +51,5 @@ export async function getRecentMessages(userId: string, limit: number = 20) {
     .orderBy(desc(messagesTable.createdAt))
     .limit(limit)
 
-  return res?.reverse();
+  return res.reverse();
 }
