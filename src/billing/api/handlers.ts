@@ -16,60 +16,51 @@ export async function stripeWebhook(req: Request, res: Response) {
       stripeWebhookSecret
     );
   } catch (err) {
-    console.error("Error constructing Stripe event:", err);
+    console.error("Error constructing Stripe event:", { cause: err });
     return res.status(400).send(`Webhook Error: Failed to construct event`);
   }
 
-  const subscription = event.data.object as Stripe.Subscription;
+  try {
+    const subscription = event.data.object as Stripe.Subscription;
+    switch (event.type) {
+      case "customer.subscription.created": {
+        const values = getSubscriptionData(subscription);
 
-  switch (event.type) {
-    case "customer.subscription.created": {
-      const values = getSubscriptionData(subscription);
+        await updateSub({
+          type: "insert",
+          values: { ...values, createdAt: new Date(), updatedAt: new Date() },
+          subscription,
+        });
 
-      const subUpdated = await updateSub({
-        type: "insert",
-        values: { ...values, createdAt: new Date(), updatedAt: new Date() },
-        subscription,
-      });
-
-      if (!subUpdated) {
-        return res.status(500).send("Internal Server Error");
+        break;
       }
 
-      break;
-    }
+      case "customer.subscription.updated": {
+        const values = getSubscriptionData(subscription);
 
-    case "customer.subscription.updated": {
-      const values = getSubscriptionData(subscription);
+        await updateSub({
+          type: "update",
+          values: { ...values, updatedAt: new Date() },
+          subscription
+        })
 
-      const subUpdated = await updateSub({
-        type: "update",
-        values: { ...values, updatedAt: new Date() },
-        subscription
-      })
-
-      if (!subUpdated) {
-        return res.status(500).send("Internal Server Error");
+        break;
       }
 
-      break;
-    }
+      case "customer.subscription.deleted": {
+        const values = getSubscriptionData(subscription);
+        await updateSub({
+          type: "delete",
+          values: { ...values, updatedAt: new Date() },
+          subscription,
+        })
 
-    case "customer.subscription.deleted": {
-      const values = getSubscriptionData(subscription);
-
-      const subUpdated = await updateSub({
-        type: "delete",
-        values: { ...values, updatedAt: new Date() },
-        subscription,
-      })
-
-      if (!subUpdated) {
-        return res.status(500).send("Internal Server Error");
+        break;
       }
-
-      break;
     }
+  } catch (err) {
+    console.error("stripe_webhook", { event_id: event.id, event_type: event.type, cause: err })
+    return res.status(500).send("Internal Server Error");
   }
 
   return res.status(200).send();
