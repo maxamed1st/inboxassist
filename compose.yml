@@ -21,6 +21,8 @@ services:
     restart: unless-stopped
     networks:
       - inboxassist
+    profiles:
+      - app
 
   postgres:
     image: postgres:16-alpine
