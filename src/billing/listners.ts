@@ -41,7 +41,7 @@ export async function checkout({ userId }: { userId: string }) {
   });
 
   if (!session.url) {
-    throw ctxError("checkout: redirect url missing", { ctx: { userId } })
+    throw ctxError("checkout: session missing redirect url", { ctx: { userId } })
   }
 
   await publish("message:system", {
@@ -54,7 +54,7 @@ export async function customerPortal({ userId }: { userId: string }) {
   const subscription = await getSubscriptionByUserId(userId);
 
   if (!subscription) {
-    throw ctxError("customerPortal: user doesn't exist", { ctx: { userId } });
+    throw ctxError("customerPortal: user has no subscription", { ctx: { userId } });
   }
 
   const session = await stripe.billingPortal.sessions.create({
@@ -63,7 +63,7 @@ export async function customerPortal({ userId }: { userId: string }) {
   });
 
   if (!session.url) {
-    throw ctxError("customerPortal: redirect url missing", { ctx: { userId } })
+    throw ctxError("customerPortal: session missing redirect url", { ctx: { userId } })
   }
 
   await publish("message:system", {
