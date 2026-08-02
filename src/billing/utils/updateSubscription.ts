@@ -3,6 +3,7 @@ import { updateUserById } from "@/db/queries/user";
 import { cancelEmailSync } from "@/email/cron/fetchNewEmails";
 import { getAccountByUserId } from "@/db/queries/accounts";
 import { UpdateSubParams } from "../types";
+import { ctxError } from "@/utils/errorHandling";
 
 
 export async function updateSub({ type, values, subscription }: UpdateSubParams) {
@@ -19,8 +20,9 @@ export async function updateSub({ type, values, subscription }: UpdateSubParams)
   }
 
   if (!sub) {
-    console.error("updateSub: Failed to update subscription:");
-    return false;
+    throw ctxError("updateSub: Failed to update sub", {
+      ctx: { subscriptionId: subscription.id }
+    });
   }
 
   const updatedUser = await updateUserById(sub.userId, {
@@ -29,19 +31,20 @@ export async function updateSub({ type, values, subscription }: UpdateSubParams)
   });
 
   if (!updatedUser) {
-    console.error("updateSub: Failed to update user with subscription info:");
-    return false;
+    throw ctxError("updateSub: Failed to update user with subscription info", {
+      ctx: { userId: sub.userId, subscriptionId: subscription.id }
+    });
   }
 
   // remove email sync if deleted subscription
   if (type == "delete") {
     const account = await getAccountByUserId(sub.userId);
     if (!account) {
-      console.error("updateSub: Failed to find account for user:", sub.userId);
-      return false;
+      throw ctxError("updateSub: Failed to find account for user", {
+        ctx: { userId: sub.userId }
+      });
     }
+
     await cancelEmailSync(account.id);
   }
-
-  return true;
 }
