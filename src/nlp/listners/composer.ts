@@ -5,6 +5,7 @@ import { buildContext } from "../utils/context";
 import { zodResponseFormat } from "openai/helpers/zod.mjs";
 import { decrypt } from "@/utils/encryption";
 import z from "zod";
+import { ctxError } from "@/utils/errorHandling";
 
 export async function composeEmail({ userId, emailId, userMessage, threadId }: { userId: string, emailId?: string, userMessage: string, threadId?: string }) {
   try {
@@ -34,25 +35,25 @@ export async function composeEmail({ userId, emailId, userMessage, threadId }: {
     const result = response.choices[0]?.message.content;
 
     if(!result) {
-      throw new Error("composer: Failed to get response from nlp composer");
+      throw ctxError("composer: Failed to get response from nlp composer", { ctx: { userId } });
     }
 
     const parsed = JSON.parse(result) as { subject: string, content: string };
 
     if (!parsed.content) {
-      throw new Error("composer: Failed to get draft from nlp client");
+      throw ctxError("composer: Failed to get draft from nlp client");
     }
 
     if(!emailId) {
-        throw new Error(`comopser: Email id missing: ${userId}`)
+        throw ctxError("comopser: Email id missing", { ctx: { userId } })
     }
 
     if(!email) {
-        throw new Error(`composer: Failed to get email object from context builder: ${userId}`)
+        throw ctxError("composer: Failed to get email object from context builder", { ctx: { emailId } })
     }
 
     if(!user) {
-        throw new Error(`composer: Failed to get user object from context builder: ${userId}`)
+        throw ctxError("composer: Failed to get user object from context builder", { ctx: { userId } })
     }
 
     if(email.from == decrypt(user.email!)) {
