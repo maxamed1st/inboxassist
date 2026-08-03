@@ -5,12 +5,13 @@ import { getAccountById, updateAccountById } from "@/db/queries/accounts";
 import { encrypt, decrypt} from "@/utils/encryption"
 import { microsoftOauthClient } from "@/email/clients";
 import { cancelEmailSync } from "./fetchNewEmails";
+import { ctxError } from "@/utils/errorHandling";
 
 // refresh access token when expired
 async function refreshMicrosoftTokens(accountId: string) {
   const account = await getAccountById(accountId);
   if (!account) {
-    throw new Error("No account found for" + accountId);
+    throw ctxError("refreshMicrosoftTokens: account not found", { ctx: { accountId } });
   }
 
   // clear cache state
@@ -22,7 +23,7 @@ async function refreshMicrosoftTokens(accountId: string) {
   const userAccount = await microsoftOauthClient.getTokenCache().getAllAccounts();
 
   if(!userAccount[0]) {
-    throw new Error(`refresh: Failed to get userAccount from cache: ${accountId}`);
+    throw ctxError("refreshMicrosoftTokens: failed to get userAccount from cache", { ctx: { accountId } });
   }
 
   const tokens = await microsoftOauthClient.acquireTokenSilent({
@@ -43,20 +44,20 @@ async function refreshMicrosoftTokens(accountId: string) {
   });
 
   if(!updatedAccount) {
-    throw new Error(`Failed to referesh tokens for: ${accountId}`);
+    throw ctxError("refreshMicrosoftTokens: failed to referesh tokens", { ctx: { accountId } });
   }
 }
 
 async function refreshGmailTokens(accountId: string) {
   const account = await getAccountById(accountId);
   if (!account) {
-    throw new Error("No account found for" + accountId);
+    throw ctxError("refreshGmailTokens: account not found", { ctx: { accountId } });
   }
 
   googleOauth2Client.setCredentials({ refresh_token: decrypt(account.refreshToken) });
   const { credentials } = await googleOauth2Client.refreshAccessToken();
   if (!credentials || !credentials.access_token || !credentials.refresh_token) {
-    throw new Error("Failed to refresh access token");
+    throw ctxError("refreshGmailTokens: Failed to refresh access token", { ctx: { accountId } });
   }
 
   const values = {
@@ -69,7 +70,7 @@ async function refreshGmailTokens(accountId: string) {
   const updatedAccount = await updateAccountById(accountId, values);
 
   if (!updatedAccount) {
-    throw new Error("Failed to update tokens for" + account.providerAccountId);
+    throw ctxError("refreshGmailTokens: Failed to update tokens for", { ctx: { accountId } });
   }
 }
 const refreshTokensQueue = new Queue("refresh-account-tokens", { connection: { url: process.env.REDIS_URL! } });
@@ -85,7 +86,7 @@ new Worker("refresh-account-tokens", async (job) => {
         if (isLastAttempt) {
           // reauthenticate user
           const account = await getAccountById(accountId);
-          if(!account) throw Error("refreshTokens: Failed to fetch account");
+          if(!account) throw ctxError("refreshTokensWorker: Failed to fetch account", { ctx: { accountId } });
 
           publish("email:connect", { userId: account.userId, platform: "gmail" });
           return;
@@ -103,7 +104,7 @@ new Worker("refresh-account-tokens", async (job) => {
         if (isLastAttempt) {
           // reauthenticate user
           const account = await getAccountById(accountId);
-          if(!account) throw Error("refreshTokens: Failed to fetch account");
+          if(!account) throw ctxError("refreshTokensWorker: Failed to fetch account", { ctx: { accountId } });
 
           publish("message:system", { userId: account.userId, content: "You need to sync your email again"});
           publish("email:connect", { userId: account.userId, platform: "microsoft" });
