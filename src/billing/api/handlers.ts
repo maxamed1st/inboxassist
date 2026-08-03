@@ -16,7 +16,7 @@ export async function stripeWebhook(req: Request, res: Response) {
       stripeWebhookSecret
     );
   } catch (err) {
-    console.error("Error constructing Stripe event:", { err });
+    console.error("stripe_webhook: Errored while constructing Stripe event", { err });
     return res.status(400).send(`Webhook Error: Failed to construct event`);
   }
 
@@ -59,7 +59,7 @@ export async function stripeWebhook(req: Request, res: Response) {
       }
     }
   } catch (err) {
-    console.error("stripe_webhook", { event_id: event.id, event_type: event.type, err })
+    console.error("stripe_webhook: Failed to process event", { event_id: event.id, event_type: event.type, err })
     return res.status(500).send("Internal Server Error");
   }
 
