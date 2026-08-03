@@ -3,6 +3,7 @@ import { decrypt } from "@/utils/encryption";
 import { getEmailContent } from "../utils/helpers";
 import { getUserById } from "@/db/queries/user";
 import { constructChatHistory } from "./chathistory";
+import { ctxError } from "@/utils/errorHandling";
 
 export async function buildContext({ userId, ctx, userMessage, emailId, threadId }:
   { userId: string, ctx: { type: string, systemPrompt: string }, userMessage?: string, emailId?: string | null, threadId?: string | null }
@@ -16,13 +17,12 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
 
   // add user info to context
   const user = await getUserById(userId);
+  if (!user) throw ctxError("User not found", { ctx: { userId } })
 
-  if (user) {
-    messages.push({
-      role: "system",
-      content: `# Current User\nName: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
-    })
-  }
+  messages.push({
+    role: "system",
+    content: `# Current User\nName: ${decrypt(user.name!)}\nEmail Address:${decrypt(user.email!)}`
+  })
 
   // add email to context
   const email = emailId ? await getEmailContent(emailId) : null;
@@ -36,6 +36,6 @@ export async function buildContext({ userId, ctx, userMessage, emailId, threadId
 
   // construct chat history
   messages = await constructChatHistory({ userId, userMessage, ctxType: ctx.type, messages })
-  
+
   return { messages, email, user }
 }
