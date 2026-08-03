@@ -28,8 +28,7 @@ export async function getEmailContent(id: string ) {
 export async function storeSummary( emailId: string, summary: string ) {
   const email = await getEmailById(emailId);
   if (!email) {
-    console.error("failed to fetch summerised email from db", emailId);
-    return null;
+    throw ctxError("failed to fetch summerised email from db", { ctx: { emailId } });
   }
   const content = email.content
   content.summary = encrypt(summary);
@@ -37,8 +36,7 @@ export async function storeSummary( emailId: string, summary: string ) {
   const updatedEmail = await updateEmailById(emailId, { content })
 
   if (!updatedEmail) {
-    console.error("Failed to insert summary", emailId);
-    return null;
+    throw ctxError("Failed to insert summary", { ctx: { emailId } });
   }
 
   return updatedEmail;
