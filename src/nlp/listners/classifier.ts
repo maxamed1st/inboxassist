@@ -4,6 +4,7 @@ import {classifier } from "@/nlp/utils/systemPrompt";
 import { zodResponseFormat, } from "openai/helpers/zod.mjs";
 import { z } from "zod";
 import { buildContext } from "../utils/context";
+import { ctxError } from "@/utils/errorHandling";
 
 export async function classifyUserIntent({ userId, messageId, content, emailId, threadId }: { userId: string, messageId: string, content: string, emailId?: string, threadId?: string }) {
   try {
@@ -34,7 +35,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
     const result = response.choices[0]?.message.content;
 
     if(!result) {
-      throw new Error("Failed to get response from nlp classifier");
+      throw ctxError("classifier: Failed to get response from nlp classifier");
     }
 
     const parsed = JSON.parse(result);
@@ -42,12 +43,12 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
 
     const message = parsed.intent
     if(!message) {
-      throw new Error("Failed to classify user intent");
+      throw ctxError("Failed to classify user intent", { ctx: { userId } });
     }
 
     if(message === "compose" || message === "edit") {
       if(!emailId) {
-        throw new Error(`EmailId missing for compose/edit action ${messageId}`);
+        throw ctxError("classifier: emailId missing for compose/edit action", { ctx: { userId, messageId } });
       }
 
       await publish(`action:${message as "compose" | "edit"}`, { userId, emailId, userMessage: content, threadId })
@@ -55,7 +56,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
 
     else if (message === "send") {
       if(!emailId) {
-        throw new Error(`EmailId missing for send action ${messageId}`);
+        throw ctxError("classifier: emailId missing for send action", { ctx: { userId, messageId } });
       }
       
       await publish("action:send", { userId, emailId, threadId })
@@ -63,7 +64,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
 
     else if (message === "move") {
       if(!emailId) {
-        throw new Error(`EmailId missing for move action ${messageId}`);
+        throw ctxError("classifier: emailId missing for move action", { ctx: { userId, messageId } });
       }
       
       const folder = parsed.folder;
@@ -72,7 +73,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
 
     else if (message === "toggleReadStatus") {
       if(!emailId) {
-        throw new Error(`EmailId missing for toggle action ${messageId}`);
+        throw ctxError("classifier: emailId missing for toggle action", { ctx: { userId, messageId } });
       }
 
       await publish("email:toggleReadStatus", { userId, emailId, threadId });
@@ -83,7 +84,7 @@ export async function classifyUserIntent({ userId, messageId, content, emailId, 
     }
 
     else {
-      throw new Error (`undefined user intent: ${result}`);
+      throw ctxError ("classifier: undefined user intent", { ctx: { userId, messageId, result } });
     }
   } catch(err) {
     throw new Error(`Failed to classify user intent ${messageId}: ${err}`)
