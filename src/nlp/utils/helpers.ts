@@ -1,11 +1,12 @@
 import { getEmailById, updateEmailById } from "@/db/queries/emails";
 import { decrypt, encrypt } from "@/utils/encryption";
+import { ctxError } from "@/utils/errorHandling";
 
 export async function getEmailContent(id: string ) {
   const email = await getEmailById(id);
 
   if (!email) {
-    throw new Error(`Failed to fetch email to summerize:${id}`)
+    throw ctxError("Failed to fetch email to summerize", { ctx: { id } })
   }
 
   const userId = email.userId;
