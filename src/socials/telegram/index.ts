@@ -1,4 +1,4 @@
-import { sendMessage } from "@/socials/telegram/utils/sendMessage"
+import { sendMessage } from "@/socials/telegram/listners"
 import { subscribe } from "@/events/broker";
 import handleIncomingMessage from "@/socials/telegram/utils/incomingMessage";
 

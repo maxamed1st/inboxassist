@@ -1,6 +1,6 @@
 import { getTelegramUserId } from "@/db/queries/connections";
 import { bot } from "@/socials/telegram/clients";
-import { storeMessage } from "./storeMessage";
+import { storeMessage } from "@/socials/telegram/utils/storeMessage";
 
 export async function sendMessage({ userId, content, emailId, threadId }: { userId: string, content: string, emailId?: string, threadId?: string }) {
   const telegramUser = await getTelegramUserId(userId)
