@@ -1,12 +1,13 @@
 import { Queue, Worker } from "bullmq";
 import { getUserById, updateUserById } from "@/db/queries/user";
 import { publish } from "@/events/broker";
+import { ctxError } from "@/utils/errorHandling";
 
 async function cancelTrial(userId: string) {
   const user = await getUserById(userId);
 
   if (!user) {
-    throw new Error(`User not found for cancelling trial: ${userId}`);
+    throw ctxError("cancelTrial: User not found for cancelling trial", { ctx: { userId } });
   }
 
   if (user.subscriptionId) {
@@ -16,7 +17,7 @@ async function cancelTrial(userId: string) {
   const updatedUser = await updateUserById(userId, { subscriptionStatus: "inactive", updatedAt: new Date() });
 
   if (!updatedUser) {
-    throw new Error(`Failed to cancel trial for user:${userId}`);
+    throw ctxError("cancelTrial: Failed to cancel trial", { ctx: { userId } });
   }
 
   await publish("message:system", {
