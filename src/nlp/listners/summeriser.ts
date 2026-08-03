@@ -3,6 +3,7 @@ import { nlpClient } from "@/nlp/clients";
 import { storeSummary } from "@/nlp/utils/helpers";
 import { summerizer } from "@/nlp/utils/systemPrompt";
 import { buildContext } from "../utils/context";
+import { ctxError } from "@/utils/errorHandling";
 
 export async function summerizeEmail({ userId, emailId }: { userId: string, emailId: string }) {
   try {
@@ -23,13 +24,13 @@ export async function summerizeEmail({ userId, emailId }: { userId: string, emai
     const summary = response.choices[0]?.message.content;
 
     if (!summary) {
-      throw new Error("Failed to get summary from nlp client");
+      throw ctxError("summarizer: Failed to get summary from nlp client", { ctx: { emailId } });
     }
 
     await storeSummary(emailId, summary);
 
     if(!email) {
-      throw new Error(`Summerizer: email from context builder is null: ${emailId}`);
+      throw ctxError("summarizer: email from context builder is null", { ctx: { emailId } });
     }
 
     publish("message:assistant", { userId: userId, emailId, content: `${email.from.replace(/['"]/g, '')} \n\n ${summary}` })
