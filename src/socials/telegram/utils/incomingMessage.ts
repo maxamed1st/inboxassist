@@ -39,9 +39,6 @@ export default async function handleIncomingMessage() {
       message = await storeMessage(ctx.message, "user");
     } catch (err) {
       console.error("Failed to store message in database:", err);
-    }
-    if(!message) {
-      console.error("Failed to store message in database");
       return ctx.reply("Something went wrong, If you haven't initialized your assistant than please use /start command otherwise try again")
     }
 
