@@ -22,10 +22,9 @@ export async function sendMessage({ userId, content, emailId, threadId }: { user
     });
   }
 
-  const storedMessage = await storeMessage(message, "assistant", emailId, threadId);
-
-  if (!storedMessage) {
+  try {
+  await storeMessage(message, "assistant", emailId, threadId);
+  } catch (err) {
     console.error("sendMessage: Failed to store message in database", message.message_id);
-    return;
   }
 }

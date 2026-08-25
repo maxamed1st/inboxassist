@@ -73,5 +73,9 @@ export async function storeMessage(message: Message, role: "user" | "assistant",
   //Insert into database
   const savedMessage = await insertMessage(messageData);
 
+  if(!savedMessage) {
+    throw ctxError("storeMessage: Failed to persist message", { ctx: { messageId: message.message_id } })
+  }
+
   return savedMessage;
 } 
