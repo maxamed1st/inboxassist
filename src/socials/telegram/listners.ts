@@ -1,19 +1,25 @@
 import { getTelegramUserId } from "@/db/queries/connections";
 import { bot } from "@/socials/telegram/clients";
 import { storeMessage } from "@/socials/telegram/utils/storeMessage";
+import { ctxError } from "@/utils/errorHandling";
 
 export async function sendMessage({ userId, content, emailId, threadId }: { userId: string, content: string, emailId?: string, threadId?: string }) {
   const telegramUser = await getTelegramUserId(userId)
   if (!telegramUser) {
-    console.error("Could not find Telegram connection for:", userId);
-    return;
+    throw ctxError("sendMessage: Telegram Connection not found",
+      { ctx: { userId } });
   }
-  const message = await bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "Markdown"}).catch( async (err) => {
-    throw new Error(`Failed to send message to telegram user: ${err}`);
+  const message = await bot.telegram.sendMessage(telegramUser.id, content, { parse_mode: "Markdown" }).catch(async (err) => {
+    throw ctxError("sendMessage: failed to send message to telegram user", {
+      cause: { err },
+      ctx: { userId, telegramUserId: telegramUser.id }
     });
+  });
 
   if (!message) {
-    throw new Error("Failed to send message to telegram user");
+    throw ctxError("sendMessage: failed to send message to telegram user", {
+      ctx: { userId, telegramUserId: telegramUser.id }
+    });
   }
 
   const storedMessage = await storeMessage(message, "assistant", emailId, threadId);
