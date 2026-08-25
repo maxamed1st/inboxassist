@@ -25,7 +25,7 @@ export async function sendMessage({ userId, content, emailId, threadId }: { user
   const storedMessage = await storeMessage(message, "assistant", emailId, threadId);
 
   if (!storedMessage) {
-    console.error("Failed to store message in database");
+    console.error("sendMessage: Failed to store message in database", message.message_id);
     return;
   }
 }
