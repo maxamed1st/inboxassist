@@ -42,7 +42,7 @@
     "ioredis": "^5.8.1",
     "jsonwebtoken": "^9.0.2",
     "mailparser": "^3.7.5",
-    "nodemailer": "^9.0.3",
+    "nodemailer": "^10.0.14",
     "openai": "^6.8.1",
     "pg": "^8.16.3",
     "stripe": "^20.0.0",
